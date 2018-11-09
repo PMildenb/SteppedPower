@@ -1,14 +1,13 @@
 #'
+#' 'zTestPower'
+#'
+#' @param d numeric, raw effect
+#' @param se numeric, standard error
+#' @param sig.level numeric, significance level, defaults to 0.05
 #'
 #'
 #'
 #'
-#'
-#'
-#'
-I <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
-d <- EffSize ; se <- sqrt(VarTrt)
-
 
 zTestPwr <- function(d,se,sig.level=0.05){
   dsz <- abs(d/se)
@@ -17,6 +16,20 @@ zTestPwr <- function(d,se,sig.level=0.05){
 }
 
 
+
+#'
+#' 'wlsMixedPower'
+#'
+#' @param EffSize numeric, raw effect
+#' @param I integer (vector), number of clusters per wave (in SWD)
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' Else residual error on individual level
+#' @param tau numeric, standard deviation of random intercepts
+#' @param sig.level numeric, significance level, defaults to 0.05
+#'
+#'
+#'
+#'
 
 wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=1,sig.level=0.05){
 
@@ -29,5 +42,3 @@ wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=1,sig.level=0.
   return(Pwr)
 }
 
-swPwr(swDsn(c(2,2,2,2,2)),distn = "gaussian",1,0,1.5,0.9,0,0,sigma = 4)
-View(swPwr)

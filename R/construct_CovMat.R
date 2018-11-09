@@ -1,24 +1,50 @@
+#'
+#'  'construct_CorBlk'
+#'
+#' @param timepoints not implemented
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' Else residual error on individual level
+#' @param tau numeric, standard deviation of random intercepts
+#'
+#'
+#'
 
 
-
-construct_CovBlk <- function(timepoints,sigma,tau){
+construct_CorBlk <- function(timepoints,sigma,tau){
   return(diag(sigma^2,timepoints) + tau^2)
 }
 
+#'
+#'  'construct_CorBlk'
+#'
+#' @param I integer (vector), number of clusters per wave (in SWD)
+#' @param timepoints not implemented
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' Else residual error on individual level
+#' @param tau numeric, standard deviation of random intercepts
+#' @param family distribution , not implemented
+#' @param N integer (vector), number of individuals per cluster.
+#' Defaults to 'rep(1,sum(I))' if not passed.
+#'
+#'
 
 
-construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=1){
+construct_CorMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
 
- if(is.null(timepoints))  timepoints <- length(I)+1
- Sigmas <- rep(sigma,sum(I))
+  SumCluster <- sum(I)
 
- CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,
-                   MoreArgs=list(timepoints=timepoints,tau=tau),SIMPLIFY = FALSE)
- return(Matrix::bdiag(CovBlks))
+  if(is.null(N)) {
+    NVec <- rep(1,SumCluster)
+  }else if(length(N)==SumCluster) {
+    NVec <- N
+  }else {stop('length of cluster sizes does not fit to total number of clusters')}
+
+  Sigmas <- sigma / sqrt(N)
+
+#  if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
+
+  CorBlks <- mapply(construct_CorBlk,sigma=Sigmas,
+                    MoreArgs=list(timepoints=timepoints,tau=tau),SIMPLIFY = FALSE)
+  return(Matrix::bdiag(CorBlks))
 }
-
-
-construct_CovBlk(5,1,0.2)
-construct_CovMat(I=c(2,2),sigma=3,tau=0.7)
-
 

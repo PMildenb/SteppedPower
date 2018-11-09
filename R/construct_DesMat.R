@@ -1,6 +1,6 @@
-#'  'construct_DesMat
+#'  'construct_DesMat'
 #'
-#' @param I integer vector. Length number of sequences.
+#' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param trt.eff not implemented
 #'
 #'
@@ -22,5 +22,3 @@ construct_DesMat <- function(I,trt.eff=NULL){
 }
 
 
-
-construct_DesMat(c(2,1,0,1))
