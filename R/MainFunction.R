@@ -31,12 +31,12 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #'
 #'
 
-wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=1,sig.level=0.05){
+wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level=0.05){
 
   DesMat <- construct_DesMat(I=I)
-  CovMat <- construct_CovMat(I=I,sigma=sigma,tau=tau,family=family,N=N)
+  CorMat <- construct_CorMat(I=I,sigma=sigma,tau=tau,family=family,N=N)
 
-  VarTrt <- solve(t(DesMat) %*% solve(CovMat) %*% DesMat)[1,1]
+  VarTrt <- solve(t(DesMat) %*% solve(CorMat) %*% DesMat)[1,1]
 
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarTrt),sig.level=sig.level)
   return(Pwr)

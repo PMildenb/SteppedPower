@@ -15,7 +15,7 @@ construct_CorBlk <- function(timepoints,sigma,tau){
 }
 
 #'
-#'  'construct_CorBlk'
+#'  'construct_CorMat'
 #'
 #' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param timepoints not implemented
@@ -39,12 +39,14 @@ construct_CorMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NUL
     NVec <- N
   }else {stop('length of cluster sizes does not fit to total number of clusters')}
 
-  Sigmas <- sigma / sqrt(N)
+  Sigmas <- sigma / sqrt(NVec)
 
-#  if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
+  if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
 
   CorBlks <- mapply(construct_CorBlk,sigma=Sigmas,
-                    MoreArgs=list(timepoints=timepoints,tau=tau),SIMPLIFY = FALSE)
+                    MoreArgs=list(timepoints=timepoints,
+                                  tau=tau),
+                    SIMPLIFY = FALSE)
   return(Matrix::bdiag(CorBlks))
 }
 
