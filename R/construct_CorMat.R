@@ -4,15 +4,16 @@
 #' @param timepoints not implemented
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
-#' @param tau numeric, standard deviation of random intercepts
+#' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
+#' A vector of length *timepoints* is interpreted as a variing sd over time (used for binomial outcomes).
 #'
 #'
 #'
 
 
-timepoints <- 4; sigma <- 3; tau <- c(2,2,4,4)
+timepoints <- 4; sigma <- 3; tau <- c(2,2,4,4) ; eta <- .2
 construct_CovBlk <- function(timepoints,sigma,tau){
-  return(diag(sigma^2,timepoints) + tau^2)
+  return(diag(sigma^2,timepoints) + tau %o% tau)
 }
 
 
