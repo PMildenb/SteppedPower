@@ -1,5 +1,5 @@
 #'
-#'  'construct_CorBlk'
+#'  'construct_CovBlk'
 #'
 #' @param timepoints not implemented
 #' @param sigma numeric, residual error of cluster means if no N given.
@@ -10,12 +10,14 @@
 #'
 
 
-construct_CorBlk <- function(timepoints,sigma,tau){
+timepoints <- 4; sigma <- 3; tau <- c(2,2,4,4)
+construct_CovBlk <- function(timepoints,sigma,tau){
   return(diag(sigma^2,timepoints) + tau^2)
 }
 
+
 #'
-#'  'construct_CorMat'
+#'  'construct_CovMat'
 #'
 #' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param timepoints not implemented
@@ -29,7 +31,7 @@ construct_CorBlk <- function(timepoints,sigma,tau){
 #'
 
 
-construct_CorMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
+construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
 
   SumCluster <- sum(I)
 
@@ -43,10 +45,10 @@ construct_CorMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NUL
 
   if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
 
-  CorBlks <- mapply(construct_CorBlk,sigma=Sigmas,
+  CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,
                     MoreArgs=list(timepoints=timepoints,
                                   tau=tau),
                     SIMPLIFY = FALSE)
-  return(Matrix::bdiag(CorBlks))
+  return(Matrix::bdiag(CovBlks))
 }
 
