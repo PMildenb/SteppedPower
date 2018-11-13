@@ -37,17 +37,31 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #'
 
 
-construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
+construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL,trtmat=NULL){
 
-  SumCluster <- sum(I)
+  SumCl       <- sum(I)
+  siglength   <- length(sigma)
 
-  if(is.null(N)) {
-    NVec <- rep(1,SumCluster)
-  }else if(length(N)==SumCluster) {
-    NVec <- N
-  }else {stop('length of cluster sizes does not fit to total number of clusters')}
+  if(is.null(N)) {               NVec <- rep(1,SumCl)
+  }else if(length(N)==SumCl) {   NVec <- N
+  }else stop('length of cluster sizes does not fit to total number of clusters')
 
-  Sigmas <- sigma / sqrt(NVec)
+  if(siglength==1){
+    Sigmas <- sigma / sqrt(NVec)
+  }else if(siglength==2){
+    trtmat <- matrix(DesMat[,1],nrow = SumCl,byrow=T)
+    sigtmp <- mapply(function(trtvec,sigma)(sigma[1] + trtvec*(sigma[2]-sigma[1])),
+                     t(trtmat), MoreArgs=list(sigma=sigma),SIMPLIFY = T)
+    sigtmp <- sigtmp/sqrt(rep(NVec,each=timepoints))
+    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+    print("sigma is assumed to change between control and intervention,
+          but not between clusters")
+  }else if(siglength==timepoints){
+    sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
+    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+    print("sigma is assumed to change over time, but not between clusters")
+  } else stop("Cannot handle length of vector sigma")
+
 
   if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
 

@@ -6,7 +6,8 @@
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
 
 ## CovMat
-construct_CovMat(I=c(2,0,1), sigma=1, tau=0.3)
+construct_CovMat(I=c(1,1), sigma=1,      tau=0.3)
+construct_CovMat(I=c(1,1), sigma=c(1,2), tau=0.3)
 
 ## DesMat
 construct_DesMat(I=c(2,0,1))
@@ -41,7 +42,7 @@ swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
 wlsMixedPower(EffSize=0.005,I=c(25,25,25,25),sigma=sigtmp,tau=0.01)
 
 
-## groessere Cluster am Rand bringt (kleine) Powerverbesserung
+## groessere Cluster an den Rand bringt (kleine) Powerverbesserung
 wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=rep(10,8))
 wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(13,11,9,7,7,9,11,13))
 

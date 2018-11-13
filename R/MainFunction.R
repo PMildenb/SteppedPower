@@ -5,9 +5,7 @@
 #' @param se numeric, standard error
 #' @param sig.level numeric, significance level, defaults to 0.05
 #'
-#'
-#'
-#'
+
 
 zTestPwr <- function(d,se,sig.level=0.05){
   dsz <- abs(d/se)
@@ -26,18 +24,27 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #' Else residual error on individual level
 #' @param tau numeric, standard deviation of random intercepts
 #' @param sig.level numeric, significance level, defaults to 0.05
+#' @param delay numeric (possibly vector), value between 0 and 1 specifing the
+#' intervention effect in the first (second ... ) intervention phase
 #'
-#'
-#'
-#'
+
+sigma <- .4*1:timepoints
+sigma <- sigma[1:2]
+NVec <- c(1,4,1,4)
 
 wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level=0.05){
 
-  DesMat <- construct_DesMat(I=I)
-  CorMat <- construct_CorMat(I=I,sigma=sigma,tau=tau,family=family,N=N)
+  DesMat      <- construct_DesMat(I=I,delay=NULL)
 
-  VarTrt <- solve(t(DesMat) %*% solve(CorMat) %*% DesMat)[1,1]
+  SumCl       <- sum(I)
+  timepoints  <- length(I)+1
+  trtmat      <- matrix(DesMat[,1],nrow = SumCl,byrow=T)
 
+  CovMat      <- construct_CovMat(I=I,timepoints=timepoints,
+                                  sigma=sigma,tau=tau,family=family,
+                                  N=N,trtmat=trtmat)
+
+  VarTrt <- solve(t(DesMat) %*% solve(CovMat) %*% DesMat)[1,1]
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarTrt),sig.level=sig.level)
   return(Pwr)
 }
