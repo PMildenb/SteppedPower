@@ -39,7 +39,6 @@ swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)
 sigtmp <- sqrt(.0275*.9725/200)
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
 wlsMixedPower(EffSize=0.005,I=c(25,25,25,25),sigma=sigtmp,tau=0.01)
-wlsMixedPower(EffSize=0.005,I=c(32,18,18,32),sigma=sigtmp,tau=0.01)
 
 
 ## groessere Cluster am Rand bringt (kleine) Powerverbesserung
@@ -47,7 +46,18 @@ wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=rep(10,8))
 wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(13,11,9,7,7,9,11,13))
 
 
-## swPwr tests
+
+
+
+
+
+
+
+
+
+
+
+##  understanding swPwr
 View(swPwr)
 J <- timepoints <- 3 ; tau <- 0.5 ; sigSq <- 4 ; n <- 10 ; I <- SumCluster <- 4 ; eta <- 0.04
 I.rep <- waves <- c(2,2) ; i.indx <- 1 ; swDesignUnique <- matrix(c(0,1,1,0,0,1),2,byrow=T)
