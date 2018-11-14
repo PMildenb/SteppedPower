@@ -14,7 +14,7 @@ construct_DesMat <- function(I,delay=NULL){
  trtBlk <- trt[rep(1:sequences,I),]
 
  timeBlk <- cbind(1,rbind(0,diag(1,timepoints-1)))
- timeBlk <- timeBlk[rep(1:timepoints,SumCluster),]
+ timeBlk <- timeBlk[rep(1:timepoints,SumCl),]
 
  DesMat  <- cbind(as.integer(t(trtBlk)),timeBlk)
 

@@ -35,10 +35,9 @@ NVec <- c(1,4,1,4)
 wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level=0.05){
 
   DesMat      <- construct_DesMat(I=I,delay=NULL)
-
-  SumCl       <- sum(I)
   timepoints  <- length(I)+1
-  trtmat      <- matrix(DesMat[,1],nrow = SumCl,byrow=T)
+
+  trtmat      <- matrix(DesMat[,1],nrow = sum(I),byrow=T)
 
   CovMat      <- construct_CovMat(I=I,timepoints=timepoints,
                                   sigma=sigma,tau=tau,family=family,
