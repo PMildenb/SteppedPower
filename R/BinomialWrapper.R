@@ -1,4 +1,4 @@
-#'  'binomialPower'
+#'  'wlsGlmmPower'
 #'
 #'
 #'
@@ -10,18 +10,31 @@
 #'
 
 ## Convenience wrapper for non-normal outcomes, in progress ...
-
+## how to handle tau,eta,rho (delta-method?) ?
 
 wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
-                                family=binomial(),N=NULL,sig.level=0.05){
+                                family="binomial",N=NULL,sig.level=0.05){
+  if(family =="binomial"){
+    Sigmas  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
+    EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+    print(paste("The assumed odds ratio is",round(OR,4)))
 
-  Sigmas  <- c(sigma0=mu0*(1-mu0),sigma1=mu1*(1-mu1))
-  EffSize <- mu1-mu0
-
-
-  wlsMixedPower(EffSize=EffSize,I=I,sigma=Sigmas,tau=tau,
+    wlsMixedPower(EffSize=EffSize,I=I,sigma=Sigmas,tau=tau,
                 family=family,N=N,sig.level=sig.level)
+  }
 }
 
 
-wlsGlmmPower(I=c(1,1,1),mu0=0.03,mu1=0.02,tau=0.015)
+wlsGlmmPower(I=c(2,2,2,2,2,2,0),mu0=0.03,mu1=0.02,tau=0.0,N=250)
+
+
+
+## binomial <-> gaussian analogy
+## noch benoetigt fuer den "Wrapper"
+swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)
+sigtmp <- sqrt(.0275*.9725/200)
+microbenchmark(
+  swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
+  ,
+  wlsMixedPower(EffSize=0.005,I=c(25,25,25,25),sigma=sigtmp,tau=0.01)
+  ,times=100)

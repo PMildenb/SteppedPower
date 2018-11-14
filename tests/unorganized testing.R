@@ -33,7 +33,6 @@ swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",
 
 
 
-
 ##  understanding swPwr
 View(swPwr)
 J <- timepoints <- 3 ; tau <- 0.5 ; sigSq <- 4 ; n <- 10 ; I <- SumCluster <- 4 ; eta <- 0.04
