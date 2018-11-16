@@ -9,8 +9,6 @@
 #'
 
 
-timepoints=3; sigma=2; tau=rep(2,3)
-
 construct_CovBlk <- function(timepoints,sigma,tau){
   if(length(sigma)>1 && length(sigma)!=timepoints)
     stop("length of vector sigma does not fit to number of timepoints")
