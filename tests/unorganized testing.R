@@ -3,16 +3,21 @@
 ## unorganized testing
 library(swCRTdesign)
 library(microbenchmark)
+
+## DesMat
+construct_DesMat(I=c(2,0,1))
+construct_DesMat(I=c(2,2))
+
 ## CovBlk
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
 
 ## CovMat
 construct_CovMat(I=c(1,1), sigma=1,      tau=0.3)
-construct_CovMat(I=c(1,1), sigma=c(1,2), tau=0.3)
+construct_CovMat(I=c(1,1), sigma=c(1,2), tau=0.3,trtmat)
 
-## DesMat
-construct_DesMat(I=c(2,0,1))
-construct_DesMat(I=c(2,2))
+DesMat <- construct_DesMat(I=c(1,1))
+trtmat <- matrix(DesMat[,1],nrow = sum(2),byrow=T)
+
 
 ## wlsMixedPower
 I <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
@@ -22,8 +27,8 @@ swPwr(swDsn(I),distn="gaussian",1,0,EffSize,
 
 
 wlsMixedPower(1,I=c(2,0,2,0,1),1,0.5)
-wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2,N=c(1,1,1,1,1) )
-wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2,N=c(2,2,2,2,2) )
+wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 ## KidSafe Setting I
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",

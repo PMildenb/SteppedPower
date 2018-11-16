@@ -3,10 +3,10 @@
 #'
 #' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param
-#' @param tau numeric, standard deviation of random intercepts
+#' @param tau numeric, standard deviation of random intercepts (soon) to be understood on the linear predictor level
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
-#' intervention effect in the first (second ... ) intervention phase
+#' intervention effect in the first (second ... ) intervention phase *not implemented
 #'
 #'
 #'
