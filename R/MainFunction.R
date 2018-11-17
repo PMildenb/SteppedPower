@@ -28,9 +28,9 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #' intervention effect in the first (second ... ) intervention phase
 #'
 
-wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level=0.05){
+wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level=0.05,delay=NULL){
 
-  DesMat      <- construct_DesMat(I=I,delay=NULL)
+  DesMat      <- construct_DesMat(I=I,delay=delay)
   timepoints  <- length(I)+1
 
   trtmat      <- matrix(DesMat[,1],nrow = sum(I),byrow=T)
