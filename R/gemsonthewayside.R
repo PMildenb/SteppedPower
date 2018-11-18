@@ -9,6 +9,11 @@ wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=rep(10,8))
 wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(13,11,9,7,7,9,11,13))
 wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(7,9,11,13,13,11,9,7))
 
+wlsMixedPower(EffSize=0.001,I=rep(1,20),sigma=sigtmp,tau=01,
+              N=c(1:10,10:1))
+wlsMixedPower(EffSize=0.001,I=rep(1,20),sigma=sigtmp,tau=01,
+              N=c(10:1,1:10))
+
 ########################################################################################
 ## speed-test -> meine fkt ist deutlich schneller.
 library(microbenchmark) ; library(swCRTdesign)

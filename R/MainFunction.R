@@ -39,8 +39,10 @@ wlsMixedPower <- function(EffSize,I,sigma,tau,family=gaussian(),N=NULL,sig.level
                                   sigma=sigma,tau=tau,family=family,
                                   N=N,trtmat=trtmat)
 
-  VarTrt <- solve(t(DesMat) %*% solve(CovMat) %*% DesMat)[1,1]
-  Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarTrt),sig.level=sig.level)
-  return(Pwr)
+  tmpmat <- t(DesMat) %*% solve(CovMat)
+  VarMat <- solve(tmpmat %*% DesMat)
+  HatMat <- VarMat %*% tmpmat
+  Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
+  return(list(Power=Pwr,HatMatrix=HatMat)
 }
 
