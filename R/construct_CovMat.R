@@ -60,6 +60,7 @@ construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NUL
     print("sigma is assumed to change over time, but not between clusters")
   } else stop("Cannot handle length of vector sigma")
 
+
   CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,
                     MoreArgs=list(timepoints=timepoints,
                                   tau=tau),

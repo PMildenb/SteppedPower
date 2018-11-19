@@ -17,13 +17,27 @@
 
 wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
                                 family="binomial",N=NULL,sig.level=0.05,delay=NULL){
+
+  DesMat <- construct_DesMat(I=I,delay=delay)
+  trtmat <- matrix(DesMat[,1],nrow = sum(I),byrow=T)
+
   if(family =="binomial"){
-    Sigmas  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
+    sigtmp  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4)))
 
-    wlsMixedPower(EffSize=EffSize,I=I,sigma=Sigmas,tau=tau,
-                family=family,N=N,sig.level=sig.level,delay=delay)
+    taus <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
+
+    sigtmp <- mapply(,
+                     t(trtmat), MoreArgs=list(sigma=sigtmp),SIMPLIFY = T)
+    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+
+
+    wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
+                  sigma=Sigmas,tau=taus,
+                  family=family,N=N,sig.level=sig.level)
   }
 }
+
+split_sd <- function(trtvec,sd)(sd[1] + trtvec*(sd[2]-sd[1]))
 

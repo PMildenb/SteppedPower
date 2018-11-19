@@ -27,10 +27,15 @@ microbenchmark(
 (swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
   -  wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01))  ## differenz (nahezu) null
 
+########################################################################################
+## difference in binom setting (for high diff mu0-mu1)
 
+wlsGlmmPower(I=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
+swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 
 ########################################################################################
 ## Plot von gmds vortrag reloaded
+##  ich kann die simulationen noch nicht reproduzieren (!!)
 
 tau.fct <- function(tau,mu){ tau*mu*(1-mu) }
 sig.fct <- function(nInd,mu0,mu1){
