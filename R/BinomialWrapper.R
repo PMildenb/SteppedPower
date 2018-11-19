@@ -20,24 +20,30 @@ wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
 
   DesMat <- construct_DesMat(I=I,delay=delay)
   trtmat <- matrix(DesMat[,1],nrow = sum(I),byrow=T)
+  timepoints  <- length(I)+1
 
   if(family =="binomial"){
-    sigtmp  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4)))
 
-    taus <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
+    sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
+    sigtmp   <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
+    Sigmas   <- split(sigtmp,rep(1:sum(I),each=timepoints))
 
-    sigtmp <- mapply(,
-                     t(trtmat), MoreArgs=list(sigma=sigtmp),SIMPLIFY = T)
-    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
-
+    tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
+    tautmp <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
+    Taus   <- split(tautmp,rep(1:sum(I),each=timepoints))
 
     wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
-                  sigma=Sigmas,tau=taus,
+                  timepoints=timepoints,sigma=Sigmas,tau=Taus,
                   family=family,N=N,sig.level=sig.level)
   }
 }
 
-split_sd <- function(trtvec,sd)(sd[1] + trtvec*(sd[2]-sd[1]))
 
+#'  'split_sd'
+#'
+
+split_sd <- function(trtvec,sd){
+  (sd[1] + trtvec*(sd[2]-sd[1]))
+}
