@@ -19,11 +19,15 @@ construct_CovMat(I=c(1,1), sigma=1,      tau=0.3)
 construct_CovMat(I=c(1,1), sigma=c(1,2), tau=0.3,
                  trtmat=matrix(c(0,0,1,0,1,1),nrow=2))
 
-DesMat <- construct_DesMat(I=c(1,1))
-trtmat <- matrix(DesMat[,1],nrow = sum(2),byrow=T)
+SumCl <- 2; timepoints <- 3; sigma <- split()
+CovMat      <- construct_CovMat(SumCl=SumCl,timepoints=timepoints,
+                                sigma=sigma,tau=tau,family=family,
+                                N=N,trtmat=trtmat)
 
 
 ## wlsMixedPower
+wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,I=c(1,1,1,1))
+
 I <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
 wlsMixedPower(I=I,sigma=sigma,tau=tau,EffSize=EffSize)
 swPwr(swDsn(I),distn="gaussian",1,0,EffSize,
@@ -35,7 +39,7 @@ wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) 
 wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 ##wlsGlmmPower
-wlsGlmmPower(I=c(2,2,2,2,2,2,0),mu0=0.03,mu1=0.02,tau=0.0,N=250)
+wlsGlmmPower(I=c(1,1,1),mu0=0.03,mu1=0.02,tau=0.0,N=250)
 
 ## binomial <-> gaussian analogy
 ## noch benoetigt fuer den "Wrapper"
