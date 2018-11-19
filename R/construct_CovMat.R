@@ -1,4 +1,3 @@
-
 #'  'construct_CovBlk'
 #'
 #' @param timepoints not implemented
@@ -34,9 +33,8 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #'
 
 
-construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL,trtmat=NULL){
+construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
 
-  SumCl       <- sum(I)
   siglength   <- length(sigma)
   if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
 
@@ -45,24 +43,28 @@ construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NUL
   }else if(length(N)==SumCl) {   NVec <- N
   }else stop('length of cluster sizes does not fit to total number of clusters')
 
+  ## sigma on cluster level depending on cluster size
   if(siglength==1){
     Sigmas <- sigma / sqrt(NVec)
-  }else if(siglength==2){
-    if(is.null(trtmat)) stop("In construct_CovMat: trtmat needed")
-    sigtmp <- mapply(function(trtvec,sigma)(sigma[1] + trtvec*(sigma[2]-sigma[1])),
-                     t(trtmat), MoreArgs=list(sigma=sigma),SIMPLIFY = T)
-    sigtmp <- sigtmp/sqrt(rep(NVec,each=timepoints))
-    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
-    print("sigma is assumed to change between control and intervention, but not between clusters")
+  }else if(siglength==2){   ## not needed anymore
+    stop("constructing the sigma vector is moved to BinomialWrapper function")
   }else if(siglength==timepoints){
     sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
     Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
     print("sigma is assumed to change over time, but not between clusters")
-  } else stop("Cannot handle length of vector sigma")
+  } else if(siglength==SumCl){
+      if(length(sigma[[1]])==timepoints){
+        Sigmas <- Map('/',sigma,NVec)      ## used for binomial
+      }else if(length(sigma[[1]])==1){
+        sigtmp <- rep(sigma/NVec,each=timepoints)
+        Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+      }
+  } else
+    stop("Cannot handle length of vector sigma")
 
-  CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,
-                    MoreArgs=list(timepoints=timepoints,
-                                  tau=tau),
+
+  CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
+                    MoreArgs=list(timepoints=timepoints),
                     SIMPLIFY = FALSE)
   return(Matrix::bdiag(CovBlks))
 }

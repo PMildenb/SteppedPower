@@ -27,10 +27,53 @@ microbenchmark(
 (swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
   -  wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01))  ## differenz (nahezu) null
 
+########################################################################################
+## difference in binom setting (for high diff mu0-mu1)
 
+wlsGlmmPower(I=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
+swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
+
+########################################################################################
+## Investigate HatMatrix
+## all moved to plot_wlsPower
+
+
+wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,0,1,0,1),sigma=.2,tau=2,N=10)
+
+HatMat <- wlsPowerOut$HatMatrix
+
+## Zeilen/Spaltenvergleiche
+rowSums(abs(HatMat)) ## "Fruehe" un besonders "spaete Cluster haben mehr gewicht
+colSums(HatMat) ## das sollte auch null werden.
+colSums(abs(HatMat)) ## Vergleich zwischen Gewichten v Perioden haengt von tau,eta .. ab,
+## Faustregel: je groesser tau, desto wichtiger besonders fruehe & spaete Perioden.
+## aber: in meisten Faellen sind glaub ich mittlere Perioden relativ noch wichtiger.
+
+## lattice funktioniert in einer Zeile, ist aber nicht einfach in den Ausmaßen zu aendern.
+## klare Standard-Einfaerbung
+library("lattice")
+par(mar=c(1,1,2,2))
+lattice::levelplot(t(HatMat[c(nrow(HatMat):1),]))
+
+## ggplot2 -- unhandlich. Resulat nicht schlecht.
+library(ggplot2)
+library(reshape2)
+HatData <- reshape2::melt(t(HatMat[c(nrow(HatMat):1),]))
+names(HatData) <- c("Time","Cluster","Weight")
+plotraw <- ggplot2::ggplot(HatData,aes(Time,Cluster)) +
+  theme_minimal()  + scale_fill_gradient2(low="steelblue",mid="white",high="red")
+
+
+## difference between raster and tile unclear (and prob unimportant) ..
+## plotraw + geom_raster()
+plotraw + geom_tile(aes(fill=Weight),colour="white")
+
+
+plot_wlsPower(wlsPowerOut)
 
 ########################################################################################
 ## Plot von gmds vortrag reloaded
+##  ich kann die simulationen noch nicht reproduzieren (!!)
 
 tau.fct <- function(tau,mu){ tau*mu*(1-mu) }
 sig.fct <- function(nInd,mu0,mu1){
