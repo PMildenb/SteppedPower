@@ -48,11 +48,6 @@ construct_CovMat <- function(I,timepoints=NULL,sigma,tau,family=gaussian(),N=NUL
   if(siglength==1){
     Sigmas <- sigma / sqrt(NVec)
   }else if(siglength==2){
-    if(is.null(trtmat)) stop("In construct_CovMat: trtmat needed")
-    sigtmp <- mapply(function(trtvec,sigma)(sigma[1] + trtvec*(sigma[2]-sigma[1])),
-                     t(trtmat), MoreArgs=list(sigma=sigma),SIMPLIFY = T)
-    sigtmp <- sigtmp/sqrt(rep(NVec,each=timepoints))
-    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
     print("sigma is assumed to change between control and intervention, but not between clusters")
   }else if(siglength==timepoints){
     sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))

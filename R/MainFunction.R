@@ -28,8 +28,8 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #' intervention effect in the first (second ... ) intervention phase
 #'
 
-wlsMixedPower <- function(DesMat=NULL,EffSize,I,sigma,tau,family=gaussian(),
-                          N=NULL,sig.level=0.05,delay=NULL){
+wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),
+                          N=NULL,sig.level=0.05,DesMat=NULL,I=NULL,delay=NULL){
 
   if(is.null(DesMat)){
     DesMat      <- construct_DesMat(I=I,delay=delay)
@@ -45,6 +45,6 @@ wlsMixedPower <- function(DesMat=NULL,EffSize,I,sigma,tau,family=gaussian(),
   VarMat <- solve(tmpmat %*% DesMat)
   HatMat <- VarMat %*% tmpmat
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
-  return(list(Power=Pwr,HatMatrix=HatMat)
+  return(list(Power=Pwr,HatMatrix=HatMat))
 }
 
