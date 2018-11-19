@@ -37,7 +37,8 @@ swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 ## Investigate HatMatrix
 ## all moved to plot_wlsPower
 
-wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,1,1,1,1,1),sigma=.2,tau=2,N=10)
+
+wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,0,1,0,1),sigma=.2,tau=2,N=10)
 
 HatMat <- wlsPowerOut$HatMatrix
 
