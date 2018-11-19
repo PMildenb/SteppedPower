@@ -10,7 +10,7 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase
 #'
-EffSize <- 1;sigma <-.1;tau <- .01;I <- c(2,2);N <- NULL;sig.level <- 0.05
+EffSize <- 1;sigma <-.1;tau <- .01;I <- c(1,2);N <- NULL;sig.level <- 0.05
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                           N=NULL,sig.level=0.05,DesMat=NULL,I=NULL,delay=NULL){
 

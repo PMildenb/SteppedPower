@@ -43,7 +43,7 @@ construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N
   }else if(length(N)==SumCl) {   NVec <- N
   }else stop('length of cluster sizes does not fit to total number of clusters')
 
-  ## Cluster size adjustment
+  ## sigma on cluster level depending on cluster size
   if(siglength==1){
     Sigmas <- sigma / sqrt(NVec)
   }else if(siglength==2){   ## not needed anymore
