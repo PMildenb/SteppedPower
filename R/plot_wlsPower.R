@@ -21,6 +21,3 @@ plot_wlsPower <- function(wlsPower){
 
   return(list(plotraw,plotCluster,plotPeriods))
 }
-
-a <- plot_wlsPower(wlsPowerOut)
-

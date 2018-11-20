@@ -21,7 +21,6 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 
 
 #'  'construct_CovMat'
-#'
 #' @param SumCl total number of clusters
 #' @param timepoints numeric, scalar
 #' @param sigma numeric, residual error of cluster means if no N given.
@@ -36,7 +35,6 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
 
   siglength   <- length(sigma)
-  if(is.null(timepoints))  timepoints <- length(I)+1   ## not implemented
 
   if(is.null(N)) {               NVec <- rep(1,SumCl)
   }else if(length(N)==1){        NVec <- rep(N,SumCl)
@@ -46,17 +44,15 @@ construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N
   ## sigma on cluster level depending on cluster size
   if(siglength==1){
     Sigmas <- sigma / sqrt(NVec)
-  }else if(siglength==2){   ## not needed anymore
-    stop("constructing the sigma vector is moved to BinomialWrapper function")
   }else if(siglength==timepoints){
     sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
     Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
     print("sigma is assumed to change over time, but not between clusters")
   } else if(siglength==SumCl){
       if(length(sigma[[1]])==timepoints){
-        Sigmas <- Map('/',sigma,NVec)      ## used for binomial
+        Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
       }else if(length(sigma[[1]])==1){
-        sigtmp <- rep(sigma/NVec,each=timepoints)
+        sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
         Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
       }
   } else

@@ -15,14 +15,11 @@ construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
 
 
 ## CovMat
-construct_CovMat(I=c(1,1), sigma=1,      tau=0.3)
-construct_CovMat(I=c(1,1), sigma=c(1,2), tau=0.3,
-                 trtmat=matrix(c(0,0,1,0,1,1),nrow=2))
-
-SumCl <- 2; timepoints <- 3; sigma <- split()
-CovMat      <- construct_CovMat(SumCl=SumCl,timepoints=timepoints,
-                                sigma=sigma,tau=tau,family=family,
-                                N=N,trtmat=trtmat)
+construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
+construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
+                 tau=list(c(.2,.2,.1),c(.2,.1,.1)))
+construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
+                 tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(4,4))
 
 
 ## wlsMixedPower
