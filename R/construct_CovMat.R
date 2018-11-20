@@ -1,10 +1,10 @@
 #'  'construct_CovBlk'
 #'
-#' @param timepoints not implemented
+#' @param timepoints numeric (scalar), number of timeperiods, i.e. dimension of blocks in covariance matrix
 #' @param sigma numeric (scalar or vector of length timepoints),
 #' residual error (usually of cluster means)
 #' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
-#' A vector of length *timepoints* is interpreted as a variing sd over time (used for binomial outcomes).
+#' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #'
 
 
@@ -22,8 +22,8 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 
 #'  'construct_CovMat'
 #'
-#' @param I integer (vector), number of clusters per wave (in SWD)
-#' @param timepoints not implemented
+#' @param SumCl total number of clusters
+#' @param timepoints numeric, scalar
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
 #' @param tau numeric, standard deviation of random intercepts

@@ -8,7 +8,7 @@
 #' @param tau numeric, standard deviation of random intercepts
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
-#' intervention effect in the first (second ... ) intervention phase
+#' intervention effect in the first (second ... ) intervention phase  *not implemented*
 #'
 EffSize <- 1;sigma <-.1;tau <- .01;I <- c(1,2);N <- NULL;sig.level <- 0.05
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,

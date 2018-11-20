@@ -4,12 +4,12 @@
 \alias{construct_DesMat}
 \title{'construct_DesMat'}
 \usage{
-construct_DesMat(I, trt.eff = NULL)
+construct_DesMat(I, delay = NULL)
 }
 \arguments{
 \item{I}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{trt.eff}{not implemented}
+\item{delay}{*not implemented*}
 }
 \description{
 'construct_DesMat'

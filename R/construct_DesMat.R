@@ -1,9 +1,7 @@
 #'  'construct_DesMat'
 #'
 #' @param I integer (vector), number of clusters per wave (in SWD)
-#' @param delay not implemented
-#'
-#'
+#' @param delay *not implemented*
 #'
 
 construct_DesMat <- function(I,delay=NULL){
