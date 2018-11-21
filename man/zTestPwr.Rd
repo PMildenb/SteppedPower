@@ -13,6 +13,12 @@ zTestPwr(d, se, sig.level = 0.05)
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 }
+\value{
+a formula for CoxEval()
+}
 \description{
 'zTestPower'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }
