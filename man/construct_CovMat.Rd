@@ -22,6 +22,12 @@ Else residual error on individual level}
 \item{N}{integer (vector), number of individuals per cluster.
 Defaults to 'rep(1,sum(I))' if not passed.}
 }
+\value{
+a formula for CoxEval()
+}
 \description{
 'construct_CovMat'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }

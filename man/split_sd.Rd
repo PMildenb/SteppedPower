@@ -6,6 +6,17 @@
 \usage{
 split_sd(trtvec, sd)
 }
+\arguments{
+\item{trtvec}{a vector}
+
+\item{sd}{vector of length 2 (or 3).}
+}
+\value{
+a formula for CoxEval()
+}
 \description{
 'split_sd'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }

@@ -11,6 +11,12 @@ construct_DesMat(I, delay = NULL)
 
 \item{delay}{*not implemented*}
 }
+\value{
+a formula for CoxEval()
+}
 \description{
 'construct_DesMat'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }

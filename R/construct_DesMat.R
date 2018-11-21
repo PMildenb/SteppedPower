@@ -3,6 +3,12 @@
 #' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param delay *not implemented*
 #'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+
 
 construct_DesMat <- function(I,delay=NULL){
  SumCl         <- sum(I)

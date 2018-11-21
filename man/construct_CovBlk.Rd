@@ -15,6 +15,12 @@ residual error (usually of cluster means)}
 \item{tau}{numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
 A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).}
 }
+\value{
+a formula for CoxEval()
+}
 \description{
 'construct_CovBlk'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }

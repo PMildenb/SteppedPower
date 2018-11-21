@@ -6,6 +6,11 @@
 #' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 
 
 construct_CovBlk <- function(timepoints,sigma,tau){
@@ -30,6 +35,11 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' @param N integer (vector), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(I))' if not passed.
 #'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 
 
 construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){

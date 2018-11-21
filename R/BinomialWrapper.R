@@ -9,6 +9,11 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
 #'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 
 
 ## Convenience wrapper for non-normal outcomes, still in progress ...
@@ -43,6 +48,15 @@ wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
 
 #'  'split_sd'
 #'
+#' @param trtvec a vector
+#' @param sd  vector of length 2 (or 3).
+#'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+
 
 split_sd <- function(trtvec,sd){
   (sd[1] + trtvec*(sd[2]-sd[1]))

@@ -6,6 +6,15 @@
 \usage{
 plot_wlsPower(wlsPower)
 }
+\arguments{
+\item{wlsPower}{Output of function wlsMixedPower}
+}
+\value{
+a formula for CoxEval()
+}
 \description{
-plots a heat map of the weights
+'plot_wlsPower'
+}
+\examples{
+BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
 }

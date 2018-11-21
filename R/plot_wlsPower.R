@@ -1,6 +1,13 @@
 #' 'plot_wlsPower'
 #'
-#' plots a heat map of the weights
+#' @param wlsPower Output of function wlsMixedPower
+#'
+#' @return a formula for CoxEval()
+#' @export
+#'
+#' @examples
+#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+
 
 plot_wlsPower <- function(wlsPower){
   HatMat <- wlsPower$HatMat
