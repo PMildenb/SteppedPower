@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunction.R
 \name{wlsMixedPower}
 \alias{wlsMixedPower}
-\title{'wlsMixedPower'}
+\title{wlsMixedPower}
 \usage{
 wlsMixedPower(EffSize, sigma, tau, family = gaussian(),
   timepoints = NULL, N = NULL, sig.level = 0.05, DesMat = NULL,
@@ -27,7 +27,7 @@ intervention effect in the first (second ... ) intervention phase  *not implemen
 a formula for CoxEval()
 }
 \description{
-'wlsMixedPower'
+This is the work-horse function of the SteppedPower package.
 }
 \examples{
 BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")

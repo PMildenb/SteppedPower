@@ -6,9 +6,7 @@
 \alias{SteppedPower-pkg-package}
 \title{SteppedPower}
 \description{
-what it does needs further explanation, urgently
-It's but a one-trick pony.
-Neuer sinnarmer Satz.
+Assesseses Power of mixed models for the evaluation of a intervention.
 }
 \author{
 Philipp Mildenberger \email{pmildenb@uni-mainz.de}

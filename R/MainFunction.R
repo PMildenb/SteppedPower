@@ -1,5 +1,7 @@
+#' wlsMixedPower
 #'
-#' 'wlsMixedPower'
+#' This is the work-horse function of the SteppedPower package.
+#'
 #'
 #' @param EffSize numeric, raw effect
 #' @param I integer (vector), number of clusters per wave (in SWD)

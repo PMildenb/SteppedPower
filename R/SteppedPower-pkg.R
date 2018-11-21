@@ -1,8 +1,6 @@
 #' SteppedPower
 #'
-#' what it does needs further explanation, urgently
-#' It's but a one-trick pony.
-#' Neuer sinnarmer Satz.
+#' Assesseses Power of mixed models for the evaluation of a intervention.
 #'
 #' @import Matrix ggplot2 reshape2
 #' @importFrom stats as.formula quantile
