@@ -21,6 +21,11 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(4,4))
 
+construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
+                 tau=0,N=c(1,1))
+construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
+                 tau=0,N=c(25,16))
+
 
 ## wlsMixedPower
 wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,I=c(1,1,1,1))

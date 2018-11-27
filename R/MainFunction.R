@@ -12,8 +12,8 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase  *not implemented*
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return a list of lenght two. First element is the power,
+#' second element the weights of cluster per period for estimating the treatment effect
 #'
 #' @examples
 #' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
