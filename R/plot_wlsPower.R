@@ -2,11 +2,9 @@
 #'
 #' @param wlsPower Output of function wlsMixedPower
 #'
-#' @return a formula for CoxEval()
-#' @export
-#'
-#' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' @return three plots
+#' @examples wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+#' plot_wlsPower(wlsPowerOut)
 
 
 plot_wlsPower <- function(wlsPower){

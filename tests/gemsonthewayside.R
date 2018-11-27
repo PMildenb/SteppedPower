@@ -15,15 +15,15 @@ wlsMixedPower(EffSize=0.001,I=rep(1,20),sigma=sigtmp,tau=01,
               N=c(10:1,1:10))
 
 ########################################################################################
-## speed-test -> meine fkt ist deutlich schneller.
+## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
 library(microbenchmark) ; library(swCRTdesign)
-I <- rep(1,40); sigtmp <- sqrt(.0275*.9725/200)
+I <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
 
 microbenchmark(
   swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
   ,
   wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01)
-  ,times=10)
+  ,times=5)
 (swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
   -  wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01)[[1]])  ## differenz (nahezu) null
 

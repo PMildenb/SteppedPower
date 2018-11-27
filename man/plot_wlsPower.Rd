@@ -10,11 +10,12 @@ plot_wlsPower(wlsPower)
 \item{wlsPower}{Output of function wlsMixedPower}
 }
 \value{
-a formula for CoxEval()
+three plots
 }
 \description{
 'plot_wlsPower'
 }
 \examples{
-BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+plot_wlsPower(wlsPowerOut)
 }
