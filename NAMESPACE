@@ -2,8 +2,6 @@
 
 export(plot_wlsPower)
 export(split_sd)
-export(wlsMixedPower)
-export(zTestPwr)
 import(Matrix)
 import(ggplot2)
 import(reshape2)
