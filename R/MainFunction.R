@@ -1,6 +1,9 @@
 #' wlsMixedPower
 #'
 #' This is the work-horse function of the SteppedPower package.
+#' It calls the constructor functions for the design matrix $X$ and covariance matrix $V$,
+#' and then calculates the variance of the intervention effect via
+#' **Var(\theta)=(X'V^{-1}X)^{-1}[1,1]**
 #'
 #'
 #' @param EffSize numeric, raw effect
@@ -16,7 +19,8 @@
 #' second element the weights of cluster per period for estimating the treatment effect
 #'
 #' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+#' wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                           N=NULL,sig.level=0.05,DesMat=NULL,I=NULL,delay=NULL){
@@ -42,18 +46,15 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
 }
 
 
-#'
-#' 'zTestPower'
+#' zTestPower
 #'
 #' @param d numeric, raw effect
 #' @param se numeric, standard error
 #' @param sig.level numeric, significance level, defaults to 0.05
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return a scalar
 #'
-#' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' @examples zTestPwr(4,1)
 
 
 zTestPwr <- function(d,se,sig.level=0.05){
