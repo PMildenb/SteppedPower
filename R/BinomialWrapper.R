@@ -1,7 +1,7 @@
 #'  'wlsGlmmPower'
 #'
 #'
-#' @param I integer (vector), number of clusters per wave (in SWD)
+#' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param mu0 average under control
 #' @param mu1 average under intervention
 #' @param tau numeric, standard deviation of random intercepts (soon) to be understood on the linear predictor level
@@ -12,19 +12,19 @@
 #' @return
 #'
 #' @examples
-#' wlsGlmmPower(I=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
+#' wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 
 
 ## Convenience wrapper for non-normal outcomes, still in progress ...
 ## sigma is derived by mu_i*(1-mu_i) for control and intervention separately
 
 
-wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
+wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
                                 family="binomial",N=NULL,sig.level=0.05,delay=NULL){
 
-  DesMat <- construct_DesMat(I=I,delay=delay)
-  trtmat <- matrix(DesMat[,1],nrow = sum(I),byrow=T)
-  timepoints  <- length(I)+1
+  DesMat <- construct_DesMat(Cl=Cl,delay=delay)
+  trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
+  timepoints  <- length(Cl)+1
 
   if(family =="binomial"){
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
@@ -32,11 +32,11 @@ wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
 
     sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
     sigtmp   <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
-    Sigmas   <- split(sigtmp,rep(1:sum(I),each=timepoints))
+    Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
     tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
     tautmp <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
-    Taus   <- split(tautmp,rep(1:sum(I),each=timepoints))
+    Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
     wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
                   timepoints=timepoints,sigma=Sigmas,tau=Taus,

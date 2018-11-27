@@ -20,7 +20,7 @@ Else residual error on individual level}
 \item{family}{distribution , not implemented}
 
 \item{N}{integer (vector), number of individuals per cluster.
-Defaults to 'rep(1,sum(I))' if not passed.}
+Defaults to 'rep(1,sum(Cl))' if not passed.}
 }
 \value{
 a covariance matrix

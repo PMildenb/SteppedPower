@@ -7,7 +7,7 @@
 #'
 #'
 #' @param EffSize numeric, raw effect
-#' @param I integer (vector), number of clusters per wave (in SWD)
+#' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
 #' @param tau numeric, standard deviation of random intercepts
@@ -19,16 +19,16 @@
 #' second element the weights of cluster per period for estimating the treatment effect
 #'
 #' @examples
-#' wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-#' wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+#' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+#' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
-                          N=NULL,sig.level=0.05,DesMat=NULL,I=NULL,delay=NULL){
+                          N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,delay=NULL){
 
   if(is.null(DesMat)){
-    DesMat      <- construct_DesMat(I=I,delay=delay)
-    timepoints  <- length(I)+1
-    SumCl       <- sum(I)
+    DesMat      <- construct_DesMat(Cl=Cl,delay=delay)
+    timepoints  <- length(Cl)+1
+    SumCl       <- sum(Cl)
   } else {
     timepoints  <- dim(DesMat)[2]-1                 ## special case
     SumCl       <- dim(DesMat)[1]/timepoints

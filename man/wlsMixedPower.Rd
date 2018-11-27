@@ -6,7 +6,7 @@
 \usage{
 wlsMixedPower(EffSize, sigma, tau, family = gaussian(),
   timepoints = NULL, N = NULL, sig.level = 0.05, DesMat = NULL,
-  I = NULL, delay = NULL)
+  Cl = NULL, delay = NULL)
 }
 \arguments{
 \item{EffSize}{numeric, raw effect}
@@ -18,7 +18,7 @@ Else residual error on individual level}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{I}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
 \item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase  *not implemented*}
@@ -34,6 +34,6 @@ and then calculates the variance of the intervention effect via
 $$Var(\theta)=(X'V^{-1}X)^{-1}[1,1]$$
 }
 \examples{
-wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-wlsMixedPower(EffSize=1,I=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 }

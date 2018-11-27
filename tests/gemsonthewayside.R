@@ -5,32 +5,32 @@
 ########################################################################################
 ## groessere Cluster an den Rand bringt (kleine) Powerverbesserung (altbekannt)
 sigtmp <- sqrt(.0275*.9725/200)
-wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=rep(10,8))
-wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(13,11,9,7,7,9,11,13))
-wlsMixedPower(EffSize=0.005,I=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(7,9,11,13,13,11,9,7))
+wlsMixedPower(EffSize=0.005,Cl=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=rep(10,8))
+wlsMixedPower(EffSize=0.005,Cl=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(13,11,9,7,7,9,11,13))
+wlsMixedPower(EffSize=0.005,Cl=c(2,2,2,2),sigma=sigtmp,tau=0.01,N=c(7,9,11,13,13,11,9,7))
 
-wlsMixedPower(EffSize=0.001,I=rep(1,20),sigma=sigtmp,tau=01,
+wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(1:10,10:1))
-wlsMixedPower(EffSize=0.001,I=rep(1,20),sigma=sigtmp,tau=01,
+wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(10:1,1:10))
 
 ########################################################################################
 ## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
 library(microbenchmark) ; library(swCRTdesign)
-I <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
+Cl <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
 
 microbenchmark(
-  swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
+  swPwr(swDsn(Cl),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
   ,
-  wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01)
+  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
   ,times=5)
-(swPwr(swDsn(I),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
-  -  wlsMixedPower(EffSize=0.005,I=I,sigma=sigtmp,tau=0.01)[[1]])  ## differenz (nahezu) null
+(swPwr(swDsn(Cl),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
+  -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]])  ## differenz (nahezu) null
 
 ########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
 
-wlsGlmmPower(I=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
+wlsGlmmPower(Cl=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
 swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 
 ########################################################################################
@@ -38,7 +38,7 @@ swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 ## all moved to plot_wlsPower
 library(ggplot2) ; library(reshape2)
 
-wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+wlsPowerOut <- wlsMixedPower(EffSize=.1,Cl=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
 plot_wlsPower(wlsPowerOut)
 
 
@@ -74,23 +74,23 @@ swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.4,.03),eta=0,sigma=s
 # 0.186691687   0.005011320   0.004970041
 
 ## linear function can reproduce the linear results
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
 
 
 ## binomial wrapper fits nicely in between
 ## exp for tau=0
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0)
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0)
-wlsGlmmPower(I=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200)
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0)
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0)
+wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200)
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.025,0.025))
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.03,0.03))
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0,eta=0) ## swPwr and wlsGlmm are ridiciously close
 
 ## for tau =!= 0
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
-wlsMixedPower(0.005,I=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
-wlsGlmmPower(I=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200) ##
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
+wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200) ##
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=tau.fct(.4,.0275),eta=0)
 
 

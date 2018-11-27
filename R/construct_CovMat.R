@@ -1,6 +1,6 @@
 #'  'construct_CovBlk'
 #'
-#' @param timepoints numeric (scalar), number of timeperiods, i.e. dimension of blocks in covariance matrix
+#' @param timepoints numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix
 #' @param sigma numeric (scalar or vector of length timepoints),
 #' residual error (usually of cluster means)
 #' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
@@ -32,7 +32,7 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' @param tau numeric, standard deviation of random intercepts
 #' @param family distribution , not implemented
 #' @param N integer (vector), number of individuals per cluster.
-#' Defaults to 'rep(1,sum(I))' if not passed.
+#' Defaults to 'rep(1,sum(Cl))' if not passed.
 #'
 #' @return a covariance matrix
 #'

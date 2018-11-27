@@ -4,11 +4,11 @@
 \alias{wlsGlmmPower}
 \title{'wlsGlmmPower'}
 \usage{
-wlsGlmmPower(I, mu0, mu1, tau, eta = NULL, rho = NULL,
+wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
   family = "binomial", N = NULL, sig.level = 0.05, delay = NULL)
 }
 \arguments{
-\item{I}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
 \item{mu0}{average under control}
 
@@ -28,5 +28,5 @@ intervention effect in the first (second ... ) intervention phase *not implement
 'wlsGlmmPower'
 }
 \examples{
-wlsGlmmPower(I=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
+wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 }

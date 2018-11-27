@@ -7,7 +7,7 @@
 construct_CovBlk(timepoints, sigma, tau)
 }
 \arguments{
-\item{timepoints}{numeric (scalar), number of timeperiods, i.e. dimension of blocks in covariance matrix}
+\item{timepoints}{numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix}
 
 \item{sigma}{numeric (scalar or vector of length timepoints),
 residual error (usually of cluster means)}
