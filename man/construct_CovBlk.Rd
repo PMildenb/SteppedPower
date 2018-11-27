@@ -16,11 +16,11 @@ residual error (usually of cluster means)}
 A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).}
 }
 \value{
-a formula for CoxEval()
+a block of a covariance matrix
 }
 \description{
 'construct_CovBlk'
 }
 \examples{
-BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+construct_CovBlk(timepoints=5, sigma=2, tau=2)
 }

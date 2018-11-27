@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_DesMat}
 \alias{construct_DesMat}
-\title{'construct_DesMat'}
+\title{construct_DesMat}
 \usage{
 construct_DesMat(I, delay = NULL)
 }
@@ -12,11 +12,12 @@ construct_DesMat(I, delay = NULL)
 \item{delay}{*not implemented*}
 }
 \value{
-a formula for CoxEval()
+a design matrix (for a stepped wedge design)
 }
 \description{
-'construct_DesMat'
+constructs a
 }
 \examples{
-BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+construct_DesMat(I=c(2,0,1))
+
 }

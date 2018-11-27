@@ -6,11 +6,10 @@
 #' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return a block of a covariance matrix
 #'
 #' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' construct_CovBlk(timepoints=5, sigma=2, tau=2)
 
 
 construct_CovBlk <- function(timepoints,sigma,tau){
@@ -35,11 +34,10 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' @param N integer (vector), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(I))' if not passed.
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return a covariance matrix
 #'
 #' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))
 
 
 construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
@@ -67,7 +65,6 @@ construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N
       }
   } else
     stop("Cannot handle length of vector sigma")
-
 
   CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
                     MoreArgs=list(timepoints=timepoints),

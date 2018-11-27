@@ -22,11 +22,11 @@ wlsGlmmPower(I, mu0, mu1, tau, eta = NULL, rho = NULL,
 intervention effect in the first (second ... ) intervention phase *not implemented*}
 }
 \value{
-a formula for CoxEval()
+
 }
 \description{
 'wlsGlmmPower'
 }
 \examples{
-BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+wlsGlmmPower(I=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 }

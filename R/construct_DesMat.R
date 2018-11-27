@@ -1,14 +1,13 @@
-#'  'construct_DesMat'
+#'  construct_DesMat
+#'
+#' constructs a
 #'
 #' @param I integer (vector), number of clusters per wave (in SWD)
 #' @param delay *not implemented*
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return a design matrix (for a stepped wedge design)
+#' @examples construct_DesMat(I=c(2,0,1))
 #'
-#' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
-
 
 construct_DesMat <- function(I,delay=NULL){
  SumCl         <- sum(I)

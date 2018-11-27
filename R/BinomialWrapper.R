@@ -9,16 +9,15 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
 #'
-#' @return a formula for CoxEval()
-#' @export
+#' @return
 #'
 #' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+#' wlsGlmmPower(I=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 
 
 ## Convenience wrapper for non-normal outcomes, still in progress ...
 ## sigma is derived by mu_i*(1-mu_i) for control and intervention separately
-## how to handle tau,eta,rho (delta-method?) ?
+
 
 wlsGlmmPower <- function(I,mu0,mu1,tau,eta=NULL,rho=NULL,
                                 family="binomial",N=NULL,sig.level=0.05,delay=NULL){
