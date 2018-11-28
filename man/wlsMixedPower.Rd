@@ -6,7 +6,7 @@
 \usage{
 wlsMixedPower(EffSize, sigma, tau, family = gaussian(),
   timepoints = NULL, N = NULL, sig.level = 0.05, DesMat = NULL,
-  Cl = NULL, delay = NULL)
+  Cl = NULL, delay = NULL, design = "SWD")
 }
 \arguments{
 \item{EffSize}{numeric, raw effect}
@@ -18,10 +18,13 @@ Else residual error on individual level}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+or number in control and intervention (in parallel designs)}
 
 \item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase  *not implemented*}
+
+\item{design}{character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".}
 }
 \value{
 a list of lenght two. First element is the power,

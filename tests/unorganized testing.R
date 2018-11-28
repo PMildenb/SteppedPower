@@ -8,7 +8,7 @@ library(microbenchmark)
 construct_DesMat(Cl=c(2,0,1))
 construct_DesMat(Cl=c(2,2))
 
-construct_DesMat(Cl=c(5,5),design="parallel")
+construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
 
 
@@ -30,7 +30,6 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(25,16))
 
-
 ## wlsMixedPower
 wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,Cl=c(1,1,1,1))
 
@@ -39,14 +38,23 @@ wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,EffSize=EffSize)
 swPwr(swDsn(Cl),distn="gaussian",1,0,EffSize,
       tau=tau,eta=0,rho=0,sigma=sigma)
 
-
-wlsMixedPower(1,Cl=c(2,0,2,0,1),1,0.5)
 wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-##wlsGlmmPower
+Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
+design="parallel" ; N <- NULL ; sig.level=0.05
+wlsMixedPower(1,Cl=c(5,5),1,0.1,family="gaussian",timepoints=2,design="parallel")
+
+
+## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
 swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
+
+
+## plot_wlsPower
+plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
+                            timepoints=2,design="parallel"))
+
 
 ## binomial <-> gaussian analogy
 ## noch benoetigt fuer den "Wrapper"
@@ -59,9 +67,6 @@ microbenchmark(
   ,times=100)
 
 
-## KidSafe Setting Cl
-swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",
-      n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.00131, rho=-.25, retDATA=FALSE)
 
 
 

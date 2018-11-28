@@ -34,12 +34,9 @@ wlsGlmmPower(Cl=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
 swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 
 ########################################################################################
-## Investigate HatMatrix
-## all moved to plot_wlsPower
-library(ggplot2) ; library(reshape2)
-
-wlsPowerOut <- wlsMixedPower(EffSize=.1,Cl=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
-plot_wlsPower(wlsPowerOut)
+## KidSafe Setting Cl
+swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",
+      n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.00131, rho=-.25, retDATA=FALSE)
 
 
 ########################################################################################

@@ -11,20 +11,17 @@
 
 construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
 
+  SumCl         <- sum(Cl)
   if(design=="SWD"){
-    SumCl         <- sum(Cl)
     sequences     <- length(Cl)
     timepoints    <- sequences + 1  ## modifikationen moeglich
     trt    <- matrix(0,sequences,timepoints) ; trt[upper.tri(trt)] <- 1
     trtBlk <- trt[rep(1:sequences,Cl),]
     trtvec <- as.numeric(t(trtBlk))
   }else if(design=="parallel"){
-    SumCl <- sum(Cl)
-    if(length(Cl)!=2){
-      stop("Cannot handle vector Cl")}
+    if(length(Cl)!=2) {stop("Cannot handle length of vector Cl")}
     if(is.null(timepoints)){
-      timepoints <- 1
-      warning("timepoints unspecified. Defaults to 1.")}
+      timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")}
     trtvec  <- c(rep(c(0,1),Cl*timepoints))
   }
 
