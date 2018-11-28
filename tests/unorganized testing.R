@@ -53,7 +53,7 @@ swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
 
 ## plot_wlsPower
 plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
-                            timepoints=2,design="parallel"))
+                            timepoints=NULL,design="parallel"))
 
 
 ## binomial <-> gaussian analogy
