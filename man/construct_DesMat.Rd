@@ -4,7 +4,8 @@
 \alias{construct_DesMat}
 \title{construct_DesMat}
 \usage{
-construct_DesMat(Cl, delay = NULL, design = "SWD")
+construct_DesMat(Cl, delay = NULL, design = "SWD",
+  timepoints = timepoints)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}

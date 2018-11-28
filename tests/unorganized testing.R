@@ -8,6 +8,10 @@ library(microbenchmark)
 construct_DesMat(Cl=c(2,0,1))
 construct_DesMat(Cl=c(2,2))
 
+construct_DesMat(Cl=c(5,5),design="parallel")
+construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
+
+
 ## CovBlk
 timepoints=3; sigma=2; tau=rep(2,3)
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
