@@ -11,12 +11,14 @@ construct_DesMat(Cl, delay = NULL, design = "SWD",
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
 \item{delay}{*not implemented*}
+
+\item{timepoints}{numeric, scalar}
 }
 \value{
-a design matrix (for a stepped wedge design)
+a matrix (for a stepped wedge design)
 }
 \description{
-constructs a
+constructs the design matrix.
 }
 \examples{
 construct_DesMat(Cl=c(2,0,1))

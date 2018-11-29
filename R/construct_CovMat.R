@@ -54,14 +54,14 @@ construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N
     Sigmas <- sigma / sqrt(NVec)
   }else if(siglength==timepoints){
     sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
-    Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+    Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
     print("sigma is assumed to change over time, but not between clusters")
   } else if(siglength==SumCl){
       if(length(sigma[[1]])==timepoints){
         Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
       }else if(length(sigma[[1]])==1){
         sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
-        Sigmas <- split(sigtmp,rep(1:SumCl,each=timepoints))
+        Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
       }
   } else
     stop("Cannot handle length of vector sigma")

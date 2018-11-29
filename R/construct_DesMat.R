@@ -1,11 +1,12 @@
 #'  construct_DesMat
 #'
-#' constructs a
+#' constructs the design matrix.
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param delay *not implemented*
+#' @param timepoints numeric, scalar
 #'
-#' @return a design matrix (for a stepped wedge design)
+#' @return a matrix (for a stepped wedge design)
 #' @examples construct_DesMat(Cl=c(2,0,1))
 #'
 

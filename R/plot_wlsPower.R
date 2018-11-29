@@ -1,8 +1,9 @@
 #' 'plot_wlsPower'
 #'
+#'  visual interpretation of cluster and period influences on intervention estimate
 #' @param wlsPower Output of function wlsMixedPower
 #'
-#' @return three plots
+#' @return three ggplot2 objects.
 #' @examples wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
 #' plot_wlsPower(wlsPowerOut)
 

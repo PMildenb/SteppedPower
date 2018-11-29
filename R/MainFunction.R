@@ -29,8 +29,8 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   if(is.null(DesMat)){
     SumCl       <- sum(Cl)
     if(is.null(timepoints)){
-      if(design=="SWD"){             timepoints  <- length(Cl)+1 } else
-      if(design=="parallel"){        timepoints  <- 1            }
+      if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
+      if(design=="parallel"){ timepoints  <- 1            }
     }
     DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   } else {
@@ -42,8 +42,8 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                                     sigma=sigma,tau=tau,family=family,
                                     N=N)
 
-  tmpmat <- t(DesMat) %*% solve(CovMat)
-  VarMat <- solve(tmpmat %*% DesMat)
+  tmpmat <- t(DesMat) %*% Matrix::solve(CovMat)
+  VarMat <- Matrix::solve(tmpmat %*% DesMat)
   HatMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
 

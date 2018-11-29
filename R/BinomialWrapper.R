@@ -31,11 +31,11 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
     print(paste("The assumed odds ratio is",round(OR,4)))
 
     sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
-    sigtmp   <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
+    sigtmp   <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
     Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
     tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
-    tautmp <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
+    tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
     wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
@@ -47,15 +47,13 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
 
 #'  'split_sd'
 #'
+#'  small helper function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
+#'  for interventional periods for each cluster.
+#'
 #' @param trtvec a vector
 #' @param sd  vector of length 2 (or 3).
 #'
-#' @return a formula for CoxEval()
-#' @export
-#'
-#' @examples
-#' BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
-
+#' @return numeric, scalar.
 
 split_sd <- function(trtvec,sd){
   (sd[1] + trtvec*(sd[2]-sd[1]))

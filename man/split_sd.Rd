@@ -12,11 +12,9 @@ split_sd(trtvec, sd)
 \item{sd}{vector of length 2 (or 3).}
 }
 \value{
-a formula for CoxEval()
+numeric, scalar.
 }
 \description{
-'split_sd'
-}
-\examples{
-BuildFormula(VarName="Variable",AdjName="additiveAdjustment",StratName="Stratification")
+small helper function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
+ for interventional periods for each cluster.
 }
