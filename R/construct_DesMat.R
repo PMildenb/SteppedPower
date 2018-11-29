@@ -19,11 +19,28 @@ construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
     trt    <- matrix(0,sequences,timepoints) ; trt[upper.tri(trt)] <- 1
     trtBlk <- trt[rep(1:sequences,Cl),]
     trtvec <- as.numeric(t(trtBlk))
-  }else if(design=="parallel"){
+  }else
+  if(design=="parallel"){
     if(length(Cl)!=2) {stop("Cannot handle length of vector Cl")}
     if(is.null(timepoints)){
-      timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")}
-    trtvec  <- c(rep(c(0,1),Cl*timepoints))
+      timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")
+    }
+    trtvec  <- rep(c(0,1),Cl*timepoints)
+  }else
+  if(design=="parallel_baseline"){
+    if(length(Cl)!=2) {stop("Cannot handle length of vector Cl")}
+    if(length(timepoints)==1){
+      timepoints01 <- c(1,timepoints-1)
+      message(paste("assumes 1 baseline period and",timepoints-1,"parallel period(s)"))
+    }else if(length(timepoints)==2){
+      timepoints01 <- timepoints
+      timepoints   <- sum(timepoints)
+    }else if(is.null(timepoints)){
+      timepoints01 <- c(1,1)
+      timepoints   <- 2
+      message("timepoints unspecified. Defaults to 1 baseline, 1 parallel period.")
+    }
+    trtvec  <- c(rep(rep(0,timepoints),Cl[1]),rep(c(0,rep(1,timepoints-1)),Cl[2]))
   }
 
   timeBlk <- suppressWarnings(cbind(1,rbind(0,diag(1,timepoints-1))))

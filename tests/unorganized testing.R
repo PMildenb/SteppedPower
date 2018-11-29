@@ -11,6 +11,9 @@ construct_DesMat(Cl=c(2,2))
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
 
+construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
+construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
+
 
 ## CovBlk
 timepoints=3; sigma=2; tau=rep(2,3)
