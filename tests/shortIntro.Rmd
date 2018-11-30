@@ -58,10 +58,47 @@ SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
 ## Main function
 call the function `wlsMixedPower`
 ```{r}
-wlsMixed_out <- SteppedPower::wlsMixedPower(EffSize=2, sigma=1, tau=0.1, N=c(4,1), Cl=c(1,1), design="SWD")
+wlsMixed_swd <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                              N=c(4,1), Cl=c(1,1), design="SWD")
+wlsMixed_swd$Power
 ```
 
-## 
+* N denotes the sizes of the two clusters, sigma is adjusted for:
+```{r}
+wlsMixed_swd$CovarianceMatrix
+```
+
+
+## Main function
+```{r}
+wlsMixed_swd$DesignMatrix
+```
+
+## Visualizations
+```{r}
+plot_swd <- plot_wlsPower(wlsMixed_swd)
+plot_swd[[1]]
+```
+
+* first and third period have (almost) no effect on trt estimate (!)
+
+```{r}
+wlsMixed_swd2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
+                              N=c(4,1), Cl=c(1,1), design="SWD")
+plot_swd2 <- plot_wlsPower(wlsMixed_swd2)
+plot_swd2[[1]]
+```
+
+## Main function, revisited
+```{r}
+wlsMixed_parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                                N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
+plot_wlsPower(wlsMixed_parll)[[1]]
+
+wlsMixed_parll$Power
+```
+
+
 
 
 ## TODO
@@ -71,7 +108,8 @@ wlsMixed_out <- SteppedPower::wlsMixedPower(EffSize=2, sigma=1, tau=0.1, N=c(4,1
 
 * add 'edge cases' of SWD, e.g. incomplete designs
 * add mixtures of SWD and parallel designs
-* find (and implement) visualizations for the robustness against misspecification
+* improve existing visualizations
+* find (and implement) visualizations for the sensitivity to misspecification
 * ... 
 
 

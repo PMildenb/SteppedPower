@@ -13,21 +13,21 @@
 
 
 plot_wlsPower <- function(wlsPower){
-  HatMat <- wlsPower$HatMat
-  HatData <- reshape2::melt(t(HatMat[c(nrow(HatMat):1),]))
+  WgtMat <- wlsPower$WeightMatrix
+  HatData <- reshape2::melt(t(WgtMat[c(nrow(WgtMat):1),]))
   names(HatData) <- c("Time","Cluster","Weight")
   plotraw <- ggplot2::ggplot(HatData,ggplot2::aes(Time,Cluster)) +
     ggplot2::theme_minimal()  + ggplot2::scale_fill_gradient2(low="steelblue",mid="white",high="red") +
     ggplot2::geom_tile(ggplot2::aes(fill=Weight),colour="white")
 
 
-  Timeweights    <- colSums(abs(HatMat))
-  plotCluster <- ggplot2::ggplot(data.frame(Cluster=1:dim(HatMat)[1],
-                                            Clusterweights=rowSums(abs(HatMat))),
+  Timeweights    <- colSums(abs(WgtMat))
+  plotCluster <- ggplot2::ggplot(data.frame(Cluster=1:dim(WgtMat)[1],
+                                            Clusterweights=rowSums(abs(WgtMat))),
                                  ggplot2::aes(Cluster,Clusterweights)) +
     ggplot2::geom_point() + ggplot2::theme_minimal()
-  plotPeriods <- ggplot2::ggplot(data.frame(Periods=1:dim(HatMat)[2],
-                                             Weights=colSums(abs(HatMat))),
+  plotPeriods <- ggplot2::ggplot(data.frame(Periods=1:dim(WgtMat)[2],
+                                             Weights=colSums(abs(WgtMat))),
                                  ggplot2::aes(Periods,Weights)) +
     ggplot2::geom_point() + ggplot2::theme_minimal()
 
