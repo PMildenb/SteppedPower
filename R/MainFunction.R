@@ -3,7 +3,7 @@
 #' This is the work-horse function of the SteppedPower package.
 #' It calls the constructor functions for the design matrix $X$ and covariance matrix $V$,
 #' and then calculates the variance of the intervention effect via
-#' $$Var(\theta)=(X'V^{-1}X)^{-1}[1,1]$$
+#' $$Var(trteff)=(X'V^{-1}X)^{-1}[1,1]$$
 #'
 #'
 #' @param EffSize numeric, raw effect
