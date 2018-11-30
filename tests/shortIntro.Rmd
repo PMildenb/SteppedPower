@@ -1,0 +1,66 @@
+---
+title: "about SteppedPower"
+author: "Philipp Mildenberger"
+date: "4 December 2018"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(SteppedPower)
+```
+
+## What?
+
+* `SteppedPower` calculates power for longitudinal intervention studies
+* offers tools for visualization of cluster influences
+* applicable to various designs:
+    + stepped wedge
+    + parallel
+    + parallel with baseline
+    + t.b.c. 
+
+
+
+## Why?
+
+Software for power calculation of SWD already exists (in R: `swCRTdesign`, `SWSamp`;  in Stata: `steppedwedge`).
+So why yet another new package?
+
+* can handle different cluster sizes
+* constructs exact covariance matrix for non-normal responses
+* convenient option to compare power of a SWD to other designs 
+* integrates plotting options
+* modularized, 
+
+
+## How?
+
+Calculate power of a z-test 
+
+$$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
+
+
+where $\text{Var}(\hat \theta)$ depends on the design matrix and the covariance matrix.
+
+## Design Matrices
+
+```{r}
+library(SteppedPower)
+SteppedPower::construct_DesMat(c(1,1))
+SteppedPower::construct_DesMat()
+```
+
+
+## TODO
+
+... a lot.
+
+
+* add edge cases of SWD, e.g. incomplete designs
+* add mixture designs of parallel and SWD
+* integrate `swCRTdesign` output
+* find (and implement) visualizations of sensitivity to misspecification
+* 
+* ... 
+
