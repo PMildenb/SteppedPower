@@ -48,6 +48,16 @@ SteppedPower::construct_DesMat(Cl=c(1,1),design="SWD")
 SteppedPower::construct_DesMat(Cl=c(1,1),design="parallel",timepoints=3)
 ```
 
+## Covariance Matrix
+
+```{r}
+
+```
+
+## Explanation 
+
+now this is fun!
+
 ## TODO
 
 ... a lot.
