@@ -48,7 +48,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   HatMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
 
-  return(list(Power=Pwr,HatMatrix=HatMat))
+  return(list(Power=Pwr, HatMatrix=HatMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat))
 }
 
 

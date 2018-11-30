@@ -6,7 +6,7 @@ output: slidy_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## What?
@@ -44,26 +44,32 @@ where $\text{Var}(\hat \theta)$ depends on the design matrix and the covariance 
 
 ```{r}
 library(SteppedPower)
-SteppedPower::construct_DesMat(Cl=c(1,1),design="SWD")
-SteppedPower::construct_DesMat(Cl=c(1,1),design="parallel",timepoints=3)
+SteppedPower::construct_DesMat(Cl=c(1,1), design="SWD")
+SteppedPower::construct_DesMat(Cl=c(1,1), design="parallel", timepoints=3)
 ```
 
 ## Covariance Matrix
 
 ```{r}
-
+SteppedPower::construct_CovBlk(timepoints=3, sigma=0.5, tau=0.1)
+SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
 ```
 
-## Explanation 
+## Main function
+call the function `wlsMixedPower`
+```{r}
+wlsMixed_out <- SteppedPower::wlsMixedPower(EffSize=2, sigma=1, tau=0.1, N=c(4,1), Cl=c(1,1), design="SWD")
+```
 
-now this is fun!
+## 
+
 
 ## TODO
 
 ... a lot.
 
 
-* add edge cases of SWD, e.g. incomplete designs
+* add 'edge cases' of SWD, e.g. incomplete designs
 * add mixtures of SWD and parallel designs
 * find (and implement) visualizations for the robustness against misspecification
 * ... 
