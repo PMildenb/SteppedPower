@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovMat}
 \alias{construct_CovMat}
-\title{'construct_CovMat'}
+\title{construct_CovMat}
 \usage{
 construct_CovMat(SumCl, timepoints = NULL, sigma, tau,
   family = gaussian(), N = NULL)
@@ -26,7 +26,8 @@ Defaults to 'rep(1,sum(Cl))' if not passed.}
 a covariance matrix
 }
 \description{
-'construct_CovMat'
+constructs a covariance matrix, a bloc diagonal matrix. Calls `construct_CovBlk`
+for each block.
 }
 \examples{
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))

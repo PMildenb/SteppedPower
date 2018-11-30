@@ -1,4 +1,6 @@
-#'  'construct_CovBlk'
+#' construct_CovBlk
+#'
+#' constructs the covariance matrix for multiple measurements of one cluster
 #'
 #' @param timepoints numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix
 #' @param sigma numeric (scalar or vector of length timepoints),
@@ -7,6 +9,7 @@
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #'
 #' @return a block of a covariance matrix
+#' @export
 #'
 #' @examples
 #' construct_CovBlk(timepoints=5, sigma=2, tau=2)
@@ -24,7 +27,11 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 }
 
 
-#'  'construct_CovMat'
+#' construct_CovMat
+#'
+#' constructs a covariance matrix, a bloc diagonal matrix. Calls `construct_CovBlk`
+#' for each block.
+#'
 #' @param SumCl total number of clusters
 #' @param timepoints numeric, scalar
 #' @param sigma numeric, residual error of cluster means if no N given.

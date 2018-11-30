@@ -6,7 +6,7 @@
 \alias{SteppedPower-pkg-package}
 \title{SteppedPower}
 \description{
-Assesseses Power of mixed models for the evaluation of a intervention.
+Assesses Power of mixed models for the evaluation of a intervention.
 }
 \author{
 Philipp Mildenberger \email{pmildenb@uni-mainz.de}

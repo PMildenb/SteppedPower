@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovBlk}
 \alias{construct_CovBlk}
-\title{'construct_CovBlk'}
+\title{construct_CovBlk}
 \usage{
 construct_CovBlk(timepoints, sigma, tau)
 }
@@ -19,7 +19,7 @@ A vector of length *timepoints* is interpreted as a variing sd over time (also u
 a block of a covariance matrix
 }
 \description{
-'construct_CovBlk'
+constructs the covariance matrix for multiple measurements of one cluster
 }
 \examples{
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
