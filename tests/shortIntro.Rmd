@@ -1,0 +1,118 @@
+---
+title: "about SteppedPower"
+author: "Philipp Mildenberger"
+date: "4 December 2018"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What?
+
+* `SteppedPower` calculates power for longitudinal intervention studies
+* offers tools for visualization of cluster influences
+* applicable to various designs:
+    + stepped wedge
+    + parallel
+    + parallel with baseline
+    + t.b.c. 
+
+
+
+## Why?
+
+Software for power calculation of SWD already exists (in R: `swCRTdesign`, `SWSamp`;  in Stata: `steppedwedge`).
+So why yet another new package?
+
+* 
+* constructs exact covariance matrix for non-normal responses
+* convenient option to compare power of a SWD to other designs 
+* integrates 
+
+## How?
+
+Calculate power of a z-test 
+
+$$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
+
+
+where $\text{Var}(\hat \theta)$ depends on the design matrix and the covariance matrix.
+
+## Design Matrix
+
+```{r}
+library(SteppedPower)
+SteppedPower::construct_DesMat(Cl=c(1,1), design="SWD")
+SteppedPower::construct_DesMat(Cl=c(1,1), design="parallel", timepoints=3)
+```
+
+## Covariance Matrix
+
+```{r}
+SteppedPower::construct_CovBlk(timepoints=3, sigma=0.5, tau=0.1)
+SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
+```
+
+## Main function
+call the function `wlsMixedPower`
+```{r}
+wlsMixed_swd <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                              N=c(4,1), Cl=c(1,1), design="SWD")
+wlsMixed_swd$Power
+```
+
+* N denotes the sizes of the two clusters, sigma is adjusted for:
+```{r}
+wlsMixed_swd$CovarianceMatrix
+```
+
+
+## Main function
+```{r}
+wlsMixed_swd$DesignMatrix
+```
+
+## Visualizations
+```{r}
+plot_swd <- plot_wlsPower(wlsMixed_swd)
+plot_swd[[1]]
+```
+
+* first and third period have (almost) no effect on trt estimate (!)
+
+```{r}
+wlsMixed_swd2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
+                              N=c(4,1), Cl=c(1,1), design="SWD")
+plot_swd2 <- plot_wlsPower(wlsMixed_swd2)
+plot_swd2[[1]]
+```
+
+## Main function, revisited
+```{r}
+wlsMixed_parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                                N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
+plot_wlsPower(wlsMixed_parll)[[1]]
+
+wlsMixed_parll$Power
+```
+
+
+
+
+## TODO
+
+... a lot.
+
+
+* add 'edge cases' of SWD, e.g. incomplete designs
+* add mixtures of SWD and parallel designs
+* improve existing visualizations
+* find (and implement) visualizations for the sensitivity to misspecification
+* ... 
+
+
+## 
+
+`devtools::install.github()
