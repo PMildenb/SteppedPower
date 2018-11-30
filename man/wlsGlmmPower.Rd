@@ -2,7 +2,7 @@
 % Please edit documentation in R/BinomialWrapper.R
 \name{wlsGlmmPower}
 \alias{wlsGlmmPower}
-\title{'wlsGlmmPower'}
+\title{wlsGlmmPower}
 \usage{
 wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
   family = "binomial", N = NULL, sig.level = 0.05, delay = NULL)
@@ -22,10 +22,10 @@ wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
 intervention effect in the first (second ... ) intervention phase *not implemented*}
 }
 \value{
-
+as wlsMixedPower
 }
 \description{
-'wlsGlmmPower'
+wlsGlmmPower
 }
 \examples{
 wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)

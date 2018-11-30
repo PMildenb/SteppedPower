@@ -19,6 +19,7 @@
 #'
 #' @return a list of lenght two. First element is the power,
 #' second element the weights of cluster per period for estimating the treatment effect
+#' @export
 #'
 #' @examples
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
@@ -58,6 +59,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
 #' @param sig.level numeric, significance level, defaults to 0.05
 #'
 #' @return a scalar
+#' @export
 #'
 #' @examples zTestPwr(4,1)
 

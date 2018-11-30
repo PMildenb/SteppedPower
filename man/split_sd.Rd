@@ -2,7 +2,7 @@
 % Please edit documentation in R/BinomialWrapper.R
 \name{split_sd}
 \alias{split_sd}
-\title{'split_sd'}
+\title{split_sd}
 \usage{
 split_sd(trtvec, sd)
 }

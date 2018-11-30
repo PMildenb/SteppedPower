@@ -1,4 +1,4 @@
-#'  'wlsGlmmPower'
+#'  wlsGlmmPower
 #'
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
@@ -9,7 +9,8 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
 #'
-#' @return
+#' @return as wlsMixedPower
+#' @export
 #'
 #' @examples
 #' wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
@@ -45,7 +46,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
 }
 
 
-#'  'split_sd'
+#'  split_sd
 #'
 #'  small helper function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
 #'  for interventional periods for each cluster.

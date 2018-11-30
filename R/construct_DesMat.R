@@ -7,6 +7,8 @@
 #' @param timepoints numeric, scalar
 #'
 #' @return a matrix (for a stepped wedge design)
+#' @export
+#'
 #' @examples construct_DesMat(Cl=c(2,0,1))
 #'
 
@@ -15,7 +17,7 @@ construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
   SumCl         <- sum(Cl)
   if(design=="SWD"){
     sequences     <- length(Cl)
-    timepoints    <- sequences + 1  ## modifikationen moeglich
+    timepoints    <- sequences + 1  ## hier modifikationen moeglich
     trt    <- matrix(0,sequences,timepoints) ; trt[upper.tri(trt)] <- 1
     trtBlk <- trt[rep(1:sequences,Cl),]
     trtvec <- as.numeric(t(trtBlk))
