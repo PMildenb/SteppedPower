@@ -74,7 +74,7 @@ wlsMixed_swd$CovarianceMatrix
 wlsMixed_swd$DesignMatrix
 ```
 
-## Visualizations
+## Visualization - Weight Matrix
 ```{r}
 plot_swd <- plot_wlsPower(wlsMixed_swd)
 plot_swd[[1]]
@@ -83,14 +83,6 @@ plot_swd[[1]]
 * first and third period have (almost) no effect on trt estimate (!)
 
 ```{r}
-wlsMixed_swd2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
-                              N=c(4,1), Cl=c(1,1), design="SWD")
-plot_swd2 <- plot_wlsPower(wlsMixed_swd2)
-plot_swd2[[1]]
-```
-
-## Main function, revisited
-```{r}
 wlsMixed_parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
                                 N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
 plot_wlsPower(wlsMixed_parll)[[1]]
@@ -98,6 +90,15 @@ plot_wlsPower(wlsMixed_parll)[[1]]
 wlsMixed_parll$Power
 ```
 
+## Weight Matrix 
+
+```{r}
+wlsMixed_parll2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
+                                N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
+plot_wlsPower(wlsMixed_parll2)[[1]]
+
+wlsMixed_parll2$Power
+```
 
 
 
@@ -121,13 +122,57 @@ wlsMixed_parll$Power
 #     theme_xkcd()
 # p
 
+xrange <- range(mtcars$mpg)
+yrange <- range(mtcars$wt)
+p <- ggplot() +
+     geom_point(aes(mpg, wt), data=mtcars) +
+     xkcdaxis(xrange,yrange)
+p
+
+
+datascaled <- data.frame(x=c(-3,3),y=c(-30,30))
+p <- ggplot(data=datascaled, aes(x=x,y=y)) + geom_point()
+xrange <- range(datascaled$x)
+yrange <- range(datascaled$y)
+ratioxy <- diff(xrange) / diff(yrange)
+
+mapping <- aes(x=x,
+               y=y,
+               scale=scale,
+               ratioxy=ratioxy,
+               angleofspine = angleofspine,
+               anglerighthumerus = anglerighthumerus,
+               anglelefthumerus = anglelefthumerus,
+               anglerightradius = anglerightradius,
+               angleleftradius = angleleftradius,
+               anglerightleg =  anglerightleg,
+               angleleftleg = angleleftleg,
+               angleofneck = angleofneck,
+               color = color )
+ 
+dataman <- data.frame( x= c(-1,0,1), y=c(-10,0,10),
+                  scale = c(10,7,5),
+                  ratioxy = ratioxy,
+                  angleofspine =  seq(- pi / 2, -pi/2 + pi/8, l=3) ,
+                  anglerighthumerus = -pi/6,
+                  anglelefthumerus = pi + pi/6,
+                  anglerightradius = 0,
+                  angleleftradius = runif(3,- pi/4, pi/4),
+                  angleleftleg = 3*pi/2  + pi / 12 ,
+                  anglerightleg = 3*pi/2  - pi / 12,
+                  angleofneck = runif(3, min = 3 * pi / 2 - pi/10 , max = 3 * pi / 2 + pi/10),
+                  color=c("A","B","C"))
+ 
+p + xkcdman(mapping,dataman)
+
+
 library(xkcd)
 
 
 iswd <- c("add incomplete SWD",2,1)
 mswd <- c("add mixture designs",1,2.5)
 iviz <- c("improve visualizations",-.2,.5)
-nviz <- c("visualize misspecification \n sensitivity",1,3.5)
+nviz <- c("visualize sensitivity \n to misspecification",1,3.5)
 ncov <- c("AR-m correlation structure",2,2.3)
 ntau <- c("random intervention effect",3,-.3)
 bugs <- c("erase all bugs",2.5,4)
@@ -135,18 +180,21 @@ doku <- c("document my code",3.3,2)
 iccs <- c("accept icc",-1,-1)
 coun <- c("implement count responses",0,-.5)
 soun <- c("add sound effects",0,-1.5)
+clgr <- c("randomizig clusters \n of different sizes",1,-1.2)
 
 
 dat <- as.data.frame(rbind(iswd,mswd,iviz,nviz,ncov,ntau,bugs,doku,iccs,coun,
-                           soun))
+                           soun,clgr))
 names(dat) <- c("proj","importance","difficulty")
 dat$importance <- as.numeric(as.character(dat$importance))
 dat$difficulty <- as.numeric(as.character(dat$difficulty))
 
-p1 <- ggplot(dat, aes(importance, difficulty, label = proj)) + xlim(-2.3,4) + ylim(-2.3,4)
+p1 <- ggplot(dat, aes(importance, difficulty)) 
++ xlim(-2.3,4) + ylim(-2.3,4)
 #p1 <- p1 + scale_y_continuous(breaks=c(-1,0,3),labels=c("easy","sunday afternoon","eehm .. Jochem??"))
 #p1
-p1 + geom_text(family="xkcd") + theme_xkcd() + theme(axis.text.x=element_text())
+p1 + geom_text(family="xkcd",aes(label=proj)) + xkcdaxis(c(-2.3,4),c(-2.3,4)) + xkcdman()
+p1 + theme_xkcd()+ geom_text(family="xkcd",aes(label=proj))
 ```
 
 ... a lot.
