@@ -103,6 +103,48 @@ wlsMixed_parll$Power
 
 ## TODO
 
+```{r}
+# download.file("http://simonsoftware.se/other/xkcd.ttf", dest="xkcd.ttf", mode="wb")
+# system("mkdir ~/.fonts") 
+# system("cp xkcd.ttf ~/.fonts") 
+# font_import(pattern = "[X/x]kcd", prompt=FALSE) 
+# fonts() 
+# fonttable() 
+# if(.Platform$OS.type != "unix") { 
+# ## Register fonts for Windows bitmap output 
+#   loadfonts(device="win")
+# } else {  
+#   loadfonts() 
+# }
+# 
+# p <- ggplot() + geom_point(aes(mpg, wt), data=mtcars) +
+#     theme_xkcd()
+# p
+
+
+library(xkcd)
+
+iswd <- c("add incomplete SWD",2,1)
+mswd <- c("add mixture designs",1,2.5)
+iviz <- c("improve visualizations",-.2,.5)
+nviz <- c("visualize misspecification \n sensitivity",1,3.5)
+ncov <- c("AR-m correlation structure",2,2.3)
+ntau <- c("random intervention effect",3,-.3)
+bugs <- c("erase all bugs",2.5,4)
+doku <- c("document my code",3.3,2)
+iccs <- c("implement more ways to specify \n cluster correlations",-1,-1)
+coun <- c("implement count responses",0,-.5)
+
+
+dat <- as.data.frame(rbind(iswd,mswd,iviz,nviz,ncov,ntau,bugs,doku,iccs,coun))
+names(dat) <- c("proj","importance","difficulty")
+dat$importance <- as.numeric(as.character(dat$importance))
+dat$difficulty <- as.numeric(as.character(dat$difficulty))
+
+p <- ggplot(dat, aes(importance, difficulty, label = proj)) + xlim(-3,4) + ylim(-3,4)
+p + geom_text(family="xkcd") + theme_xkcd() + theme(axis.text.x=element_text())
+```
+
 ... a lot.
 
 
