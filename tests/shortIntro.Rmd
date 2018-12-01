@@ -6,7 +6,7 @@ output: slidy_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message=FALSE)
 ```
 
 ## What?
@@ -103,7 +103,7 @@ wlsMixed_parll$Power
 
 ## TODO
 
-```{r}
+```{r, echo= FALSE}
 # download.file("http://simonsoftware.se/other/xkcd.ttf", dest="xkcd.ttf", mode="wb")
 # system("mkdir ~/.fonts") 
 # system("cp xkcd.ttf ~/.fonts") 
@@ -121,8 +121,8 @@ wlsMixed_parll$Power
 #     theme_xkcd()
 # p
 
-
 library(xkcd)
+
 
 iswd <- c("add incomplete SWD",2,1)
 mswd <- c("add mixture designs",1,2.5)
@@ -132,17 +132,21 @@ ncov <- c("AR-m correlation structure",2,2.3)
 ntau <- c("random intervention effect",3,-.3)
 bugs <- c("erase all bugs",2.5,4)
 doku <- c("document my code",3.3,2)
-iccs <- c("implement more ways to specify \n cluster correlations",-1,-1)
+iccs <- c("accept icc",-1,-1)
 coun <- c("implement count responses",0,-.5)
+soun <- c("add sound effects",0,-1.5)
 
 
-dat <- as.data.frame(rbind(iswd,mswd,iviz,nviz,ncov,ntau,bugs,doku,iccs,coun))
+dat <- as.data.frame(rbind(iswd,mswd,iviz,nviz,ncov,ntau,bugs,doku,iccs,coun,
+                           soun))
 names(dat) <- c("proj","importance","difficulty")
 dat$importance <- as.numeric(as.character(dat$importance))
 dat$difficulty <- as.numeric(as.character(dat$difficulty))
 
-p <- ggplot(dat, aes(importance, difficulty, label = proj)) + xlim(-3,4) + ylim(-3,4)
-p + geom_text(family="xkcd") + theme_xkcd() + theme(axis.text.x=element_text())
+p1 <- ggplot(dat, aes(importance, difficulty, label = proj)) + xlim(-2.3,4) + ylim(-2.3,4)
+#p1 <- p1 + scale_y_continuous(breaks=c(-1,0,3),labels=c("easy","sunday afternoon","eehm .. Jochem??"))
+#p1
+p1 + geom_text(family="xkcd") + theme_xkcd() + theme(axis.text.x=element_text())
 ```
 
 ... a lot.
