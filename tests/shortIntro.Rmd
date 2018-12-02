@@ -90,7 +90,8 @@ plot_wlsPower(wlsMixed_parll)[[1]]
 wlsMixed_parll$Power
 ```
 
-## Weight Matrix 
+## Weight Matrix - high cluster correlation 
+
 
 ```{r}
 wlsMixed_parll2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
@@ -100,6 +101,29 @@ plot_wlsPower(wlsMixed_parll2)[[1]]
 wlsMixed_parll2$Power
 ```
 
+
+```{r}
+wlsMixed_parll2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
+                                N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
+plot_wlsPower(wlsMixed_parll2)[[1]]
+
+wlsMixed_parll2$Power
+```
+
+
+## 4 Clusters
+```{r}
+wlsMixed_4swd <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                                N=1, Cl=c(1,1,1,1), design="SWD")
+plot_wlsPower(wlsMixed_4swd)[[1]]
+wlsMixed_4swd$Power
+
+
+wlsMixed_4parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+                                N=1, Cl=c(2,2), design="parallel",timepoints=5)
+plot_wlsPower(wlsMixed_4parll)[[1]]
+wlsMixed_4parll$Power
+```
 
 
 ## TODO
