@@ -241,4 +241,4 @@ p1 + geom_text(family="xkcd",aes(label=proj)) + xkcdaxis(c(-1.5,4),c(-2.3,4))
 
 
 
-current state of the package    `devtools::install.github()`
+current state of the package    `devtools::install.github("PMildenb/SteppedPower")`
