@@ -59,6 +59,18 @@ plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
                             timepoints=NULL,design="parallel"))
 
 
+
+## compare_designs
+compare_designs(EffSize=1, sigma=1 ,tau=.1, Cl=c(1,1,1,1))
+
+
+
+
+
+
+
+
+
 ## binomial <-> gaussian analogy
 ## noch benoetigt fuer den "Wrapper"
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)

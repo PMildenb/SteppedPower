@@ -126,7 +126,16 @@ wlsMixed_4parll$Power
 ```
 
 
-## TODO
+## compairing designs
+function `compare_designs` returns power for three settings with different designs, but the same 
+number of clusters and periods
+```{r}
+compare_designs(EffSize=1, sigma=1 ,tau=.1, Cl=c(1,1,1,1))
+compare_designs(EffSize=2, sigma=1 ,tau= 1, Cl=c(1,1,1,1))
+```
+
+
+## Prospects 
 
 ```{r, echo= FALSE}
 # download.file("http://simonsoftware.se/other/xkcd.ttf", dest="xkcd.ttf", mode="wb")
@@ -145,49 +154,49 @@ wlsMixed_4parll$Power
 # p <- ggplot() + geom_point(aes(mpg, wt), data=mtcars) +
 #     theme_xkcd()
 # p
+# 
+# xrange <- range(mtcars$mpg)
+# yrange <- range(mtcars$wt)
+# p <- ggplot() +
+#      geom_point(aes(mpg, wt), data=mtcars) +
+#      xkcdaxis(xrange,yrange)
+# p
 
-xrange <- range(mtcars$mpg)
-yrange <- range(mtcars$wt)
-p <- ggplot() +
-     geom_point(aes(mpg, wt), data=mtcars) +
-     xkcdaxis(xrange,yrange)
-p
 
+# datascaled <- data.frame(x=c(-3,3),y=c(-30,30))
+# p <- ggplot(data=datascaled, aes(x=x,y=y)) + geom_point()
+# xrange <- range(datascaled$x)
+# yrange <- range(datascaled$y)
+# ratioxy <- diff(xrange) / diff(yrange)
 
-datascaled <- data.frame(x=c(-3,3),y=c(-30,30))
-p <- ggplot(data=datascaled, aes(x=x,y=y)) + geom_point()
-xrange <- range(datascaled$x)
-yrange <- range(datascaled$y)
-ratioxy <- diff(xrange) / diff(yrange)
-
-mapping <- aes(x=x,
-               y=y,
-               scale=scale,
-               ratioxy=ratioxy,
-               angleofspine = angleofspine,
-               anglerighthumerus = anglerighthumerus,
-               anglelefthumerus = anglelefthumerus,
-               anglerightradius = anglerightradius,
-               angleleftradius = angleleftradius,
-               anglerightleg =  anglerightleg,
-               angleleftleg = angleleftleg,
-               angleofneck = angleofneck,
-               color = color )
- 
-dataman <- data.frame( x= c(-1,0,1), y=c(-10,0,10),
-                  scale = c(10,7,5),
-                  ratioxy = ratioxy,
-                  angleofspine =  seq(- pi / 2, -pi/2 + pi/8, l=3) ,
-                  anglerighthumerus = -pi/6,
-                  anglelefthumerus = pi + pi/6,
-                  anglerightradius = 0,
-                  angleleftradius = runif(3,- pi/4, pi/4),
-                  angleleftleg = 3*pi/2  + pi / 12 ,
-                  anglerightleg = 3*pi/2  - pi / 12,
-                  angleofneck = runif(3, min = 3 * pi / 2 - pi/10 , max = 3 * pi / 2 + pi/10),
-                  color=c("A","B","C"))
- 
-p + xkcdman(mapping,dataman)
+# mapping <- aes(x=x,
+#                y=y,
+#                scale=scale,
+#                ratioxy=ratioxy,
+#                angleofspine = angleofspine,
+#                anglerighthumerus = anglerighthumerus,
+#                anglelefthumerus = anglelefthumerus,
+#                anglerightradius = anglerightradius,
+#                angleleftradius = angleleftradius,
+#                anglerightleg =  anglerightleg,
+#                angleleftleg = angleleftleg,
+#                angleofneck = angleofneck,
+#                color = color )
+#  
+# dataman <- data.frame( x= c(-1,0,1), y=c(-10,0,10),
+#                   scale = c(10,7,5),
+#                   ratioxy = ratioxy,
+#                   angleofspine =  seq(- pi / 2, -pi/2 + pi/8, l=3) ,
+#                   anglerighthumerus = -pi/6,
+#                   anglelefthumerus = pi + pi/6,
+#                   anglerightradius = 0,
+#                   angleleftradius = runif(3,- pi/4, pi/4),
+#                   angleleftleg = 3*pi/2  + pi / 12 ,
+#                   anglerightleg = 3*pi/2  - pi / 12,
+#                   angleofneck = runif(3, min = 3 * pi / 2 - pi/10 , max = 3 * pi / 2 + pi/10),
+#                   color=c("A","B","C"))
+#  
+# p + xkcdman(mapping,dataman)
 
 
 library(xkcd)
@@ -199,9 +208,9 @@ iviz <- c("improve visualizations",-.2,.5)
 nviz <- c("visualize sensitivity \n to misspecification",1,3.5)
 ncov <- c("AR-m correlation structure",2,2.3)
 ntau <- c("random intervention effect",3,-.3)
-bugs <- c("erase all bugs",2.5,4)
+bugs <- c("find bugs",2.5,4)
 doku <- c("document my code",3.3,2)
-iccs <- c("accept icc",-1,-1)
+iccs <- c("icc as input option \n for cluster effect",-1,-1)
 coun <- c("implement count responses",0,-.5)
 soun <- c("add sound effects",0,-1.5)
 clgr <- c("randomizig clusters \n of different sizes",1,-1.2)
@@ -214,23 +223,22 @@ dat$importance <- as.numeric(as.character(dat$importance))
 dat$difficulty <- as.numeric(as.character(dat$difficulty))
 
 p1 <- ggplot(dat, aes(importance, difficulty)) 
-+ xlim(-2.3,4) + ylim(-2.3,4)
+# + xlim(-2.3,4) + ylim(-2.3,4)
 #p1 <- p1 + scale_y_continuous(breaks=c(-1,0,3),labels=c("easy","sunday afternoon","eehm .. Jochem??"))
 #p1
-p1 + geom_text(family="xkcd",aes(label=proj)) + xkcdaxis(c(-2.3,4),c(-2.3,4)) + xkcdman()
-p1 + theme_xkcd()+ geom_text(family="xkcd",aes(label=proj))
+p1 + geom_text(family="xkcd",aes(label=proj)) + xkcdaxis(c(-1.5,4),c(-2.3,4))
+# p1 + theme_xkcd()+ geom_text(family="xkcd",aes(label=proj))
 ```
 
-... a lot.
+<!-- ... a lot. -->
 
 
-* add 'edge cases' of SWD, e.g. incomplete designs
-* add mixtures of SWD and parallel designs
-* improve existing visualizations
-* find (and implement) visualizations for the sensitivity to misspecification
-* ... 
+<!-- * add 'edge cases' of SWD, e.g. incomplete designs -->
+<!-- * add mixtures of SWD and parallel designs -->
+<!-- * improve existing visualizations -->
+<!-- * find (and implement) visualizations for the sensitivity to misspecification -->
+<!-- * ...  -->
 
 
-## 
 
-`devtools::install.github()
+current state of the package    `devtools::install.github()`
