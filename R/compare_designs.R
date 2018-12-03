@@ -20,5 +20,5 @@ compare_designs <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                             design="parallel_baseline")
   return(data.frame("Stepped Wedge"= pwr_swd$Power,
                     "parallel"= pwr_par$Power,
-                    "parallel with baseline"= pwr_parBl$Power,row.names="Power"))
+                    "parallel+baseline"= pwr_parBl$Power,row.names="Power"))
 }

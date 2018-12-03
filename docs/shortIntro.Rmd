@@ -1,5 +1,5 @@
 ---
-title: "about SteppedPower"
+title: "`SteppedPower`, an `R`-package"
 author: "Philipp Mildenberger"
 date: "4 December 2018"
 output: slidy_presentation
@@ -24,12 +24,12 @@ knitr::opts_chunk$set(echo = TRUE,message=FALSE)
 ## Why?
 
 Software for power calculation of SWD already exists (in R: `swCRTdesign`, `SWSamp`;  in Stata: `steppedwedge`).
-So why yet another new package?
+So why yet another power package?
 
-* 
+* `SteppedPower` can handle unequal cluster sizes
 * constructs exact covariance matrix for non-normal responses
 * convenient option to compare power of a SWD to other designs 
-* integrates 
+* focuses on choice of appropriate design 
 
 ## How?
 
@@ -38,18 +38,20 @@ Calculate power of a z-test
 $$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
 
 
-where $\text{Var}(\hat \theta)$ depends on the design matrix and the covariance matrix.
+where $\text{Var}(\hat \theta)$ depends on the **design matrix** and the **covariance matrix**.
+  
 
 ## Design Matrix
+* one row per observation
+* one column per variable
 
 ```{r}
-library(SteppedPower)
 SteppedPower::construct_DesMat(Cl=c(1,1), design="SWD")
 SteppedPower::construct_DesMat(Cl=c(1,1), design="parallel", timepoints=3)
 ```
 
 ## Covariance Matrix
-
+* one block of dim timepoints$^2$ per cluster
 ```{r}
 SteppedPower::construct_CovBlk(timepoints=3, sigma=0.5, tau=0.1)
 SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
@@ -58,6 +60,7 @@ SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
 ## Main function
 call the function `wlsMixedPower`
 ```{r}
+library(SteppedPower)
 wlsMixed_swd <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
                               N=c(4,1), Cl=c(1,1), design="SWD")
 wlsMixed_swd$Power
@@ -66,11 +69,7 @@ wlsMixed_swd$Power
 * N denotes the sizes of the two clusters, sigma is adjusted for:
 ```{r}
 wlsMixed_swd$CovarianceMatrix
-```
 
-
-## Main function
-```{r}
 wlsMixed_swd$DesignMatrix
 ```
 
@@ -81,6 +80,7 @@ plot_swd[[1]]
 ```
 
 * first and third period have (almost) no effect on trt estimate (!)
+* power quite low 
 
 ```{r}
 wlsMixed_parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
@@ -94,11 +94,11 @@ wlsMixed_parll$Power
 
 
 ```{r}
-wlsMixed_parll2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
-                                N=c(4,1), Cl=c(1,1), design="parallel",timepoints=3)
-plot_wlsPower(wlsMixed_parll2)[[1]]
+wlsMixed_swd2 <- wlsMixedPower(EffSize=2, sigma=1, tau=1, 
+                                N=c(4,1), Cl=c(1,1), design="SWD")
+plot_wlsPower(wlsMixed_swd2)[[1]]
 
-wlsMixed_parll2$Power
+wlsMixed_swd2$Power
 ```
 
 
@@ -113,13 +113,13 @@ wlsMixed_parll2$Power
 
 ## 4 Clusters
 ```{r}
-wlsMixed_4swd <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+wlsMixed_4swd <- wlsMixedPower(EffSize=1.5, sigma=1, tau=0.1, 
                                 N=1, Cl=c(1,1,1,1), design="SWD")
 plot_wlsPower(wlsMixed_4swd)[[1]]
 wlsMixed_4swd$Power
 
 
-wlsMixed_4parll <- wlsMixedPower(EffSize=2, sigma=1, tau=0.1, 
+wlsMixed_4parll <- wlsMixedPower(EffSize=1.5, sigma=1, tau=0.1, 
                                 N=1, Cl=c(2,2), design="parallel",timepoints=5)
 plot_wlsPower(wlsMixed_4parll)[[1]]
 wlsMixed_4parll$Power
@@ -128,10 +128,31 @@ wlsMixed_4parll$Power
 
 ## compairing designs
 function `compare_designs` returns power for three settings with different designs, but the same 
-number of clusters and periods
+number of clusters and observation periods
 ```{r}
-compare_designs(EffSize=1, sigma=1 ,tau=.1, Cl=c(1,1,1,1))
-compare_designs(EffSize=2, sigma=1 ,tau= 1, Cl=c(1,1,1,1))
+compare_designs(EffSize=1.5, sigma=1 ,tau=.1, Cl=c(1,1,1,1))
+compare_designs(EffSize=1.5, sigma=1 ,tau= 1, Cl=c(1,1,1,1))
+```
+
+
+## Cluster Weigths ( Setting with 100 Clusters)
+```{r}
+swd100 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=.15,Cl=rep(2,50))
+```
+
+### Plot of  
+* weight matrix, 
+* absolute cluster weights, 
+* ablolute period weights
+```{r,echo=FALSE}
+plot_wlsPower(swd100)[[1]]
+plot_wlsPower(swd100)[[2]]
+plot_wlsPower(swd100)[[3]]
+```
+
+### Power comparison
+```{r}
+compare_designs(EffSize=0.1,sigma=1,tau=.15,Cl=rep(2,50))
 ```
 
 
@@ -208,7 +229,7 @@ iviz <- c("improve visualizations",-.2,.5)
 nviz <- c("visualize sensitivity \n to misspecification",1,3.5)
 ncov <- c("AR-m correlation structure",2,2.3)
 ntau <- c("random intervention effect",3,-.3)
-bugs <- c("find bugs",2.5,4)
+bugs <- c("find all bugs",2.5,4)
 doku <- c("document my code",3.3,2)
 iccs <- c("icc as input option \n for cluster effect",-1,-1)
 coun <- c("implement count responses",0,-.5)
@@ -241,4 +262,4 @@ p1 + geom_text(family="xkcd",aes(label=proj)) + xkcdaxis(c(-1.5,4),c(-2.3,4))
 
 
 
-current state of the package    `devtools::install.github("PMildenb/SteppedPower")`
+current state of the package     `devtools::install.github("PMildenb/SteppedPower")`
