@@ -236,10 +236,11 @@ iccs <- c("icc as input option \n for cluster effect",-1,-1)
 coun <- c("implement count responses",0,-.5)
 soun <- c("add sound effects",0,-1.5)
 clgr <- c("randomizig clusters \n of different sizes",1,-1.2)
+attr <- c("add a attrition over time",0.8,2.1)
 
 
 dat <- as.data.frame(rbind(iswd,mswd,iviz,nviz,ncov,ntau,bugs,doku,iccs,coun,
-                           soun,clgr))
+                           soun,clgr,attr))
 names(dat) <- c("proj","importance","difficulty")
 dat$importance <- as.numeric(as.character(dat$importance))
 dat$difficulty <- as.numeric(as.character(dat$difficulty))
