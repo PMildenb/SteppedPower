@@ -13,6 +13,7 @@ construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
 
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
+construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(2,2))
 
 
 ## CovBlk
@@ -22,6 +23,8 @@ construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
 
 
 ## CovMat
+construct_CovMat(SumCl=2,sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
+
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=list(c(.2,.2,.1),c(.2,.1,.1)))

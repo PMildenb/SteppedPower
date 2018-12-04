@@ -11,8 +11,8 @@ knitr::opts_chunk$set(echo = TRUE,message=FALSE)
 
 ## What?
 
-* `SteppedPower` calculates power for longitudinal intervention studies
-* offers tools for visualization of cluster influences
+* `SteppedPower` calculates power for longitudinal interventional studies
+* offers tools for visualization
 * applicable to various designs:
     + stepped wedge
     + parallel
@@ -28,8 +28,7 @@ So why yet another power package?
 
 * `SteppedPower` can handle unequal cluster sizes
 * constructs exact covariance matrix for non-normal responses
-* convenient option to compare power of a SWD to other designs 
-* focuses on choice of appropriate design 
+* offers convenient option to compare power of different designs 
 
 ## How?
 
@@ -54,7 +53,7 @@ SteppedPower::construct_DesMat(Cl=c(1,1), design="parallel", timepoints=3)
 * one block of dim timepoints$^2$ per cluster
 ```{r}
 SteppedPower::construct_CovBlk(timepoints=3, sigma=0.5, tau=0.1)
-SteppedPower:::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
+SteppedPower::construct_CovMat(SumCl=2, timepoints=3, sigma=c(0.5,1), tau=0.1)
 ```
 
 ## Main function
@@ -144,6 +143,7 @@ swd100 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=.15,Cl=rep(2,50))
 * weight matrix, 
 * absolute cluster weights, 
 * ablolute period weights
+
 ```{r,echo=FALSE}
 plot_wlsPower(swd100)[[1]]
 plot_wlsPower(swd100)[[2]]
@@ -153,6 +153,7 @@ plot_wlsPower(swd100)[[3]]
 ### Power comparison
 ```{r}
 compare_designs(EffSize=0.1,sigma=1,tau=.15,Cl=rep(2,50))
+compare_designs(EffSize=0.01,sigma=1,tau=.15,Cl=rep(2,50),N=250)
 ```
 
 

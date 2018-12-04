@@ -48,8 +48,9 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))
 
 
-construct_CovMat <- function(SumCl,timepoints=NULL,sigma,tau,family=gaussian(),N=NULL){
+construct_CovMat <- function(SumCl, timepoints, sigma, tau, family=gaussian(), N=NULL){
 
+  timepoints  <- sum(timepoints)  ## dirty hack to fix vector input for parll+baseline
   siglength   <- length(sigma)
 
   if(is.null(N)) {               NVec <- rep(1,SumCl)
