@@ -42,7 +42,8 @@ construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
       timepoints   <- 2
       message("timepoints unspecified. Defaults to 1 baseline, 1 parallel period.")
     }
-    trtvec  <- c(rep(rep(0,timepoints),Cl[1]),rep(c(0,rep(1,timepoints-1)),Cl[2]))
+    trtvec  <- c(rep(0,timepoints*Cl[1]),
+                 rep(rep(c(0,1),timepoints01),Cl[2]))
   }
 
   timeBlk <- suppressWarnings(cbind(1,rbind(0,diag(1,timepoints-1))))

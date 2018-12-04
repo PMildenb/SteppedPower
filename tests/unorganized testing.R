@@ -6,14 +6,15 @@ library(microbenchmark)
 
 ## DesMat
 construct_DesMat(Cl=c(2,0,1))
-construct_DesMat(Cl=c(2,2))
+Des_PB <- construct_DesMat(Cl=c(2,2))
 
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
+Des_PB <-construct_DesMat(Cl=c(2,2),design="parallel",timepoints=3)
 
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
-construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(2,2))
+Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
 
 
 ## CovBlk
@@ -35,6 +36,13 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(1,1))
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(25,16))
+Cov_PB <- construct_CovMat(4,3,1,0.1)
+
+
+## Does the Matrix inversion / multiplication work?
+tmpmat <- t(Des_PB) %*% Matrix::solve(Cov_PB)
+VarMat <- Matrix::solve(tmpmat %*% Des_PB)
+
 
 ## wlsMixedPower
 wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,Cl=c(1,1,1,1))
@@ -51,6 +59,18 @@ Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 design="parallel" ; N <- NULL ; sig.level=0.05
 wlsMixedPower(1,Cl=c(5,5),1,0.1,family="gaussian",timepoints=2,design="parallel")
 
+
+wls_parBl1 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
+                           design="parallel_baseline",timepoints=51)
+wls_parBl2 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
+                           design="parallel_baseline",timepoints=c(15,36))
+wls_swd    <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=rep(2,50),
+                            design="SWD")
+
+wls_parBl1$Power
+wls_parBl2$Power
+wls_swd$Power
+plot_wlsPower(wls_parBl2)[[1]]
 
 ## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
