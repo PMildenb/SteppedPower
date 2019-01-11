@@ -1,0 +1,32 @@
+---
+title: "swd_Davos"
+author: "Philipp Mildenberger"
+date: "10 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aufgabenstellung v Jochem:
+
+Lieber Philipp,
+
+Kannst du mal für dieses Design die tatsächliche Power finden?
+Für eine Analyseart deiner Wahl, die das alpha=0.05 hält.
+
+
+```{r}
+swPwr(swDsn(c(3,4,3)), distn="binomial", 
+        n=38, mu0=0.33, mu1=0.22, tau=0.04, eta=0, rho=0, alpha=0.05, retDATA=FALSE)
+```
+
+
+## Power mit unterschiedlichern randeff-Varianzen zwischen Kontrolle/Intervention
+
+```{r}
+wlsGlmmPower(Cl=c(3,4,4),mu0=0.33,mu1=0.22,tau=0.04,N=38)
+
+```
+

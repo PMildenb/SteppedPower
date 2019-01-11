@@ -50,9 +50,14 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
 
 
-  out <- ifelse(verbose,
-                list(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)
-                Power=Pwr)
+  # out <- ifelse(verbose,list(c(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)),
+  #               list(Power=Pwr))
+
+
+  if(verbose)
+    out <- list(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)
+  else
+    out <- c(Power=Pwr)
   return(out)
 }
 
