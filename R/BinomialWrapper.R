@@ -36,7 +36,8 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
     sigtmp   <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
     Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
-    tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
+#    tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
+    tau01  <- c(tau0=tau,tau1=tau)
     tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
@@ -56,6 +57,8 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
 #' @param sd  vector of length 2 (or 3).
 #'
 #' @return numeric, scalar.
+#' @export
+#'
 
 split_sd <- function(trtvec,sd){
   (sd[1] + trtvec*(sd[2]-sd[1]))
