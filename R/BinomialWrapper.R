@@ -21,7 +21,8 @@
 
 
 wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
-                                family="binomial",N=NULL,sig.level=0.05,delay=NULL){
+                         family="binomial",N=NULL,sig.level=0.05,delay=NULL,
+                         verbose=TRUE){
 
   DesMat <- construct_DesMat(Cl=Cl,delay=delay)
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
@@ -41,7 +42,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
 
     wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
                   timepoints=timepoints,sigma=Sigmas,tau=Taus,
-                  family=family,N=N,sig.level=sig.level)
+                  family=family,N=N,sig.level=sig.level,verbose=verbose)
   }
 }
 

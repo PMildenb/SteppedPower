@@ -26,7 +26,8 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
-                          N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,delay=NULL,design="SWD"){
+                          N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,delay=NULL,design="SWD",
+                          verbose=TRUE){
   if(is.null(DesMat)){
     SumCl       <- sum(Cl)
     if(is.null(timepoints)){
@@ -48,7 +49,11 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
 
-  return(list(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat))
+
+  out <- ifelse(verbose,
+                list(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)
+                Power=Pwr)
+  return(out)
 }
 
 
