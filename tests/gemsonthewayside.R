@@ -77,25 +77,24 @@ wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.
 
 ## binomial wrapper fits nicely in between
 ## exp for tau=0
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0)
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0)
-wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200)
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0,verbose=F)
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0,verbose=F)
+wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200,verbose=F)
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.025,0.025))
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.03,0.03))
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0,eta=0) ## swPwr and wlsGlmm are ridiciously close
 
 ## for tau =!= 0
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
-wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200) ##
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025),verbose=F)
+wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ),verbose=F)
+wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200,verbose=F) ##
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=tau.fct(.4,.0275),eta=0)
 
 
 
 ########################################################################################
 ## What about package longpower ??
-library(longpower)
-
+## -> different setting. not suitable
 
 
 
