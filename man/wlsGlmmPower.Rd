@@ -5,7 +5,8 @@
 \title{wlsGlmmPower}
 \usage{
 wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
-  family = "binomial", N = NULL, sig.level = 0.05, delay = NULL)
+  family = "binomial", N = NULL, sig.level = 0.05, delay = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}

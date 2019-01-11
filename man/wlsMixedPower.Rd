@@ -6,7 +6,7 @@
 \usage{
 wlsMixedPower(EffSize, sigma, tau, family = gaussian(),
   timepoints = NULL, N = NULL, sig.level = 0.05, DesMat = NULL,
-  Cl = NULL, delay = NULL, design = "SWD")
+  Cl = NULL, delay = NULL, design = "SWD", verbose = TRUE)
 }
 \arguments{
 \item{EffSize}{numeric, raw effect}
