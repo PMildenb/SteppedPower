@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(swCRTdesign)
 ```
 
 ## Aufgabenstellung v Jochem:
@@ -26,7 +27,15 @@ swPwr(swDsn(c(3,4,3)), distn="binomial",
 ## Power mit unterschiedlichern randeff-Varianzen zwischen Kontrolle/Intervention
 
 ```{r}
-wlsGlmmPower(Cl=c(3,4,4),mu0=0.33,mu1=0.22,tau=0.04,N=38)
+wlsGlmmPower(Cl=c(3,4,3),mu0=0.33,mu1=0.22,tau=0.04,N=38,verbose=F)
+```
+
+
+
+## Simulation
+
+```{r}
+
 
 ```
 
