@@ -1,5 +1,21 @@
 ## Simulation functions
 
+#' @param design
+#' @param n
+#' @param mu0
+#' @param mu1
+#' @param time.effect
+#' @param sigma
+#' @param tau
+#' @param eta
+#' @param rho
+#' @param time.lab
+#' @param seed
+#' @param seed.designonly
+#'
+#' @export
+
+
 library(car)
 library(gee)
 ## simuliert fuer gegebenes SWD binomiale outcomes (cluster*time aggregiert)
@@ -91,10 +107,12 @@ Simslim <- function (design, n, mu0, mu1, time.effect, sigma, tau,
 }
 
 
+
 ## GENERAL SIMULATION FORMULA (cluster effect on linear predictor)
 
+
 realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
-                               whichModel=c("HQ","PQL","GEE")){
+                               whichModel=c("AGQ","PQL","GEE"),nAGQ=1){
 
   sizes      <- rep(nInd,design$n.clusters*design$total.time)
   SimHHshort <- Simslim(design,n=nInd,car::logit(mu0),car::logit(mu1),
@@ -102,44 +120,44 @@ realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
   out.p      <- NULL
   out.tx     <- NULL
 
-  if("HQ" %in% whichModel){
-    mod1a <- glmer(response.var/nInd ~ tx.var  + time.var + (1|cluster.var),
+  if("AGQ" %in% whichModel){
+    modAGQ <- glmer(response.var/nInd ~ tx.var  + time.var + (1|cluster.var),
                    weights =sizes,
                    family = "binomial" ,data=SimHHshort)
-    p.ztest.1a <- coef(summary(mod1a))["tx.var","Pr(>|z|)"]
-    tx.est.1a  <- mod1a@beta[2]
+    p.ztest.AGQ <- coef(summary(modAGQ))["tx.var","Pr(>|z|)"]
+    tx.est.AGQ  <- modAGQ@beta[2]
 
-    out.p  <- c(out.p,p.ztest.1a=p.ztest.1a)
-    out.tx <- c(out.tx,tx.est.1a=tx.est.1a)
+    out.p  <- c(out.p,p.ztest.AGQ=p.ztest.AGQ)
+    out.tx <- c(out.tx,tx.est.AGQ=tx.est.AGQ)
   }
 
   if("PQL" %in% whichModel){
-    mod3a <- MASS::glmmPQL(response.var/sizes ~ tx.var + time.var,
+    modPQL <- MASS::glmmPQL(response.var/sizes ~ tx.var + time.var,
                            random=~1|cluster.var,
                            weights = sizes,
                            family = "binomial",data=SimHHshort,verbose = FALSE)
-    p.ttest.3a <- coef(summary(mod3a))["tx.var","p-value"]
-    tx.est.3a  <- as.numeric(mod3a$coefficients$fixed[2])
-    denDF      <- coef(summary(mod3a))["tx.var","DF"]
+    p.ttest.PQL <- coef(summary(modPQL))["tx.var","p-value"]
+    tx.est.PQL  <- as.numeric(modPQL$coefficients$fixed[2])
+    denDF       <- coef(summary(modPQL))["tx.var","DF"]
 
-    out.p  <- c(out.p,p.ttest.3a=p.ttest.3a)
-    out.tx <- c(out.tx,tx.est.3a=tx.est.3a)
+    out.p  <- c(out.p,p.ttest.PQL=p.ttest.PQL)
+    out.tx <- c(out.tx,tx.est.PQL=tx.est.PQL)
   }
 
   if("GEE" %in% whichModel){
-    mod5a <- invisible(gee(
+    modGEE <- suppressMessages(gee(
       cbind(response.var,nInd-response.var) ~ tx.var + time.var,
       id = cluster.var,
       corstr = "exchangeable",
       #     corstr = "unstructured",
       maxiter = 1000,
       family = "binomial",SimHHshort))
-    tx.est.5a   <- as.numeric(mod5a$coefficients[2])
-    test      <- coef(summary(mod5a))["tx.var",c("Estimate","Robust S.E.")]
-    p.ztest.5a  <- as.numeric(2*pnorm(-abs(test[1]),0,test[2]))
+    tx.est.GEE   <- as.numeric(modGEE$coefficients[2])
+    test         <- coef(summary(modGEE))["tx.var",c("Estimate","Robust S.E.")]
+    p.ztest.GEE  <- as.numeric(2*pnorm(-abs(test[1]),0,test[2]))
 
-    out.p  <- c(out.p,p.ztest.5a=p.ztest.5a)
-    out.tx <- c(out.tx,tx.est.5a=tx.est.5a)
+    out.p  <- c(out.p,p.ztest.GEE=p.ztest.GEE)
+    out.tx <- c(out.tx,tx.est.GEE=tx.est.GEE)
   }
 
   ifelse("PQL" %in% whichModel,

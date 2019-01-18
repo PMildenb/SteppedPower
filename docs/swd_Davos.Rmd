@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(swCRTdesign)
+library(beepr)
 ```
 
 ## Aufgabenstellung v Jochem:
@@ -20,22 +21,32 @@ Für eine Analyseart deiner Wahl, die das alpha=0.05 hält.
 
 ```{r}
 swPwr(swDsn(c(3,4,3)), distn="binomial", 
-        n=38, mu0=0.33, mu1=0.22, tau=0.04, eta=0, rho=0, alpha=0.05, retDATA=FALSE)
+        n=38, mu0=0.33, mu1=0.22, tau=0.0, eta=0, rho=0, alpha=0.05, retDATA=FALSE)
 ```
 
 
 ## Power mit unterschiedlichern randeff-Varianzen zwischen Kontrolle/Intervention
 
 ```{r}
-wlsGlmmPower(Cl=c(3,4,3),mu0=0.33,mu1=0.22,tau=0.04,N=38,verbose=F)
+wlsGlmmPower(Cl=c(3,4,3),mu0=0.33,mu1=0.22,tau=0.0,N=38,verbose=F)
 ```
 
 
 
 ## Simulation
 
+### der Power
 ```{r}
+power <- as.data.frame(mapply(realpower.simulate,1:2000,
+                MoreArgs=list(nInd=38,mu0=0.33,mu1=.33,tau=.23,design=swDsn(c(3,4,3)),whichModel=c("AGQ","PQL"))))
 
+dim(power)
+mean(power[1,]<0.05)
+mean(power[2,]<0.05)
+mean(power[3,]<0.05)
 
+qqnorm(power["tx.est.PQL",])
+qqnorm(power["tx.est.AGQ",])
 ```
 
+### des \alpha-Fehlers
