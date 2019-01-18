@@ -1,5 +1,11 @@
 ## Simulation functions
 
+
+library(car)
+library(gee)
+
+#' SimSlim
+#'
 #' @param design
 #' @param n
 #' @param mu0
@@ -16,8 +22,6 @@
 #' @export
 
 
-library(car)
-library(gee)
 ## simuliert fuer gegebenes SWD binomiale outcomes (cluster*time aggregiert)
 Simslim <- function (design, n, mu0, mu1, time.effect, sigma, tau,
                      eta, rho = 0, time.lab = NULL, seed = NULL, seed.designonly= F)
@@ -110,6 +114,12 @@ Simslim <- function (design, n, mu0, mu1, time.effect, sigma, tau,
 
 ## GENERAL SIMULATION FORMULA (cluster effect on linear predictor)
 
+#' realpower.simulate
+#'
+#' @param n helper
+#'
+#'
+#' @export
 
 realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
                                whichModel=c("AGQ","PQL","GEE"),nAGQ=1){
