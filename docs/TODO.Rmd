@@ -1,0 +1,24 @@
+---
+title: "TODO"
+author: "PM"
+date: "19 Januar 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## compare_designs
+
+* add non-normal outcomes
+
+
+## non-normal-wrapper
+
+* add designs 
+
+## simulation
+
+* dependencies aufraeumen
+
