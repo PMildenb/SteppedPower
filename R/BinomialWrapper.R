@@ -20,13 +20,16 @@
 ## sigma is derived by mu_i*(1-mu_i) for control and intervention separately
 
 
-wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,
+wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoints=NULL,
                          family="binomial",N=NULL,sig.level=0.05,delay=NULL,
                          verbose=TRUE){
 
-  DesMat <- construct_DesMat(Cl=Cl,delay=delay)
+  if(is.null(timepoints)){
+    if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
+    if(design=="parallel"){ timepoints  <- 1            }
+  }
+  DesMat <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
-  timepoints  <- length(Cl)+1
 
   if(family =="binomial"){
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
