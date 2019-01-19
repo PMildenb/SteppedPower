@@ -86,11 +86,20 @@ plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
 
 
 ## compare_designs
-compare_designs(EffSize=1, sigma=1 ,tau=.1, Cl=c(1,1,1,1))
+compare_designs(EffSize=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
+compare_designs(EffSize=1, sigma=1 ,tau=.5, Cl=c(2,2,2,2))
+compare_designs(EffSize=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
+compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
+## beispiel: jochems davos-studie
+wlsGlmmPower(Cl=c(3,4,3),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
+             family="binomial",N=38,verbose=T)
+wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
+             family="binomial",N=38,verbose=F,design="parallel",timepoints=4)
+wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
+             family="binomial",N=38,verbose=F,design="parallel_baseline",timepoints=4)
 
-
-
+compare_designs(EffSize=.56,sigma=.17,tau=0.04,Cl=c(3,4,3))
 
 
 

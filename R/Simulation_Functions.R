@@ -158,8 +158,8 @@ realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
     modGEE <- suppressMessages(gee(
       cbind(response.var,nInd-response.var) ~ tx.var + time.var,
       id = cluster.var,
-      corstr = "exchangeable",
-      #     corstr = "unstructured",
+      # corstr = "exchangeable",
+      corstr = "AR-M", Mv=1,
       maxiter = 1000,
       family = "binomial",SimHHshort))
     tx.est.GEE   <- as.numeric(modGEE$coefficients[2])

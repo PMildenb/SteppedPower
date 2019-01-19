@@ -26,7 +26,8 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
 
   if(is.null(timepoints)){
     if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
-    if(design=="parallel"){ timepoints  <- 1            }
+    if(design=="parallel"){ timepoints  <- 1            } else
+    if(design=="parallel_baseline") {timepoints <- 2    }
   }
   DesMat <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
