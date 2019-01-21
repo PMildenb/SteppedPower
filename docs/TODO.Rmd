@@ -9,13 +9,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# general
+
+* remove any sign of that stupid idea of samp size calculation!
+
 ## compare_designs
 
 * add non-normal outcomes
 
 ## wlsMixedPower
-
-* add option supply target power - function should return \# Individuals needed per Cluster
 
 
 ## non-normal-wrapper

@@ -69,7 +69,8 @@ wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
 
-## SWD-Aerzteblatt paper  -  graphik 2
+                                    ## SWD-Aerzteblatt paper  -  graphik 2
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(5,5),design="parallel",
               timepoints=7,Power=.9,verbose=F)
@@ -111,7 +112,11 @@ microbenchmark(
   ,times=100)
 
 
+## scaling of trt variance with N
+library(swCRTdesign)
 
+wlsMixedPower(EffSize=.25,sigma=1,tau=.3,Cl=rep(1,10),verbose=F)
+swPwr(swDsn(rep(1,10)),distn="gaussian",n=10,mu0=1,mu1=1.25,tau=.3,eta=0,sigma=1)
 
 
 
