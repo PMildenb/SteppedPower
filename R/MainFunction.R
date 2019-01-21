@@ -39,7 +39,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
     }
     DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   } else {
-    timepoints  <- dim(DesMat)[2]-1                 ## this is only a special case
+    timepoints  <- dim(DesMat)[2]-1                 ## this is only a the canonical case
     SumCl       <- dim(DesMat)[1]/timepoints
   }
 
@@ -51,21 +51,19 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   VarMat <- Matrix::solve(tmpmat %*% DesMat)
   WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
 
-  if()
-  Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
-  nInd   <- zTestPwr(d=EffSize,sd=sqrt(VarMat[1,1]),Power=Power,sig.level=sig.level)
-
-
+  if(is.null(Power)){
+    out <- list(Power=zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level))
+  } else{
+    out <- list(nInd=zTestSampSize(d=EffSize,sd=sqrt(VarMat[1,1]),Power=Power,sig.level=sig.level))
+  }
 
   if(verbose)
-    out <- list(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)
-  else
-    out <- c(Power=Pwr)
+    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat))
   return(out)
 }
 
 
-#' zTestPower
+#' zTestPwr
 #'
 #' @param d numeric, raw effect
 #' @param se numeric, standard error
