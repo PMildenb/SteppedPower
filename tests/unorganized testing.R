@@ -70,6 +70,9 @@ wls_parBl2$Power
 wls_swd$Power
 plot_wlsPower(wls_parBl2)[[1]]
 
+wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,Cl=c(1,1,1,1),Power=.9,verbose=F)
+
+
 ## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
 swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")

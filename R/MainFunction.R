@@ -29,7 +29,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                           N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
                           delay=NULL,design="SWD",verbose=TRUE){
 
-  if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
+  if(!is.null(N) & !is.null(power)) stop("Both target power and individuals per cluster not NULL.")
 
   if(is.null(DesMat)){
     SumCl       <- sum(Cl)
@@ -98,6 +98,6 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #' @examples zTestPwr(4,1)
 
 zTestSampSize <- function(d,sd,Power,sig.level=0.05){
-  nInd <- ((qnorm(1-sig.level/2)+qnorm(power))*sd/d)^2
+  nInd <- ((qnorm(1-sig.level/2)+qnorm(Power))*sd/d)^2
   return(nInd)
 }
