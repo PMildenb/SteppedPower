@@ -5,8 +5,8 @@
 \title{wlsGlmmPower}
 \usage{
 wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
-  family = "binomial", N = NULL, sig.level = 0.05, delay = NULL,
-  verbose = TRUE)
+  design = "SWD", timepoints = NULL, family = "binomial", N = NULL,
+  sig.level = 0.05, delay = NULL, verbose = TRUE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
@@ -17,13 +17,27 @@ wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
 
 \item{tau}{numeric, standard deviation of random intercepts (soon) to be understood on the linear predictor level}
 
+\item{eta}{*not implemented*}
+
+\item{rho}{*not implemented*}
+
+\item{design}{study design. One of the following values: "SWD", "parallel", "parallel_baseline" ...}
+
+\item{family}{currently only "binomial"}
+
+\item{N}{Number of Individuals per cluster/period}
+
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
 \item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase *not implemented*}
+
+\item{verbose}{}
+
+\item{Power}{Target power. If between 0 and 1, function returns needed `N`}
 }
 \value{
-as wlsMixedPower
+as `wlsMixedPower`
 }
 \description{
 wlsGlmmPower

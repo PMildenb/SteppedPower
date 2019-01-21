@@ -2,7 +2,7 @@
 % Please edit documentation in R/MainFunction.R
 \name{zTestPwr}
 \alias{zTestPwr}
-\title{zTestPower}
+\title{zTestPwr}
 \usage{
 zTestPwr(d, se, sig.level = 0.05)
 }
@@ -17,7 +17,7 @@ zTestPwr(d, se, sig.level = 0.05)
 a scalar
 }
 \description{
-zTestPower
+zTestPwr
 }
 \examples{
 zTestPwr(4,1)
