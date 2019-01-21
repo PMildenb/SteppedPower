@@ -29,7 +29,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                           N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
                           delay=NULL,design="SWD",verbose=TRUE){
 
-  if(!is.null(N) & !is.null(power)) stop("Both target power and individuals per cluster not NULL.")
+  if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
   if(is.null(DesMat)){
     SumCl       <- sum(Cl)

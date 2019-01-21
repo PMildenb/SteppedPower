@@ -68,9 +68,11 @@ wls_swd    <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=rep(2,50),
 wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
-plot_wlsPower(wls_parBl2)[[1]]
 
-wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,Cl=c(1,1,1,1),Power=.9,verbose=F)
+## SWD-Aerzteblatt paper  -  graphik 2
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),Power=.9,verbose=F)
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(5,5),design="parallel",
+              timepoints=7,Power=.9,verbose=F)
 
 
 ## wlsGlmmPower
@@ -85,6 +87,7 @@ swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 ## plot_wlsPower
 plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
                             timepoints=NULL,design="parallel"))
+plot_wlsPower(wls_parBl2)[[1]]
 
 
 
@@ -93,17 +96,6 @@ compare_designs(EffSize=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
 compare_designs(EffSize=1, sigma=1 ,tau=.5, Cl=c(2,2,2,2))
 compare_designs(EffSize=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
 compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
-
-## beispiel: jochems davos-studie
-wlsGlmmPower(Cl=c(3,4,3),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
-             family="binomial",N=38,verbose=T)
-wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
-             family="binomial",N=38,verbose=F,design="parallel",timepoints=4)
-wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
-             family="binomial",N=38,verbose=F,design="parallel_baseline",timepoints=4)
-
-compare_designs(EffSize=.56,sigma=.17,tau=0.04,Cl=c(3,4,3))
-
 
 
 
