@@ -5,11 +5,18 @@
 #' @param mu0 average under control
 #' @param mu1 average under intervention
 #' @param tau numeric, standard deviation of random intercepts (soon) to be understood on the linear predictor level
+#' @param eta *not implemented*
+#' @param rho *not implemented*
+#' @param design study design. One of the following values: "SWD", "parallel", "parallel_baseline" ...
+#' @param family currently only "binomial"
+#' @param N Number of Individuals per cluster/period
+#' @param Power Target power. If between 0 and 1, function returns needed `N`
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
+#' @param verbose
 #'
-#' @return as wlsMixedPower
+#' @return as `wlsMixedPower`
 #' @export
 #'
 #' @examples
@@ -47,7 +54,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
 
     wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
                   timepoints=timepoints,sigma=Sigmas,tau=Taus,
-                  family=family,N=N,sig.level=sig.level,verbose=verbose)
+                  family=family,N=N,Power=NULL,sig.level=sig.level,verbose=verbose)
   }
 }
 

@@ -44,6 +44,8 @@ wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
              family="binomial",N=38,verbose=F,design="parallel",timepoints=4)
 wlsGlmmPower(Cl=c(5,5),mu0=.33,mu1=,.22,tau=0.04,eta=0,rho=0,
              family="binomial",N=38,verbose=F,design="parallel_baseline",timepoints=4)
+
+
 ```
 
 
