@@ -26,8 +26,11 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
-                          N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,delay=NULL,design="SWD",
-                          verbose=TRUE){
+                          N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
+                          delay=NULL,design="SWD",verbose=TRUE){
+
+  if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
+
   if(is.null(DesMat)){
     SumCl       <- sum(Cl)
     if(is.null(timepoints)){
@@ -47,11 +50,11 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
   tmpmat <- t(DesMat) %*% Matrix::solve(CovMat)
   VarMat <- Matrix::solve(tmpmat %*% DesMat)
   WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
+
+  if()
   Pwr    <- zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level)
+  nInd   <- zTestPwr(d=EffSize,sd=sqrt(VarMat[1,1]),Power=Power,sig.level=sig.level)
 
-
-  # out <- ifelse(verbose,list(c(Power=Pwr, WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat)),
-  #               list(Power=Pwr))
 
 
   if(verbose)
@@ -78,4 +81,25 @@ zTestPwr <- function(d,se,sig.level=0.05){
   dsz <- abs(d/se)
   Pwr <- pnorm(dsz+qnorm(sig.level/2)) + pnorm(-dsz+qnorm(sig.level/2))
   return(Pwr)
+}
+
+
+#' zTestSampSize
+#'
+#' calculate needed sample size for given target power, effect size and individual variance
+#' does it also work for closed cohorts? i fear not (gotta think about it ...)
+#'
+#' @param d numeric, raw effect
+#' @param se numeric, standard deviaton (on individual level)
+#' @param sig.level numeric, significance level, defaults to 0.05
+#' @param Power target power
+#'
+#' @return a scalar
+#' @export
+#'
+#' @examples zTestPwr(4,1)
+
+zTestSampSize <- function(d,sd,Power,sig.level=0.05){
+  nInd <- ((qnorm(1-sig.level/2)+qnorm(power))*sd/d)^2
+  return(nInd)
 }
