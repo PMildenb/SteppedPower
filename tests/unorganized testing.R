@@ -118,7 +118,7 @@ swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 ## plot_wlsPower
 plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
-                            timepoints=NULL,design="parallel"))
+                            timepoints=NULL,design="parallel",verbose=T))
 plot_wlsPower(wls_parBl2)[[1]]
 
 
