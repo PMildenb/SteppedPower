@@ -19,12 +19,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## wlsMixedPower
 
-* options to adjust for degrees of freedom
+* options to adjust for degrees of freedom (between-within, ... )
+
+* rewrite the very heart of the calculation as a function in sigma (using optim or similar)
 
 ## non-normal-wrapper
 
-* add designs 
+* add design selection option
 
 ## simulation
 
 * dependencies aufraeumen
+
+
+## TAKING POINTS for ISCB
+
+* advise to use rand trt effect (Hughes 2015 Thompson 2017 ... )
+* inflated test size (esp. for smaller number of clusters)
+* try to find balance 
+* maybe hinting at GEE approaches?
