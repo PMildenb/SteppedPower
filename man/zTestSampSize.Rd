@@ -2,7 +2,10 @@
 % Please edit documentation in R/MainFunction.R
 \name{zTestSampSize}
 \alias{zTestSampSize}
-\title{zTestSampSize}
+\title{zTestSampSize
+s
+calculate needed sample size for given target power, effect size and individual variance
+does it work ? i fear not (gotta think about it ...)}
 \usage{
 zTestSampSize(d, sd, Power, sig.level = 0.05)
 }
@@ -19,8 +22,10 @@ zTestSampSize(d, sd, Power, sig.level = 0.05)
 a scalar
 }
 \description{
+zTestSampSize
+s
 calculate needed sample size for given target power, effect size and individual variance
-does it also work for closed cohorts? i fear not (gotta think about it ...)
+does it work ? i fear not (gotta think about it ...)
 }
 \examples{
 zTestPwr(4,1)

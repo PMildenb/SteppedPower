@@ -4,7 +4,7 @@
 \alias{construct_CovMat}
 \title{construct_CovMat}
 \usage{
-construct_CovMat(SumCl, timepoints, sigma, tau, family = gaussian(),
+construct_CovMat(SumCl, timepoints, sigma, tau, family = "gaussian",
   N = NULL)
 }
 \arguments{

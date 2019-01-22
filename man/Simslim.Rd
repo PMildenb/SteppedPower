@@ -8,7 +8,30 @@ Simslim(design, n, mu0, mu1, time.effect, sigma, tau, eta, rho = 0,
   time.lab = NULL, seed = NULL, seed.designonly = F)
 }
 \arguments{
-\item{seed.designonly}{}
+\item{design}{as in swDsn()}
+
+\item{n}{Number per Cluster}
+
+\item{mu0}{mean response under control}
+
+\item{mu1}{mean response under treatment}
+
+\item{time.effect}{a vector of fixed time (i.e. period) effects}
+
+\item{sigma}{residual variance on indiviual level}
+
+\item{tau}{standard deviation of random cluster effect}
+
+\item{eta}{standard deviation of random treatment effect}
+
+\item{rho}{correlation of rho tau and eta}
+
+\item{time.lab}{defaults to NULL}
+
+\item{seed}{a fixed seed}
+
+\item{seed.designonly}{logical, if TRUE, only random cluster/treatment effect is determined by the seed.
+If false, realisations of response as well.}
 }
 \description{
 SimSlim

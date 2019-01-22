@@ -17,8 +17,10 @@ zTestPwr(d, se, sig.level = 0.05)
 a scalar
 }
 \description{
-zTestPwr
+computes the power of a z-test given a standard error, an effect size and a significance level.
+Computes the exact power, see second example
 }
 \examples{
-zTestPwr(4,1)
+zTestPwr(4,1) :
+zTestPwr(qnorm(.975),1) == pnorm(qnorm(.975),qnorm(.975),1) + pnorm(-qnorm(.975),qnorm(.975),1)
 }
