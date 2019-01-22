@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## wlsMixedPower
 
+* options to adjust for degrees of freedom
 
 ## non-normal-wrapper
 
@@ -27,4 +28,3 @@ knitr::opts_chunk$set(echo = TRUE)
 ## simulation
 
 * dependencies aufraeumen
-

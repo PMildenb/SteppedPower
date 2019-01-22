@@ -2,7 +2,6 @@
 
 
 library(car)
-library(gee)
 
 #' SimSlim
 #'
