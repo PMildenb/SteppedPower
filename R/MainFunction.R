@@ -27,7 +27,7 @@
 
 wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                           N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
-                          delay=NULL,design="SWD",verbose=TRUE){
+                          delay=NULL,design="SWD",verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
@@ -39,9 +39,34 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
     }
     DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   } else {
-    timepoints  <- dim(DesMat)[2]-1                 ## this is only a the canonical case
+    timepoints  <- dim(DesMat)[2]-1                 ## this is only the 'canonical' case
     SumCl       <- dim(DesMat)[1]/timepoints
   }
+
+  if(is.null(Power)){
+    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
+                            sigma=sigma,tau=tau,family=family,Power=NULL,N=N,sig.level=sig.level,
+                            verbose=verbose)
+  }else{
+
+  }
+
+
+  return(out)
+}
+
+
+#' WlsInnerFunction
+#'
+#' only to be called by wlsMixedPower
+#'
+#' @param DesMat matrix, the design matrix
+#' @param SumCl integer, total number of clusters
+#'
+#' @export
+#'
+wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,N,
+                             Power,sig.level,verbose){
 
   CovMat        <- construct_CovMat(SumCl=SumCl,timepoints=timepoints,
                                     sigma=sigma,tau=tau,family=family,
@@ -63,7 +88,11 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
 }
 
 
+
 #' zTestPwr
+#'
+#' computes the power of a z-test given a standard error, an effect size and a significance level.
+#' Computes the exact power, see second example
 #'
 #' @param d numeric, raw effect
 #' @param se numeric, standard error
@@ -72,7 +101,8 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
 #' @return a scalar
 #' @export
 #'
-#' @examples zTestPwr(4,1)
+#' @examples zTestPwr(4,1) :
+#' zTestPwr(qnorm(.975),1) == pnorm(qnorm(.975),qnorm(.975),1) + pnorm(-qnorm(.975),qnorm(.975),1)
 
 
 zTestPwr <- function(d,se,sig.level=0.05){
@@ -82,10 +112,11 @@ zTestPwr <- function(d,se,sig.level=0.05){
 }
 
 
+
 #' zTestSampSize
-#'
+#'s
 #' calculate needed sample size for given target power, effect size and individual variance
-#' does it also work for closed cohorts? i fear not (gotta think about it ...)
+#' does it work ? i fear not (gotta think about it ...)
 #'
 #' @param d numeric, raw effect
 #' @param se numeric, standard deviaton (on individual level)

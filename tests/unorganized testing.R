@@ -42,11 +42,18 @@ tmpmat <- t(Des_PB) %*% Matrix::solve(Cov_PB)
 VarMat <- Matrix::solve(tmpmat %*% Des_PB)
 
 
+## wlsInnerFunction
+DesMat <- construct_DesMat(Cl=c(2,0,1))
+
+wlsInnerFunction(DesMat=DesMat, EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",N=1,
+                 Power=NULL,sig.level=.05,verbose=F)
+wlsMixedPower(DesMat=DesMat,EffSize=1,sigma=1,tau=.3)
+
 ## wlsMixedPower
-wlsMixedPower(EffSize = .1,sigma=.1,tau=.01,Cl=c(1,1,1,1))
+wlsMixedPower(EffSize = .1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
 Cl <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
-wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,EffSize=EffSize)
+wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,EffSize=EffSize,verbose=F)
 swPwr(swDsn(Cl),distn="gaussian",1,0,EffSize,
       tau=tau,eta=0,rho=0,sigma=sigma)
 
@@ -69,12 +76,7 @@ wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
 
-                                    ## SWD-Aerzteblatt paper  -  graphik 2
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),Power=.9,verbose=F)
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(5,5),design="parallel",
-              timepoints=7,Power=.9,verbose=F)
-
 
 ## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
@@ -117,6 +119,24 @@ library(swCRTdesign)
 
 wlsMixedPower(EffSize=.25,sigma=1,tau=.3,Cl=rep(1,10),verbose=F)
 swPwr(swDsn(rep(1,10)),distn="gaussian",n=10,mu0=1,mu1=1.25,tau=.3,eta=0,sigma=1)
+
+## use optim to find needed N
+
+library(stats)
+SampSizeCalc <- function(EffSize,sigma,tau,family="gaussian",timepoints=NULL,
+                         N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
+                         delay=NULL,design="SWD",verbose=F){
+  diff <- Power- wlsMixedPower(EffSize=EffSize,sigma=sigma,tau=tau,family=family,timepoints=timepoints,N=N,
+                sig.level=sig.level,DesMat=DesMat,Cl=Cl,delay=delay,design=design,verbose=F)$`Power`
+  return(diff)
+}
+
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
+SampSizeCalc(.1,1,.3,"gaussian",timepoints=NULL,N=NULL,Power=.9,Cl=c(1,1,1))
+
+
+optim(N=10,SampSizeCalc,EffSize=.1,sigma=1,tau=.3,Cl=c(1,1,1),Power=.9,verbose=F)
+
 
 
 
