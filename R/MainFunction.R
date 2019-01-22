@@ -48,23 +48,35 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                             sigma=sigma,tau=tau,family=family,Power=NULL,N=N,sig.level=sig.level,
                             verbose=verbose)
   }else{
+    optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,Power,N,sig.level,verbose){
 
+      diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
+                               sigma=sigma,tau=tau,family=family,N=N,sig.level=sig.level,
+                               verbose=verbose)$`Power`)
+      return(diff)
+    }
+    optim(N=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
+          sigma=sigma,tau=tau,family=family,N=N,Power=Power,sig.level=sig.level,verbose=verbose)
   }
+
 
 
   return(out)
 }
 
 
-#' WlsInnerFunction
+#' wlsInnerFunction
 #'
 #' only to be called by wlsMixedPower
 #'
 #' @param DesMat matrix, the design matrix
 #' @param SumCl integer, total number of clusters
 #'
+#' @return a list.
+#'
 #' @export
 #'
+
 wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,N,
                              Power,sig.level,verbose){
 
@@ -76,12 +88,7 @@ wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,N,
   VarMat <- Matrix::solve(tmpmat %*% DesMat)
   WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
 
-  if(is.null(Power)){
-    out <- list(Power=zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level))
-  } else{
-    out <- list(nInd=zTestSampSize(d=EffSize,sd=sqrt(VarMat[1,1]),Power=Power,sig.level=sig.level))
-  }
-
+  out <- list(Power=zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level))
   if(verbose)
     out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=DesMat, CovarianceMatrix=CovMat))
   return(out)

@@ -49,6 +49,19 @@ wlsInnerFunction(DesMat=DesMat, EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,fa
                  Power=NULL,sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=1,sigma=1,tau=.3)
 
+
+## optFunction
+# initialised inside of wlsMixedPower
+optFunction(DesMat=DesMat,EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",N=1,
+            Power=.9,sig.level=.05,verbose=F)
+
+optim(par=1,optFunction,DesMat=DesMat,EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",
+      Power=.9,sig.level=.05,verbose=F, method="BFGS")
+
+wlsMixedPower(DesMat=DesMat,EffSize=1,sigma=1,tau=.3,N=14)
+
+
+
 ## wlsMixedPower
 wlsMixedPower(EffSize = .1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
@@ -77,6 +90,7 @@ wls_parBl2$Power
 wls_swd$Power
 
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
+
 
 ## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
@@ -115,27 +129,14 @@ microbenchmark(
 
 
 ## scaling of trt variance with N
-library(swCRTdesign)
+# library(swCRTdesign)
 
 wlsMixedPower(EffSize=.25,sigma=1,tau=.3,Cl=rep(1,10),verbose=F)
 swPwr(swDsn(rep(1,10)),distn="gaussian",n=10,mu0=1,mu1=1.25,tau=.3,eta=0,sigma=1)
 
+
+
 ## use optim to find needed N
-
-library(stats)
-SampSizeCalc <- function(EffSize,sigma,tau,family="gaussian",timepoints=NULL,
-                         N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
-                         delay=NULL,design="SWD",verbose=F){
-  diff <- Power- wlsMixedPower(EffSize=EffSize,sigma=sigma,tau=tau,family=family,timepoints=timepoints,N=N,
-                sig.level=sig.level,DesMat=DesMat,Cl=Cl,delay=delay,design=design,verbose=F)$`Power`
-  return(diff)
-}
-
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
-SampSizeCalc(.1,1,.3,"gaussian",timepoints=NULL,N=NULL,Power=.9,Cl=c(1,1,1))
-
-
-optim(N=10,SampSizeCalc,EffSize=.1,sigma=1,tau=.3,Cl=c(1,1,1),Power=.9,verbose=F)
 
 
 
