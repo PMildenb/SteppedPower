@@ -53,14 +53,18 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
       diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
                                sigma=sigma,tau=tau,family=family,N=N,sig.level=sig.level,
                                verbose=verbose)$`Power`)
-      return(diff)
-    }
-    optim(N=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
-          sigma=sigma,tau=tau,family=family,N=N,Power=Power,sig.level=sig.level,verbose=verbose)
+      return(diff)}
+
+    N_opt <- ceiling(optim(par=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
+                           timepoints=timepoints,sigma=1,tau=.3,family="gaussian",
+                           Power=.9,sig.level=.05,verbose=F,
+                           method="Brent",lower=1,upper=1000)$`par`)
+
+    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
+                     sigma=sigma,tau=tau,family=family,N=N_opt,sig.level=sig.level,
+                     verbose=verbose)
+    out <- append(N=N_opt,out)
   }
-
-
-
   return(out)
 }
 

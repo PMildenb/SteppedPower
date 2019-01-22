@@ -43,22 +43,26 @@ VarMat <- Matrix::solve(tmpmat %*% Des_PB)
 
 
 ## wlsInnerFunction
-DesMat <- construct_DesMat(Cl=c(2,0,1))
+Cl <- rep(10,10)
+DesMat <- construct_DesMat(Cl=Cl)
 
-wlsInnerFunction(DesMat=DesMat, EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",N=1,
+wlsInnerFunction(DesMat=DesMat, EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+                 sigma=1,tau=.3,family="gaussian",N=1,
                  Power=NULL,sig.level=.05,verbose=F)
-wlsMixedPower(DesMat=DesMat,EffSize=1,sigma=1,tau=.3)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
 ## optFunction
 # initialised inside of wlsMixedPower
-optFunction(DesMat=DesMat,EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",N=1,
+optFunction(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+            sigma=1,tau=.3,family="gaussian",N=1,
             Power=.9,sig.level=.05,verbose=F)
 
-optim(par=1,optFunction,DesMat=DesMat,EffSize=1,SumCl=3,timepoints=4,sigma=1,tau=.3,family="gaussian",
-      Power=.9,sig.level=.05,verbose=F, method="BFGS")
+optim(par=1,optFunction,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+      sigma=1,tau=.3,family="gaussian",
+      Power=.9,sig.level=.05,verbose=F, method="Brent",lower=1,upper=1000)
 
-wlsMixedPower(DesMat=DesMat,EffSize=1,sigma=1,tau=.3,N=14)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=20,verbose=F)
 
 
 
