@@ -88,12 +88,23 @@ wls_parBl2 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
                            design="parallel_baseline",timepoints=c(15,36))
 wls_swd    <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=rep(2,50),
                             design="SWD")
-
 wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
 
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=rep(1,10),N=97,verbose=F)
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
+swPwr(swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,mu0=0,mu1=.1,tau=.3,eta=0,sigma=1)
+
+wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
+wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
+
+wlsMixedPower(EffSize = .05,sigma=1,tau=.3,
+              Cl=c(20,2),timepoints=5,design="parallel",
+              Power=.9,verbose=F)
+wlsMixedPower(EffSize = .5,sigma=1,tau=.2,
+              Cl=c(10,10),timepoints=5,design="parallel",
+              N=7,verbose=F)
 
 
 ## wlsGlmmPower

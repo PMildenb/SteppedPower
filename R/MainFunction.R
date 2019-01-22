@@ -63,7 +63,7 @@ wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
                      sigma=sigma,tau=tau,family=family,N=N_opt,sig.level=sig.level,
                      verbose=verbose)
-    out <- append(N=N_opt,out)
+    out <- append(list(N=N_opt),out)
   }
   return(out)
 }
