@@ -29,7 +29,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## simulation
 
-* dependencies aufraeumen
+  * dependencies aufraeumen
+    * MATRIX and stats both? 
+    * what about `car` ? needed only for `logit()`?
 
 
 ## TAKING POINTS for ISCB

@@ -1,22 +1,21 @@
 ## Simulation functions
 
 
-library(car)
-
 #' SimSlim
 #'
-#' @param design
-#' @param n
-#' @param mu0
-#' @param mu1
-#' @param time.effect
-#' @param sigma
-#' @param tau
-#' @param eta
-#' @param rho
-#' @param time.lab
-#' @param seed
-#' @param seed.designonly
+#' @param design as in swDsn()
+#' @param n Number per Cluster
+#' @param mu0 mean response under control
+#' @param mu1 mean response under treatment
+#' @param time.effect a vector of fixed time (i.e. period) effects
+#' @param sigma residual variance on indiviual level
+#' @param tau standard deviation of random cluster effect
+#' @param eta standard deviation of random treatment effect
+#' @param rho correlation of rho tau and eta
+#' @param time.lab defaults to NULL
+#' @param seed a fixed seed
+#' @param seed.designonly logical, if TRUE, only random cluster/treatment effect is determined by the seed.
+#'  If false, realisations of response as well.
 #'
 #' @export
 
