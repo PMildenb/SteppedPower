@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # general
 
-* remove any sign of that stupid idea of samp size calculation!
+* remove any sign of that stupid idea of samp size calculation! **DONE**
 * Nicer names needed !!
 
 ## compare_designs
@@ -25,9 +25,13 @@ knitr::opts_chunk$set(echo = TRUE)
 * add random trt eff. Possibly just by manipulating vector tau.
 * are all the function argument needed ???
 
+## optFunction
+
+* does not work for parallel designs! but why ??
+
 ## non-normal-wrapper
 
-* add design selection option
+* add design selection option **DONE**
 
 ## simulation
 
@@ -42,3 +46,4 @@ knitr::opts_chunk$set(echo = TRUE)
 * inflated test size (esp. for smaller number of clusters)
 * try to find balance 
 * maybe hinting at GEE approaches?
+* Visualisations of cluster influences -> 
