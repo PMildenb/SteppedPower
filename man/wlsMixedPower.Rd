@@ -4,32 +4,47 @@
 \alias{wlsMixedPower}
 \title{wlsMixedPower}
 \usage{
-wlsMixedPower(EffSize, sigma, tau, family = gaussian(),
-  timepoints = NULL, N = NULL, Power = NULL, sig.level = 0.05,
-  DesMat = NULL, Cl = NULL, delay = NULL, design = "SWD",
+wlsMixedPower(Cl = NULL, timepoints = NULL, DesMat = NULL,
+  delay = NULL, design = "SWD", EffSize, sigma, tau, eta = NULL,
+  rho = NULL, N = NULL, Power = NULL, sig.level = 0.05,
   verbose = FALSE)
 }
 \arguments{
-\item{EffSize}{numeric, raw effect}
-
-\item{sigma}{numeric, residual error of cluster means if no N given.
+\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+or number in control and intervention (in parallel designs)
 Else residual error on individual level}
 
-\item{tau}{numeric, standard deviation of random intercepts}
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for parallel designs.}
 
-\item{sig.level}{numeric, significance level, defaults to 0.05}
+\item{DesMat}{matrix of dimension ... , if supplied, timepoints and Cl are ignored.}
 
-\item{Cl}{integer (vector), number of clusters per wave (in SWD),
-or number in control and intervention (in parallel designs)}
-
-\item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
+\item{delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase  *not implemented*}
 
 \item{design}{character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".}
+
+\item{EffSize}{numeric, raw effect}
+
+\item{sigma}{numeric, residual error of cluster means if no N given.}
+
+\item{tau}{numeric, standard deviation of random intercepts}
+
+\item{eta}{numeric, standard deviation of random slopes **not implemented**}
+
+\item{rho}{numeric, correlation of tau and eta **not implemented**}
+
+\item{N}{Integer,}
+
+\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned **work in progress**}
+
+\item{sig.level}{numeric, significance level, defaults to 0.05}
+
+\item{verbose}{logical, should the function return the design and covariance matrix?}
 }
 \value{
-a list of lenght two. First element is the power,
-second element the weights of cluster per period for estimating the treatment effect
+a list. First element is the power,
+second element the weights of cluster per period for estimating the treatment effect **needs update**
 }
 \description{
 This is the work-horse function of the SteppedPower package.

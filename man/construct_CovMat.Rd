@@ -4,8 +4,7 @@
 \alias{construct_CovMat}
 \title{construct_CovMat}
 \usage{
-construct_CovMat(SumCl, timepoints, sigma, tau, family = "gaussian",
-  N = NULL)
+construct_CovMat(SumCl, timepoints, sigma, tau, N = NULL)
 }
 \arguments{
 \item{SumCl}{total number of clusters}
@@ -16,8 +15,6 @@ construct_CovMat(SumCl, timepoints, sigma, tau, family = "gaussian",
 Else residual error on individual level}
 
 \item{tau}{numeric, standard deviation of random intercepts}
-
-\item{family}{distribution , not implemented}
 
 \item{N}{integer (vector), number of individuals per cluster.
 Defaults to 'rep(1,sum(Cl))' if not passed.}

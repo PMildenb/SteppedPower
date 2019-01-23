@@ -36,8 +36,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ## simulation
 
   * dependencies aufraeumen
-    * MATRIX and stats both? 
+    * MATRIX and stats both? maybe load only needed functions?
     * what about `car` ? needed only for `logit()`?
+  * normal case ? 
+  * poisson ?
+  * cohort studies
+
 
 
 ## TALKING POINTS for ISCB

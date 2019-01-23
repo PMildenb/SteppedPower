@@ -4,13 +4,16 @@
 \alias{wlsInnerFunction}
 \title{wlsInnerFunction}
 \usage{
-wlsInnerFunction(DesMat, EffSize, SumCl, timepoints, sigma, tau, family, N,
-  Power, sig.level, verbose)
+wlsInnerFunction(DesMat, EffSize, SumCl, timepoints, sigma, tau, N, Power,
+  sig.level, verbose)
 }
 \arguments{
 \item{DesMat}{matrix, the design matrix}
 
 \item{SumCl}{integer, total number of clusters}
+}
+\value{
+a list.
 }
 \description{
 only to be called by wlsMixedPower
