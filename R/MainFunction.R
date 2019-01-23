@@ -83,12 +83,11 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,delay=NULL,
 #' @export
 #'
 
-wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,N,
+wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,N,
                              Power,sig.level,verbose){
 
   CovMat        <- construct_CovMat(SumCl=SumCl,timepoints=timepoints,
-                                    sigma=sigma,tau=tau,family=family,
-                                    N=N)
+                                    sigma=sigma,tau=tau,N=N)
 
   tmpmat <- t(DesMat) %*% Matrix::solve(CovMat)
   VarMat <- Matrix::solve(tmpmat %*% DesMat)

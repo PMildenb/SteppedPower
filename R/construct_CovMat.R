@@ -37,7 +37,6 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
 #' @param tau numeric, standard deviation of random intercepts
-#' @param family distribution , **not implemented**
 #' @param N integer (vector), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
 #'
@@ -48,7 +47,7 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))
 
 
-construct_CovMat <- function(SumCl, timepoints, sigma, tau, family="gaussian", N=NULL){
+construct_CovMat <- function(SumCl, timepoints, sigma, tau, N=NULL){
 
   timepoints  <- sum(timepoints)  ## dirty hack to fix vector input for parll+baseline
   siglength   <- length(sigma)
