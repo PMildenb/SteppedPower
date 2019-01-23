@@ -6,29 +6,35 @@
 #' $$Var(trteff)=(X'V^{-1}X)^{-1}[1,1]$$
 #'
 #'
-#' @param EffSize numeric, raw effect
 #' @param Cl integer (vector), number of clusters per wave (in SWD),
 #' or number in control and intervention (in parallel designs)
-#' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
-#' @param tau numeric, standard deviation of random intercepts
-#' @param sig.level numeric, significance level, defaults to 0.05
-#' @param delay numeric (possibly vector), value between 0 and 1 specifing the
+#' @param timepoints numeric (scalar or vector), number of timepoints (periods).
+#' If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for parallel designs.
+#' @param DesMat matrix of dimension ... , if supplied, timepoints and Cl are ignored.
+#' @param delay numeric (possibly vector), value(s) between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase  *not implemented*
 #' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
+#' @param EffSize numeric, raw effect
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' @param tau numeric, standard deviation of random intercepts
+#' @param eta numeric, standard deviation of random slopes **not implemented**
+#' @param rho numeric, correlation of tau and eta **not implemented**
+#' @param N Integer,
+#' @param Power numeric, a specified target power. If supplied, the minimal N is returned **work in progress**
+#' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
 #'
 #' @return a list. First element is the power,
-#' second element the weights of cluster per period for estimating the treatment effect
+#' second element the weights of cluster per period for estimating the treatment effect **needs update**
 #' @export
 #'
 #' @examples
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-wlsMixedPower <- function(Cl=NULL,timepoints=NULL,delay=NULL,
-                          DesMat=NULL,design="SWD",family="gaussian",
-                          EffSize,sigma,tau,
+wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design="SWD",
+                          EffSize,sigma,tau,eta=NULL,rho=NULL,
                           N=NULL,Power=NULL,sig.level=0.05,verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
@@ -50,20 +56,20 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,delay=NULL,
                             sigma=sigma,tau=tau,family=family,Power=NULL,N=N,sig.level=sig.level,
                             verbose=verbose)
   }else{
-    optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,family,Power,N,sig.level,verbose){
+    optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level,verbose){
 
-      diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
-                               sigma=sigma,tau=tau,family=family,N=N,sig.level=sig.level,
-                               verbose=verbose)$`Power`)
+      diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
+                                           EffSize=EffSize,sigma=sigma,tau=tau,
+                                           N=N,sig.level=sig.level,verbose=verbose)$`Power`)
       return(diff)}
 
     N_opt <- ceiling(optim(par=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
-                           timepoints=timepoints,sigma=1,tau=.3,family="gaussian",
+                           timepoints=timepoints,sigma=1,tau=.3,
                            Power=.9,sig.level=.05,verbose=F,
                            method="Brent",lower=1,upper=1000)$`par`)
 
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
-                     sigma=sigma,tau=tau,family=family,N=N_opt,sig.level=sig.level,
+                     sigma=sigma,tau=tau,N=N_opt,sig.level=sig.level,
                      verbose=verbose)
     out <- append(list(N=N_opt),out)
   }

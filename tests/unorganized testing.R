@@ -45,6 +45,8 @@ VarMat <- Matrix::solve(tmpmat %*% Des_PB)
 ## wlsInnerFunction
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
+DesMat_prl <- construct_DesMat(Cl=c(4,4),design="parallel",timepoints=3)
+
 
 wlsInnerFunction(DesMat=DesMat, EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
                  sigma=1,tau=.3,family="gaussian",N=1,
@@ -52,17 +54,39 @@ wlsInnerFunction(DesMat=DesMat, EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
+wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5,SumCl=8,timepoints=3,
+                 sigma=1,tau=.3,N=1,
+                 Power=NULL,sig.level=.05,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
+wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
+              EffSize=.5,sigma=1,tau=.3,verbose=F)
+
+
+
 ## optFunction
 # initialised inside of wlsMixedPower
 optFunction(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-            sigma=1,tau=.3,family="gaussian",N=1,
+            sigma=1,tau=.3,N=1,
             Power=.9,sig.level=.05,verbose=F)
 
 optim(par=1,optFunction,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-      sigma=1,tau=.3,family="gaussian",
+      sigma=1,tau=.3,
       Power=.9,sig.level=.05,verbose=F, method="Brent",lower=1,upper=1000)
 
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=20,verbose=F)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+
+
+optFunction(DesMat=DesMat_prl,EffSize=0.5,SumCl=8,timepoints=3,
+            sigma=1,tau=.3,N=1,
+            Power=.9,sig.level=.05,verbose=F)
+
+optim(par=1,optFunction,DesMat=DesMat_prl,EffSize=.5,SumCl=8,timepoints=3,
+      sigma=1,tau=.15,Power=.9,sig.level=.05,verbose=F, method="Brent",
+      lower=1,upper=1000)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
+## HERE IS THE POODLES KERNEL !! BUG BUG BUG
 
 
 
@@ -99,12 +123,12 @@ swPwr(swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,mu0=0,mu1=.1,tau=.3,eta=0,sigma
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
-wlsMixedPower(EffSize = .05,sigma=1,tau=.3,
-              Cl=c(20,2),timepoints=5,design="parallel",
+wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
+              Cl=c(2,3),timepoints=5,design="parallel",
               Power=.9,verbose=F)
-wlsMixedPower(EffSize = .5,sigma=1,tau=.2,
+wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
               Cl=c(10,10),timepoints=5,design="parallel",
-              N=7,verbose=F)
+              N=1000,verbose=F)
 
 
 ## wlsGlmmPower
