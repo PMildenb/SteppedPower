@@ -16,8 +16,9 @@
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase  *not implemented*
 #' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
+#' @param verbose logical, should the function return the design and covariance matrix?
 #'
-#' @return a list of lenght two. First element is the power,
+#' @return a list. First element is the power,
 #' second element the weights of cluster per period for estimating the treatment effect
 #' @export
 #'
@@ -25,9 +26,10 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-wlsMixedPower <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
-                          N=NULL,Power=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,
-                          delay=NULL,design="SWD",verbose=FALSE){
+wlsMixedPower <- function(Cl=NULL,timepoints=NULL,delay=NULL,
+                          DesMat=NULL,design="SWD",family="gaussian",
+                          EffSize,sigma,tau,
+                          N=NULL,Power=NULL,sig.level=0.05,verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 

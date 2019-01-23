@@ -37,7 +37,7 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' Else residual error on individual level
 #' @param tau numeric, standard deviation of random intercepts
-#' @param family distribution , not implemented
+#' @param family distribution , **not implemented**
 #' @param N integer (vector), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
 #'
