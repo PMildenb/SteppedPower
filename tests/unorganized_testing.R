@@ -102,7 +102,7 @@ wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2)
 
 Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 design="parallel" ; N <- NULL ; sig.level=0.05
-wlsMixedPower(1,Cl=c(5,5),1,0.1,family="gaussian",timepoints=2,design="parallel")
+wlsMixedPower(1,Cl=c(5,5),1,0.1,timepoints=2,design="parallel")
 
 
 wls_parBl1 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
@@ -128,6 +128,7 @@ wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
 wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
               Cl=c(10,10),timepoints=5,design="parallel",
               N=1000,verbose=F)
+
 
 
 ## wlsGlmmPower

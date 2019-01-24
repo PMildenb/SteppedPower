@@ -97,6 +97,26 @@ swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=tau.fct(.4,.0275),eta=0)
 ## -> different setting. not suitable
 
 
+########################################################################################
+## sampsize calculation works
+
+devtools::install_github("PMildenb/SteppedPower")
+library(SteppedPower) ; library(swCRTdesign)
+
+## Wie viele Individuen pro Cluster braucht man bei 4 Clustern in 4 Sequenzen je nach Design fuer 90% pwr?
+EffSize <- .5 ; sigma <- 1 ; tau <- .1
+wlsMixedPower(Cl=rep(1,4), EffSize=EffSize, sigma=sigma, tau=tau, Power=.9, N_range=c(1,100))
+wlsMixedPower(Cl=c(2,2), timepoints=5, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau, Power=.9)
+
+tau <- .15
+wlsMixedPower(Cl=rep(1,4), EffSize=EffSize, sigma=sigma, tau=tau, Power=.9, N_range=c(1,100))
+wlsMixedPower(Cl=c(2,2), timepoints=5, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau, Power=.9)
+
+
+## Wie viele Individuen pro Cluster braucht man bei 50 Clustern in 10 Sequenzen je nach Design?
+wlsMixedPower(Cl=rep(5,10), EffSize=.1, sigma = 1, tau=.1, Power=.9, N_range=c(1,100))
+wlsMixedPower(Cl=c(25,25), timepoints=11, design="parallel", EffSize=.1, sigma=1, tau=.1, Power=.9)
+
 
 
 
