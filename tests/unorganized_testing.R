@@ -45,11 +45,11 @@ VarMat <- Matrix::solve(tmpmat %*% Des_PB)
 ## wlsInnerFunction
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
-DesMat_prl <- construct_DesMat(Cl=c(4,4),design="parallel",timepoints=3)
+DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
 wlsInnerFunction(DesMat=DesMat, EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-                 sigma=1,tau=.3,family="gaussian",N=1,
+                 sigma=1,tau=.3,N=1,
                  Power=NULL,sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
@@ -86,7 +86,6 @@ optim(par=1,optFunction,DesMat=DesMat_prl,EffSize=.5,SumCl=8,timepoints=3,
       lower=1,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
-## HERE IS THE POODLES KERNEL !! BUG BUG BUG
 
 
 

@@ -53,7 +53,7 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design=
 
   if(is.null(Power)){
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
-                            sigma=sigma,tau=tau,family=family,Power=NULL,N=N,sig.level=sig.level,
+                            sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
                             verbose=verbose)
   }else{
     optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level,verbose){
@@ -64,8 +64,8 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design=
       return(diff)}
 
     N_opt <- ceiling(optim(par=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
-                           timepoints=timepoints,sigma=1,tau=.3,
-                           Power=.9,sig.level=.05,verbose=F,
+                           timepoints=timepoints,sigma=1,tau=tau,
+                           Power=Power,sig.level=.05,verbose=F,
                            method="Brent",lower=1,upper=1000)$`par`)
 
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
