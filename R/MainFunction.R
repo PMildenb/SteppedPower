@@ -35,7 +35,7 @@
 
 wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design="SWD",
                           EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,sig.level=0.05,verbose=FALSE){
+                          N=NULL,Power=NULL,N_range=c(1,1000),sig.level=0.05,verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
@@ -63,10 +63,10 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design=
                                            N=N,sig.level=sig.level,verbose=verbose)$`Power`)
       return(diff)}
 
-    N_opt <- ceiling(optim(par=1,optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
+    N_opt <- ceiling(optim(par=sqrt(N_range[2]),optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
                            timepoints=timepoints,sigma=1,tau=tau,
                            Power=Power,sig.level=.05,verbose=F,
-                           method="Brent",lower=1,upper=1000)$`par`)
+                           method="Brent",lower=N_range[1],upper=N_range[2])$`par`)
 
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
                      sigma=sigma,tau=tau,N=N_opt,sig.level=sig.level,
