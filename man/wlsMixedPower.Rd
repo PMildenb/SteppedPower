@@ -6,8 +6,8 @@
 \usage{
 wlsMixedPower(Cl = NULL, timepoints = NULL, DesMat = NULL,
   delay = NULL, design = "SWD", EffSize, sigma, tau, eta = NULL,
-  rho = NULL, N = NULL, Power = NULL, sig.level = 0.05,
-  verbose = FALSE)
+  rho = NULL, N = NULL, Power = NULL, N_range = c(1, 1000),
+  sig.level = 0.05, verbose = FALSE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD),
@@ -37,6 +37,8 @@ intervention effect in the first (second ... ) intervention phase  *not implemen
 \item{N}{Integer,}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned **work in progress**}
+
+\item{N_range}{numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 

@@ -22,6 +22,7 @@
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N Integer,
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned **work in progress**
+#' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
 #'
