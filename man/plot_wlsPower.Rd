@@ -16,7 +16,7 @@ three ggplot2 objects.
 visual interpretation of cluster and period influences on intervention estimate
 }
 \examples{
-wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
-plot_wlsPower(wlsPowerOut)
+# wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+# plot_wlsPower(wlsPowerOut)
 
 }

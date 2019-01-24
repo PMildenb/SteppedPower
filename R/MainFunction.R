@@ -137,7 +137,7 @@ zTestPwr <- function(d,se,sig.level=0.05){
 #' does it work ? i fear not (gotta think about it ...)
 #'
 #' @param d numeric, raw effect
-#' @param se numeric, standard deviaton (on individual level)
+#' @param sd numeric, standard deviaton (on individual level)
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param Power target power
 #'
