@@ -14,7 +14,7 @@
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
-#' @param verbose
+#' @param verbose Logical
 #'
 #' @return as `wlsMixedPower`
 #' @export

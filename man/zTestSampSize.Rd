@@ -12,11 +12,11 @@ zTestSampSize(d, sd, Power, sig.level = 0.05)
 \arguments{
 \item{d}{numeric, raw effect}
 
+\item{sd}{numeric, standard deviaton (on individual level)}
+
 \item{Power}{target power}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
-
-\item{se}{numeric, standard deviaton (on individual level)}
 }
 \value{
 a scalar

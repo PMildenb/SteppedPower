@@ -2,6 +2,8 @@
 #'
 #' constructs the design matrix.
 #'
+#' Note: Unlike the usual notiation, the treatment is in the first column (for easier access by higher level functions).
+#'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param delay *not implemented*
 #' @param timepoints numeric, scalar
@@ -11,7 +13,6 @@
 #'
 #' @examples construct_DesMat(Cl=c(2,0,1))
 #'
-#' Note: Unlike the usual notiation, the treatment is in the first column (for easier access by higher level functions).
 
 construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
 

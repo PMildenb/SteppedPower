@@ -32,7 +32,7 @@ wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
 \item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase *not implemented*}
 
-\item{verbose}{}
+\item{verbose}{Logical}
 
 \item{Power}{Target power. If between 0 and 1, function returns needed `N`}
 }

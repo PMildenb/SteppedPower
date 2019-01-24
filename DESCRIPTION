@@ -6,7 +6,15 @@ Author: Philipp Mildenberger
 Maintainer: Philipp Mildenberger <pmildenb@uni-mainz.de>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Imports:
+    Matrix,
+    gee,
+    ggplot2,
+    reshape2,
+    swCRTdesign,
+    car,
+    MASS
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
