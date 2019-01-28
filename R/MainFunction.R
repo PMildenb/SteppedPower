@@ -25,6 +25,7 @@
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
+#' @param df_adjust character, use t-test ? If yes, what df approx **wording!!**
 #' @param verbose logical, should the function return the design and covariance matrix?
 #'
 #' @return a list. First element is the power,
@@ -37,7 +38,8 @@
 
 wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,time_adjust="factor",
                           design="SWD",EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,N_range=c(1,10000),sig.level=0.05,verbose=FALSE){
+                          N=NULL,Power=NULL,N_range=c(1,10000),sig.level=0.05,df_adjust="None",
+                          verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
@@ -62,14 +64,12 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
   if(is.null(Power)){
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
-                            verbose=verbose)
+                            df_adjust=df_adjust,verbose=verbose)
   }else{
-
     N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
-                             Power=Power,sig.level=.05,interval=N_range)$`root`)
-
+                             Power=Power,df_adjust=df_adjust,sig.level=.05,interval=N_range)$root)
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                            N=N_opt,sig.level=sig.level,verbose=verbose)
+                            N=N_opt,sig.level=sig.level,df_adjust=df_adjust, verbose=verbose)
     out <- append(list(N=N_opt),out)
   }
   return(out)
@@ -88,10 +88,10 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param sig.level numeric, significance level, defaults to 0.05
 
-optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,sig.level){
+optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
   diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
+                                    N=N,df_adjust=df_adjust,sig.level=sig.level,verbose=F)$Power)
   return(diff)}
 
 
