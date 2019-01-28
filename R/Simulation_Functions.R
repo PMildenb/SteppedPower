@@ -108,6 +108,7 @@ Simslim <- function (design, n, mu0, mu1, time.effect, sigma, tau,
   return(swData)
 }
 
+utils::globalVariables("cluster.var")
 
 
 ## GENERAL SIMULATION FORMULA (cluster effect on linear predictor)
