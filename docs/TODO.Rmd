@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # general
 
-* remove any sign of that stupid idea of samp size calculation! **DONE**
 * Nicer names needed !!
 
 ## compare_designs
@@ -20,14 +19,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## wlsMixedPower
 
-* options to adjust for degrees of freedom (between-within, ... )
+* options to adjust for degrees of freedom (between-within, containment, none, ... )
 * rewrite the very heart of the calculation as a function in sigma (using optim or similar)
 * add random trt eff. Possibly just by manipulating vector tau.
-* are all the function argument needed ???
+* are all the function arguments needed ???
 
 ## optFunction
 
-* does not work for parallel designs! but why ??
+* does not work for parallel designs! but why ??  **done**
 
 ## non-normal-wrapper
 
