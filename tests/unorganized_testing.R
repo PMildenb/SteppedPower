@@ -87,10 +87,10 @@ optFunction2(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
 library(microbenchmark)
 microbenchmark({
 optim(par=1,optFunction2,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-      sigma=1,tau=.3,Power=.9,sig.level=.05,method="Brent",lower=1,upper=1000)
+      sigma=1,tau=.3,Power=.9,sig.level=.05,method="Brent",lower=1,upper=10000)
 },{
 uniroot(optFunction1,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-        sigma=1,tau=.3,Power=.9,sig.level=.05,interval=c(1,1000))
+        sigma=1,tau=.3,Power=.9,sig.level=.05,interval=c(1,10000))
 },times=10)
 
 

@@ -22,7 +22,7 @@
 #' @param eta numeric, standard deviation of random slopes **not implemented**
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N Integer,
-#' @param Power numeric, a specified target power. If supplied, the minimal N is returned **work in progress**
+#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
@@ -37,7 +37,7 @@
 
 wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,time_adjust="factor",
                           design="SWD",EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,N_range=c(1,1000),sig.level=0.05,verbose=FALSE){
+                          N=NULL,Power=NULL,N_range=c(1,10000),sig.level=0.05,verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
@@ -46,47 +46,39 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
     #   if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
     #   if(design=="parallel"){ timepoints  <- 1            }
     # }
-    DesMat_lst    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
+    DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
                                     timepoints=timepoints,time_adjust=time_adjust)
-    DesMat      <- DesMat_lst[[1]]
-    timepoints  <- DesMat_lst[[2]]
-    SumCl       <- DesMat_lst[[3]]
+    dsnmatrix   <- DesMat[[1]]
+    timepoints  <- DesMat[[2]]
+    SumCl       <- DesMat[[3]]
   } else if(inherits(DesMat,"list")){
-    # try(
-    #   timepoints  <- DesMat$timepoints
-    #   SumCl       <- dim(DesMat)[1]/timepoints
-    # ) else {
-    DesMat      <- DesMat[[1]]
+    dsnmatrix   <- DesMat[[1]]
     timepoints  <- DesMat[[2]]
     SumCl       <- DesMat[[3]]
     # }
   } else if(inherits(DesMat,"matrix")){
-    DesMat      <- DesMat
+    dsnmatrix   <- DesMat
     timepoints  <- dim(DesMat)[2]-1
     SumCl       <- dim(DesMat)[1]/timepoints
     # message("time effect modelled as factor variable")
   }
 
   if(is.null(Power)){
-    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
+    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
                             verbose=verbose)
   }else{
-    optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
+    optFunction <- function(DesMat,EffSize,sigma,tau,Power,N,sig.level){
 
-      diff <- (Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
-                                           EffSize=EffSize,sigma=sigma,tau=tau,
-                                           N=N,sig.level=sig.level,verbose=F)$`Power`)
+      diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
+                                        N=N,sig.level=sig.level,verbose=F)$`Power`)
       return(diff)}
 
-    N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
-                           timepoints=timepoints,sigma=1,tau=tau,
-                           Power=Power,sig.level=.05,
-                           interval=N_range)$`root`)
+    N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
+                             Power=Power,sig.level=.05,interval=N_range)$`root`)
 
-    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
-                     sigma=sigma,tau=tau,N=N_opt,sig.level=sig.level,
-                     verbose=verbose)
+    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
+                            N=N_opt,sig.level=sig.level,verbose=verbose)
     out <- append(list(N=N_opt),out)
   }
   return(out)
@@ -97,7 +89,8 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
 #'
 #' only to be called by wlsMixedPower
 #'
-#' @param DesMat matrix, the design matrix
+#' @param DesMat list, containing a matrix, the design matrix,
+#' numeric timepoints, numeric total number of Clusters
 #' @param SumCl integer, total number of clusters
 #'
 #' @return a list.
@@ -105,20 +98,20 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
 #' @export
 #'
 
-wlsInnerFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,N,
+wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
                              Power,sig.level,verbose){
 
-  CovMat        <- construct_CovMat(SumCl=SumCl,timepoints=timepoints,
+  CovMat        <- construct_CovMat(SumCl=DesMat[[3]],timepoints=DesMat[[2]],
                                     sigma=sigma,tau=tau,N=N)
 
-  tmpmat <- t(DesMat) %*% Matrix::solve(CovMat)
-  VarMat <- Matrix::solve(tmpmat %*% DesMat)
-  WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = SumCl,byrow=TRUE)
+  tmpmat <- t(DesMat[[1]]) %*% Matrix::solve(CovMat)
+  VarMat <- Matrix::solve(tmpmat %*% DesMat[[1]])
+  WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = DesMat[[3]],byrow=TRUE)
 
   out <- list(Power=zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level))
   if(verbose)
-    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=DesMat,
-                            First_CovarianceBlk=CovMat[1:timepoints,1:timepoints]))
+    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=DesMat[[1]],
+                            First_CovarianceBlk=CovMat[1:DesMat[[2]],1:DesMat[[2]] ]))
   return(out)
 }
 
