@@ -5,7 +5,8 @@
 #' Note: Unlike the usual notiation, the treatment is in the first column (for easier access by higher level functions).
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trt_delay *implemented for swd, parallel and parallel w baseline*
+#' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifing the
+#' intervention effect in the first (second ... ) intervention phase
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
 #'
@@ -52,9 +53,9 @@ construct_DesMat <- function(Cl,trt_delay=NULL,design="SWD",timepoints=NULL,time
       timepoints01 <- timepoints
       timepoints   <- sum(timepoints)
     }else if(is.null(timepoints)){
-      timepoints01 <- c(1,1)
-      timepoints   <- 2
-      message("timepoints unspecified. Defaults to 1 baseline, 1 parallel period.")
+      timepoints01 <- c(1,length(trt_delay)+1)
+      timepoints   <- sum(timepoints01)
+      message("timepoints unspecified. Defaults to 1 baseline,",length(trt_delay)+1, " parallel period(s).")
     }
     ctl_cluster <- rep(0,sum(timepoints01))
     trt_cluster <- c(rep(0,timepoints01[1]),
