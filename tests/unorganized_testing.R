@@ -5,7 +5,7 @@ library(swCRTdesign)
 library(microbenchmark)
 
 ## DesMat
-construct_DesMat(Cl=c(2,0,1),timepoints=4)
+construct_DesMat(Cl=c(2,0,1))
 Des_PB <- construct_DesMat(Cl=c(2,2))
 
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)
@@ -32,14 +32,10 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
 
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(1,1))
+
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(25,16))
 Cov_PB <- construct_CovMat(4,3,1,0.1)
-
-
-## Does the Matrix inversion / multiplication work?
-tmpmat <- t(Des_PB) %*% Matrix::solve(Cov_PB)
-VarMat <- Matrix::solve(tmpmat %*% Des_PB)
 
 
 ## wlsInnerFunction
@@ -60,7 +56,6 @@ wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5,SumCl=8,timepoints=3,
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
               EffSize=.5,sigma=1,tau=.3,verbose=F)
-
 
 
 ## optFunction
@@ -86,7 +81,6 @@ optim(par=1,optFunction,DesMat=DesMat_prl,EffSize=.5,SumCl=8,timepoints=3,
       lower=1,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
-
 
 
 ## wlsMixedPower
@@ -123,7 +117,7 @@ wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
 wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
-              Cl=c(2,3),timepoints=5,design="parallel",
+              Cl=c(50,50),timepoints=5,design="parallel",
               Power=.9,verbose=F)
 wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
               Cl=c(10,10),timepoints=5,design="parallel",

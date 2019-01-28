@@ -128,7 +128,8 @@ wlsMixedPower(Cl=c(25,25), timepoints=c(2,3), design="parallel_baseline", EffSiz
 
 # switch()
   for(i in 1:1000){ beepr::beep() ; Sys.sleep(rexp(1,2)) }
-  for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
+
+for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
 
 N <- 1e8
 primes <- which(as.logical(matlab::isprime(1:N)))

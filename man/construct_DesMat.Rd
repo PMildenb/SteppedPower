@@ -4,15 +4,17 @@
 \alias{construct_DesMat}
 \title{construct_DesMat}
 \usage{
-construct_DesMat(Cl, delay = NULL, design = "SWD",
-  timepoints = timepoints)
+construct_DesMat(Cl, trt_delay = NULL, design = "SWD",
+  timepoints = NULL, time_adjust = "factor")
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{delay}{*not implemented*}
+\item{trt_delay}{*implemented for swd, parallel and parallel w baseline*}
 
 \item{timepoints}{numeric, scalar}
+
+\item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 }
 \value{
 a matrix (for a stepped wedge design)

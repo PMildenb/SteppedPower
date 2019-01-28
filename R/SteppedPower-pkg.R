@@ -11,6 +11,7 @@
 #' @import swCRTdesign
 #' @importFrom car logit
 #' @importFrom MASS glmmPQL
+#' @importFrom lme4 glmer lmer
 #'
 #' @author Philipp Mildenberger \email{pmildenb@@uni-mainz.de}
 #' @name SteppedPower-pkg
