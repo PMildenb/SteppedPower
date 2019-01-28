@@ -52,9 +52,9 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
     tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
-    wlsMixedPower(DesMat=DesMat,EffSize=EffSize,
-                  timepoints=timepoints,sigma=Sigmas,tau=Taus,
-                  family=family,N=N,Power=NULL,sig.level=sig.level,verbose=verbose)
+    wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, delay=delay,
+                  design=design, EffSize=EffSize, sigma=Sigmas,tau=Taus,
+                  N=N,Power=NULL,sig.level=sig.level,verbose=verbose)
   }
 }
 
