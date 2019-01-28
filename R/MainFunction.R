@@ -109,19 +109,21 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #' @param verbose logical, should the function return the design and covariance matrix?
 
 wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
-                             Power,sig.level,verbose){
+                             Power,df_adjust=df_adjust,sig.level,verbose){
+  dsnmatrix  <- DesMat$matrix
+  timepoints <- DesMat$timepoints
+  SumCl      <- DesMat$SumCl
+  CovMat     <- construct_CovMat(SumCl=SumCl, timepoints=timepoints,
+                                    sigma=sigma, tau=tau, N=N)
 
-  CovMat        <- construct_CovMat(SumCl=DesMat[[3]],timepoints=DesMat[[2]],
-                                    sigma=sigma,tau=tau,N=N)
+  tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)
+  VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
+  WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
-  tmpmat <- t(DesMat[[1]]) %*% Matrix::solve(CovMat)
-  VarMat <- Matrix::solve(tmpmat %*% DesMat[[1]])
-  WgtMat <- matrix((VarMat %*% tmpmat)[1,],nrow = DesMat[[3]],byrow=TRUE)
-
-  out <- list(Power=zTestPwr(d=EffSize,se=sqrt(VarMat[1,1]),sig.level=sig.level))
+  out <- list(Power=zTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), sig.level=sig.level))
   if(verbose)
-    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=DesMat[[1]],
-                            First_CovarianceBlk=CovMat[1:DesMat[[2]],1:DesMat[[2]] ]))
+    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=dsnmatrix,
+                            First_CovarianceBlk=CovMat[1:timepoints,1:timepoints ]))
   return(out)
 }
 
