@@ -82,7 +82,7 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
     N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
                            timepoints=timepoints,sigma=1,tau=tau,
                            Power=Power,sig.level=.05,
-                           interval=N_range)$`par`)
+                           interval=N_range)$`root`)
 
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
                      sigma=sigma,tau=tau,N=N_opt,sig.level=sig.level,
