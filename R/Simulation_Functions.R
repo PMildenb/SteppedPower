@@ -130,8 +130,7 @@ realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
 
   if("AGQ" %in% whichModel){
     modAGQ <- lme4::glmer(response.var/nInd ~ tx.var  + time.var + (1|cluster.var),
-                   weights =sizes,
-                   family = "binomial" ,data=SimHHshort)
+                   weights =sizes, family = "binomial", nAGQ=nAGQ, data=SimHHshort)
     p.ztest.AGQ <- coef(summary(modAGQ))["tx.var","Pr(>|z|)"]
     tx.est.AGQ  <- modAGQ@beta[2]
 
