@@ -126,9 +126,9 @@ wlsMixedPower(Cl=c(25,25), timepoints=c(2,3), design="parallel_baseline", EffSiz
 ## compare different values for trt_delay
 
 ## parameters of setting to compare:
-EffSize <- .3 ; sigma <- 1 ; tau <- .2 ; verbose <- FALSE
+EffSize <- .4 ; sigma <- 1 ; tau <- .2 ; verbose <- FALSE
 
-wlsMixedPower(Cl=rep(2,5),trt_delay=c(.3,.7),EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose)
+wlsMixedPower(Cl=rep(2,5),trt_delay=c(.3,.7),EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose,N_range=c(1,100))
 wlsMixedPower(Cl=rep(2,5),trt_delay=c(.8),   EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose,N_range=c(1,100))
 wlsMixedPower(Cl=rep(2,5),trt_delay=NULL,    EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose,N_range=c(1,100))
 
