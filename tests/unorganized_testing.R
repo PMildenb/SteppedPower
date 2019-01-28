@@ -44,7 +44,7 @@ Cov_PB <- construct_CovMat(4,3,1,0.1)
 
 ## wlsInnerFunction
 Cl <- rep(10,10)
-DesMat <- construct_DesMat(Cl=Cl)
+DesMat <- construct_DesMat(Cl=Cl)[[1]]
 DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
@@ -64,13 +64,35 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 ## optFunction
 # initialised inside of wlsMixedPower
-optFunction(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-            sigma=1,tau=.3,N=1,
-            Power=.9,sig.level=.05,verbose=F)
+optFunction1 <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
 
-optim(par=1,optFunction,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-      sigma=1,tau=.3,
-      Power=.9,sig.level=.05,verbose=F, method="Brent",lower=1,upper=1000)
+  diff <- (Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
+                                    EffSize=EffSize,sigma=sigma,tau=tau,
+                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
+  return(diff)}
+
+optFunction2 <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
+
+  diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
+                                    EffSize=EffSize,sigma=sigma,tau=tau,
+                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
+  return(diff)}
+
+
+optFunction2(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+            sigma=1,tau=.3,N=1,
+            Power=.9,sig.level=.05)
+
+
+library(microbenchmark)
+microbenchmark({
+optim(par=1,optFunction2,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+      sigma=1,tau=.3,Power=.9,sig.level=.05,method="Brent",lower=1,upper=1000)
+},{
+uniroot(optFunction1,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+        sigma=1,tau=.3,Power=.9,sig.level=.05,interval=c(1,1000))
+},times=10)
+
 
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
