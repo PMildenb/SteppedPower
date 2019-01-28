@@ -122,14 +122,31 @@ wlsMixedPower(Cl=c(25,25), timepoints=c(2,3), design="parallel_baseline", EffSiz
 
 
 
+###########################################################################################
+## compare different values for trt_delay
+
+## parameters of setting to compare:
+EffSize <- .3 ; sigma <- 1 ; tau <- .2 ; verbose <- FALSE
+
+wlsMixedPower(Cl=rep(2,5),trt_delay=c(.3,.7),EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose)
+wlsMixedPower(Cl=rep(2,5),trt_delay=c(.8),   EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose,N_range=c(1,100))
+wlsMixedPower(Cl=rep(2,5),trt_delay=NULL,    EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose,N_range=c(1,100))
+
+wlsMixedPower(Cl=c(5,5),timepoints=6,trt_delay=c(.3,.7),design="parallel",
+              EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose)
+wlsMixedPower(Cl=c(5,5),timepoints=6,trt_delay=c(.8),   design="parallel",
+              EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose)
+wlsMixedPower(Cl=c(5,5),timepoints=6,trt_delay=NULL,    design="parallel",
+              EffSize=EffSize,sigma=sigma,tau=tau,Power=.8,verbose=verbose)
+
+
 
 #################################
-##
+## Verteilungen hoeren ...
 
 # switch()
   for(i in 1:1000){ beepr::beep() ; Sys.sleep(rexp(1,2)) }
-
-for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
+  for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
 
 N <- 1e8
 primes <- which(as.logical(matlab::isprime(1:N)))

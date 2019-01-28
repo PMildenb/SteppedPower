@@ -16,6 +16,10 @@ construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
 Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
 
+construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7))
+construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel")
+construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline")
+
 
 ## CovBlk
 timepoints=3; sigma=2; tau=rep(2,3)
@@ -123,6 +127,13 @@ wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
               Cl=c(10,10),timepoints=5,design="parallel",
               N=1000,verbose=F)
 
+
+wlsMixedPower(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.1,verbose=T)
+wlsMixedPower(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
 
 ## wlsGlmmPower
