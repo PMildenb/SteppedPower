@@ -48,8 +48,14 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design=
     }
     DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
   } else {
-    timepoints  <- dim(DesMat)[2]-1                 ## this is only the 'canonical' case
-    SumCl       <- dim(DesMat)[1]/timepoints
+    # try(
+    #   timepoints  <- DesMat$timepoints
+    #   SumCl       <- dim(DesMat)[1]/timepoints
+    # ) else {
+      timepoints  <- dim(DesMat[2])-1                 ## this is only the 'canonical' case
+      SumCl       <- dim(DesMat)[1]/timepoints
+    # }
+
   }
 
   if(is.null(Power)){
