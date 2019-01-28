@@ -116,14 +116,38 @@ wlsMixedPower(Cl=c(2,2), timepoints=5, design="parallel", EffSize=EffSize, sigma
 ## Wie viele Individuen pro Cluster braucht man bei 50 Clustern in 10 Sequenzen je nach Design?
 wlsMixedPower(Cl=rep(5,10), EffSize=.1, sigma = 1, tau=.1, Power=.9, N_range=c(1,100))
 wlsMixedPower(Cl=c(25,25), timepoints=11, design="parallel", EffSize=.1, sigma=1, tau=.1, Power=.9)
+wlsMixedPower(Cl=c(25,25), timepoints=11, design="parallel_baseline", EffSize=.1, sigma=1, tau=.1, Power=.9)
+wlsMixedPower(Cl=c(25,25), timepoints=c(2,3), design="parallel_baseline", EffSize=.1,
+              sigma=1, tau=.1, Power=.9,N_range=c(1,100))
 
 
 
 
+#################################
+##
 
+# switch()
+  for(i in 1:1000){ beepr::beep() ; Sys.sleep(rexp(1,2)) }
+  for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
 
+N <- 100000
+primes <- which(as.logical(matlab::isprime(1:N)))
+prime_dist <- primes - c(0,primes[1:(length(primes)-1)])
 
+density(prime_dist)
 
+###########################################################################################
+## special class for design matrix
+
+setClass("design.matrix",contains="matrix",
+         slots=c(SumCl="numeric"))
+new("design.matrix",SumCl=4)
+
+setClass("track", slots = c(x="numeric", y="numeric"))
+myTrack <- new("track", x = -4:4, y = exp(-4:4))
+slot(myTrack, "x")
+slot(myTrack, "y") <- log(slot(myTrack, "y"))
+utils::str(myTrack)
 
 
 
