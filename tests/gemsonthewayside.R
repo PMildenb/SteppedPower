@@ -130,11 +130,11 @@ wlsMixedPower(Cl=c(25,25), timepoints=c(2,3), design="parallel_baseline", EffSiz
   for(i in 1:1000){ beepr::beep() ; Sys.sleep(rexp(1,2)) }
   for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
 
-N <- 100000
+N <- 1e8
 primes <- which(as.logical(matlab::isprime(1:N)))
 prime_dist <- primes - c(0,primes[1:(length(primes)-1)])
 
-density(prime_dist)
+car::densityPlot(prime_dist)
 
 ###########################################################################################
 ## special class for design matrix

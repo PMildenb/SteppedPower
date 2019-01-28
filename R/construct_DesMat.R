@@ -14,14 +14,13 @@
 #' @examples construct_DesMat(Cl=c(2,0,1))
 #'
 
-construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
+construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=NULL){
 
   SumCl         <- sum(Cl)
 
   if(design=="SWD"){
     sequences     <- length(Cl)
-    if(is.null(timepoints))
-       timepoints <- sequences + 1  ## hier modifikationen moeglich
+    if(is.null(timepoints)) timepoints <- sequences + 1  ## hier modifikationen moeglich
     trt    <- matrix(0,sequences,timepoints) ; trt[upper.tri(trt)] <- 1
     trtBlk <- trt[rep(1:sequences,Cl),]
     trtvec <- as.numeric(t(trtBlk))
@@ -52,9 +51,8 @@ construct_DesMat <- function(Cl,delay=NULL,design="SWD",timepoints=timepoints){
 
   timeBlk <- suppressWarnings(cbind(1,rbind(0,diag(1,timepoints-1))))
   timeBlk <- timeBlk[rep(1:timepoints,SumCl),]
-  DesMat  <- cbind(trtvec,timeBlk)
-  attr(DesMat,"timepoints") <- timepoints
-  attr(DesMat,"SumCl")      <- SumCl
+  DesMat  <- list(cbind(trtvec,timeBlk),timepoints,SumCl)
+  names(DesMat) <- c("matrix","timepoints","SumCl")
   return(DesMat)
 }
 

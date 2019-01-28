@@ -5,7 +5,7 @@ library(swCRTdesign)
 library(microbenchmark)
 
 ## DesMat
-construct_DesMat(Cl=c(2,0,1))
+construct_DesMat(Cl=c(2,0,1),timepoints=4)
 Des_PB <- construct_DesMat(Cl=c(2,2))
 
 construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)

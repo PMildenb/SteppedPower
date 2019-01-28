@@ -46,16 +46,21 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,delay=NULL,design=
       if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
       if(design=="parallel"){ timepoints  <- 1            }
     }
-    DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
-  } else {
+    DesMat      <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)[[1]]
+  } else if(inherits(DesMat,"list")){
     # try(
     #   timepoints  <- DesMat$timepoints
     #   SumCl       <- dim(DesMat)[1]/timepoints
     # ) else {
-      timepoints  <- dim(DesMat[2])-1                 ## this is only the 'canonical' case
-      SumCl       <- dim(DesMat)[1]/timepoints
+    DesMat      <- DesMat[[1]]
+    timepoints  <- DesMat[[2]]
+    SumCl       <- DesMat[[3]]
     # }
-
+  } else if(inherits(DesMat,"matrix")){
+    DesMat      <- DesMat
+    timepoints  <- dim(DesMat)[2]-1
+    SumCl       <- dim(DesMat)[1]/timepoints
+    message("time effect modeled as factor variable")
   }
 
   if(is.null(Power)){
