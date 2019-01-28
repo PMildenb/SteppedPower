@@ -21,7 +21,7 @@
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes **not implemented**
 #' @param rho numeric, correlation of tau and eta **not implemented**
-#' @param N Integer,
+#' @param N integer, number of individuals per cluster.
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
@@ -42,25 +42,21 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
 
   if(is.null(DesMat)){
-    # if(is.null(timepoints)){
-    #   if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
-    #   if(design=="parallel"){ timepoints  <- 1            }
-    # }
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
                                     timepoints=timepoints,time_adjust=time_adjust)
-    dsnmatrix   <- DesMat[[1]]
-    timepoints  <- DesMat[[2]]
-    SumCl       <- DesMat[[3]]
   } else if(inherits(DesMat,"list")){
-    dsnmatrix   <- DesMat[[1]]
-    timepoints  <- DesMat[[2]]
-    SumCl       <- DesMat[[3]]
-    # }
+    if(!inherits(DesMat[[1]],"matrix") |
+       !inherits(DesMat[[2]],"numeric")|
+       !inherits(DesMat[[2]],"numeric")) stop("In wlsMixedPower: Cannot interpret input for DesMat.")
+    dsnmatrix     <- DesMat[[1]]
+    timepoints    <- DesMat[[2]]
+    SumCl         <- DesMat[[3]]
+    names(DesMat) <- c("matrix","timepoints","SumCl")
   } else if(inherits(DesMat,"matrix")){
     dsnmatrix   <- DesMat
     timepoints  <- dim(DesMat)[2]-1
     SumCl       <- dim(DesMat)[1]/timepoints
-    # message("time effect modelled as factor variable")
+    DesMat      <- list(matrix=dsnmatrix, timepoints=timepoints, SumCl=SumCl)
   }
 
   if(is.null(Power)){
@@ -68,11 +64,6 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
                             verbose=verbose)
   }else{
-    optFunction <- function(DesMat,EffSize,sigma,tau,Power,N,sig.level){
-
-      diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                                        N=N,sig.level=sig.level,verbose=F)$`Power`)
-      return(diff)}
 
     N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
                              Power=Power,sig.level=.05,interval=N_range)$`root`)
@@ -84,19 +75,38 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
   return(out)
 }
 
+#' optFunction
+#'
+#' only to be called by wlsMixedPower.
+#'
+#' @param DesMat  list, containing a matrix, the design matrix,
+#' numeric timepoints, numeric total number of Clusters
+#' @param EffSize  numeric, raw effect
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' @param tau numeric, standard deviation of random intercepts
+#' @param N integer, number of individuals per cluster.
+#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
+#' @param sig.level numeric, significance level, defaults to 0.05
+
+optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,sig.level){
+
+  diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
+                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
+  return(diff)}
+
+
 
 #' wlsInnerFunction
 #'
-#' only to be called by wlsMixedPower
-#'
-#' @param DesMat list, containing a matrix, the design matrix,
+#' @param DesMat  list, containing a matrix, the design matrix,
 #' numeric timepoints, numeric total number of Clusters
-#' @param SumCl integer, total number of clusters
-#'
-#' @return a list.
-#'
-#' @export
-#'
+#' @param EffSize  numeric, raw effect
+#' @param sigma numeric, residual error of cluster means if no N given.
+#' @param tau numeric, standard deviation of random intercepts
+#' @param N integer, number of individuals per cluster.
+#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
+#' @param sig.level numeric, significance level, defaults to 0.05
+#' @param verbose logical, should the function return the design and covariance matrix?
 
 wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
                              Power,sig.level,verbose){
@@ -138,6 +148,31 @@ zTestPwr <- function(d,se,sig.level=0.05){
   Pwr <- pnorm(dsz+qnorm(sig.level/2)) + pnorm(-dsz+qnorm(sig.level/2))
   return(Pwr)
 }
+
+
+#' tTestPwr
+#'
+#' computes the power of a t-test given a standard error, an effect size,
+#' the degrees of freedom of the t-distribution and a significance level.
+#' Computes the exact power, see second example
+#'
+#' @param d numeric, raw effect
+#' @param se numeric, standard error
+#' @param df numeric, degrees of freedom of the t-distribution
+#' @param sig.level numeric, significance level, defaults to 0.05
+#'
+#' @return a scalar
+#' @export
+#'
+#' @examples tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; zTestPwr(4,1)
+
+tTestPwr <- function(d,se,df,sig.level=0.05){
+  dsz <- abs(d/se)
+  Pwr <- pt(dsz+qt(sig.level/2,df=df),df=df) + pt(-dsz+qt(sig.level/2,df=df),df=df)
+  return(Pwr)
+}
+
+
 
 
 

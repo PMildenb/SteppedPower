@@ -194,15 +194,22 @@ microbenchmark(
   ,times=100)
 
 
-## scaling of trt variance with N
-# library(swCRTdesign)
-
-wlsMixedPower(EffSize=.25,sigma=1,tau=.3,Cl=rep(1,10),verbose=F)
-swPwr(swDsn(rep(1,10)),distn="gaussian",n=10,mu0=1,mu1=1.25,tau=.3,eta=0,sigma=1)
 
 
 
-## use optim to find needed N
+
+## naming lists ...
+
+A <- matrix(1:4,nrow=2)
+B <- 4
+C <- 8
+
+Lst <- list(a=A,b=B,c=C)
+names(Lst) <- c('a','b','c')
+
+Lst$a
+
+
 
 
 
