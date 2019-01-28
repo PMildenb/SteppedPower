@@ -74,15 +74,15 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
   }else{
     optFunction <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
 
-      diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
+      diff <- (Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
                                            EffSize=EffSize,sigma=sigma,tau=tau,
                                            N=N,sig.level=sig.level,verbose=F)$`Power`)
       return(diff)}
 
-    N_opt <- ceiling(optim(par=sqrt(N_range[2]),optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
+    N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,
                            timepoints=timepoints,sigma=1,tau=tau,
                            Power=Power,sig.level=.05,
-                           method="Brent",lower=N_range[1],upper=N_range[2])$`par`)
+                           interval=N_range)$`root`)
 
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,SumCl=SumCl,timepoints=timepoints,
                      sigma=sigma,tau=tau,N=N_opt,sig.level=sig.level,
