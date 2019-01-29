@@ -66,6 +66,8 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
                             df_adjust=df_adjust,verbose=verbose)
   }else if(Power<0 | Power>1){
+    stop("Power needs to be between 0 and 1.")
+  }else {
     N_opt <- tryCatch(ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
                              Power=Power,df_adjust=df_adjust,sig.level=.05,interval=N_range)$root),
                       error=function(cond){
