@@ -44,17 +44,17 @@ Cov_PB <- construct_CovMat(4,3,1,0.1)
 
 ## wlsInnerFunction
 Cl <- rep(10,10)
-DesMat <- construct_DesMat(Cl=Cl)[[1]]
+DesMat <- construct_DesMat(Cl=Cl)
 DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
-wlsInnerFunction(DesMat=DesMat, EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
+wlsInnerFunction(DesMat=DesMat, EffSize=.05,
                  sigma=1,tau=.3,N=1,
                  Power=NULL,sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
-wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5,SumCl=8,timepoints=3,
+wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5,
                  sigma=1,tau=.3,N=1,
                  Power=NULL,sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
@@ -63,48 +63,17 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 
 ## optFunction
-# initialised inside of wlsMixedPower
-optFunction1 <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
-
-  diff <- (Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
-                                    EffSize=EffSize,sigma=sigma,tau=tau,
-                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
-  return(diff)}
-
-optFunction2 <- function(DesMat,EffSize,SumCl,timepoints,sigma,tau,Power,N,sig.level){
-
-  diff <- abs(Power - wlsInnerFunction(DesMat=DesMat,SumCl=SumCl,timepoints=timepoints,
-                                    EffSize=EffSize,sigma=sigma,tau=tau,
-                                    N=N,sig.level=sig.level,verbose=F)$`Power`)
-  return(diff)}
-
-
-optFunction2(DesMat=DesMat,EffSize=0.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-            sigma=1,tau=.3,N=1,
-            Power=.9,sig.level=.05)
-
-
-library(microbenchmark)
-microbenchmark({
-optim(par=1,optFunction2,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-      sigma=1,tau=.3,Power=.9,sig.level=.05,method="Brent",lower=1,upper=10000)
-},{
-uniroot(optFunction1,DesMat=DesMat,EffSize=.05,SumCl=sum(Cl),timepoints=length(Cl)+1,
-        sigma=1,tau=.3,Power=.9,sig.level=.05,interval=c(1,10000))
-},times=10)
-
 
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
-
-optFunction(DesMat=DesMat_prl,EffSize=0.5,SumCl=8,timepoints=3,
+SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
             sigma=1,tau=.3,N=1,
-            Power=.9,sig.level=.05,verbose=F)
+            Power=.9,sig.level=.05)
 
-optim(par=1,optFunction,DesMat=DesMat_prl,EffSize=.5,SumCl=8,timepoints=3,
-      sigma=1,tau=.15,Power=.9,sig.level=.05,verbose=F, method="Brent",
-      lower=1,upper=1000)
+uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
+        sigma=1,tau=.15,Power=.9,sig.level=.05,
+        lower=0.5,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
 
@@ -114,7 +83,7 @@ wlsMixedPower(EffSize = .1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
 Cl <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
 wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,EffSize=EffSize,verbose=F)
-swPwr(swDsn(Cl),distn="gaussian",1,0,EffSize,
+swCRTdesign::swPwr(swCRTdesign::swDsn(Cl),distn="gaussian",1,0,EffSize,
       tau=tau,eta=0,rho=0,sigma=sigma)
 
 wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
@@ -122,7 +91,7 @@ wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2)
 
 Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 design="parallel" ; N <- NULL ; sig.level=0.05
-wlsMixedPower(1,Cl=c(5,5),1,0.1,timepoints=2,design="parallel")
+wlsMixedPower(Cl=c(5,5),EffSize=.2,sigma=1,tau=0.1,timepoints=2,design="parallel")
 
 
 wls_parBl1 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),

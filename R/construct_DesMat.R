@@ -32,7 +32,7 @@ construct_DesMat <- function(Cl,trt_delay=NULL,design="SWD",timepoints=NULL,time
 }
 
 Cl <- c(2,2) ; trt_delay=NULL ; design="SWD" ; timepoints=NULL ; time_adjust="factor"
-
+construct_DesMat(Cl <- c(2,2),trt_delay=NULL,design="SWD",timepoints=NULL,time_adjust="factor")
 
 #' construct_trtvec
 #'
