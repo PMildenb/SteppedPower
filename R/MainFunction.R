@@ -73,8 +73,7 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
                       error=function(cond){
                                      message(paste0("Maximal N yields power below ",Power,
                                                     ". Increase argument N_range."))
-                                     return(N_range[2])}
-                     )
+                                     return(N_range[2])})
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
                             N=N_opt,sig.level=sig.level,df_adjust=df_adjust, verbose=verbose)
     out <- append(list(N=N_opt),out)
@@ -127,6 +126,9 @@ wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
   WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
+  if(df_adjust!="None"){
+    df <-
+  }
   out <- list(Power=zTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), sig.level=sig.level))
   if(verbose)
     out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=dsnmatrix,
