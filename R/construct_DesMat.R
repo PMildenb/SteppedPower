@@ -7,6 +7,7 @@
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase
+#' @param design character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
 #'
@@ -17,6 +18,37 @@
 #'
 
 construct_DesMat <- function(Cl,trt_delay=NULL,design="SWD",timepoints=NULL,time_adjust="factor"){
+
+  trt_Lst    <- construct_trtvec(Cl=Cl, trt_delay=trt_delay, design=design, timepoints=timepoints)
+  trtvec     <- trt_Lst[[1]]
+  timepoints <- trt_Lst[[2]]
+
+  timeBlk <- construct_timeadjust(Cl=Cl, timepoints=timepoints, time_adjust=time_adjust)
+
+  DesMat  <- list(cbind(trtvec,timeBlk),timepoints,sum(Cl))
+  names(DesMat) <- c("matrix","timepoints","SumCl")
+
+  return(DesMat)
+}
+
+Cl <- c(2,2) ; trt_delay=NULL ; design="SWD" ; timepoints=NULL ; time_adjust="factor"
+
+
+#' construct_trtvec
+#'
+#' @param Cl integer (vector), number of clusters per wave (in SWD)
+#' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifing the
+#' intervention effect in the first (second ... ) intervention phase
+#' @param design character, specifies the study design. Defaults to "SWD".
+#' @param timepoints numeric, scalar
+#'
+#' @return a vector trtvec
+#' @export
+#'
+#' @examples
+#'
+#'
+construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 
   SumCl         <- sum(Cl)
 
@@ -37,8 +69,10 @@ construct_DesMat <- function(Cl,trt_delay=NULL,design="SWD",timepoints=NULL,time
     if(is.null(timepoints)){
       if(is.null(trt_delay)){
         timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")
-      }else
-        timepoints <- length(trt_delay)+1 ;  message("timepoints unspecified. Defaults to length(trt_delay)+1")
+      }else{
+        timepoints <- length(trt_delay)+1
+        message("timepoints unspecified. Defaults to length(trt_delay)+1")
+      }
     }
     ctl_cluster <- rep(0,timepoints)
     trt_cluster <- c(trt_delay,rep(1,(timepoints-length(trt_delay))))
@@ -62,18 +96,33 @@ construct_DesMat <- function(Cl,trt_delay=NULL,design="SWD",timepoints=NULL,time
                      trt_delay,rep(1,(timepoints01[2]-length(trt_delay))))
     trtvec      <- c(rep(ctl_cluster,Cl[1]),rep(trt_cluster,Cl[2]))
   }
+  return(list(trtvec,timepoints))
+}
 
+
+#' construct_timeadjust
+#'
+#' @param Cl integer (vector), number of clusters per wave (in SWD)
+#' @param timepoints numeric, scalar
+#' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+construct_timeadjust <- function(Cl,timepoints,time_adjust){
+
+  SumCl <- sum(Cl)
   if(time_adjust=="factor"){
     timeBlk <- suppressWarnings(cbind(1,rbind(0,diag(1,timepoints-1))))
     timeBlk <- timeBlk[rep(1:timepoints,SumCl),]
   } else
-  if(time_adjust=="None"){
+  if(time_adjust=="none"){
     timeBlk <- matrix(rep(1,timepoints*SumCl))
+  } else
+  if(time_adjust=="linear"){
+
   }
-
-  DesMat  <- list(cbind(trtvec,timeBlk),timepoints,SumCl)
-  names(DesMat) <- c("matrix","timepoints","SumCl")
-  return(DesMat)
+  return(timeBlk)
 }
-
-
