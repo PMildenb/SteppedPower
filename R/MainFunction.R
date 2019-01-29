@@ -38,7 +38,7 @@
 
 wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,time_adjust="factor",
                           design="SWD",EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,N_range=c(1,10000),sig.level=0.05,df_adjust="None",
+                          N=NULL,Power=NULL,N_range=c(0.5,100000),sig.level=0.05,df_adjust="None",
                           verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
@@ -65,9 +65,14 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
                             df_adjust=df_adjust,verbose=verbose)
-  }else{
-    N_opt <- ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
-                             Power=Power,df_adjust=df_adjust,sig.level=.05,interval=N_range)$root)
+  }else if(Power<0 | Power>1){
+    N_opt <- tryCatch(ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
+                             Power=Power,df_adjust=df_adjust,sig.level=.05,interval=N_range)$root),
+                      error=function(cond){
+                                     message(paste0("Maximal N yields power below ",Power,
+                                                    ". Increase argument N_range."))
+                                     return(N_range[2])}
+                     )
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
                             N=N_opt,sig.level=sig.level,df_adjust=df_adjust, verbose=verbose)
     out <- append(list(N=N_opt),out)
