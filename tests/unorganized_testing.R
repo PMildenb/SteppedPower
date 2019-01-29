@@ -167,19 +167,10 @@ microbenchmark(
 
 
 
-## naming lists ...
+## try switch
+N <- rep(2,6)
+SumCl <- 6
 
-A <- matrix(1:4,nrow=2)
-B <- 4
-C <- 8
-
-Lst <- list(a=A,b=B,c=C)
-names(Lst) <- c('a','b','c')
-
-Lst$a
-
-
-
-
+Cl <- c(2,2) ; timepoints <- 3 ; time_adjust <- "none"
 
 

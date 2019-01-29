@@ -40,6 +40,8 @@ knitr::opts_chunk$set(echo = TRUE)
     * timepoints
     * SumCl
   * NAMING THINGS IS HARD !! 
+  
+  * other options for time_adjust: "linear", "periodic", 
 
 ## simulation
 
