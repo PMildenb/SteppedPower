@@ -4,7 +4,23 @@
 library(swCRTdesign)
 library(microbenchmark)
 
-## DesMat
+
+
+
+#### DesMat
+
+## construct_time_adjust
+construct_timeadjust(Cl=c(1,1,1), timepoints=4, "factor")
+construct_timeadjust(Cl=c(1,1,1), timepoints=4, "none"  )
+construct_timeadjust(Cl=c(1,1,1), timepoints=4, "linear")
+
+## costruct_trtvec
+construct_trtvec(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
+construct_trtvec(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
+construct_trtvec(Cl=c(1,1,1), trt_delay=c(.2,.4),  design="SWD",      timepoints=4)
+construct_trtvec(Cl=c(1,1),   trt_delay=c(.2,.4),  design="parallel", timepoints=4)
+
+## costruct_DesMat
 construct_DesMat(Cl=c(2,0,1))
 Des_PB <- construct_DesMat(Cl=c(2,2))
 
