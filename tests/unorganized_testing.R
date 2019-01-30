@@ -190,3 +190,14 @@ SumCl <- 6
 Cl <- c(2,2) ; timepoints <- 3 ; time_adjust <- "none"
 
 
+
+## really large designs
+
+Cl_swd <- rep(10,60) ; EffSize <- .01 ; sigma <- 1 ; tau <- 0 ; design <- "SWD"
+Cl_prl <- c(300,300) ; timepoints <- 61
+system.time(
+  wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
+system.time(
+  wlsMixedPower(Cl=Cl_prl, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau,
+                timepoints=timepoints, verbose=T))
+
