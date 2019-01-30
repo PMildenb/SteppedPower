@@ -127,7 +127,6 @@ wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
   WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
   if(df_adjust!="None"){
-    df <-
   }
   out <- list(Power=zTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), sig.level=sig.level))
   if(verbose)

@@ -52,14 +52,14 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 
   if(design=="SWD"){
     if(is.null(timepoints)) timepoints <- length(Cl) + 1
-    trt    <- matrix(0,sequences,timepoints)
+    trt    <- matrix(0,timepoints-1,timepoints)
     trt[upper.tri(trt)] <- 1
     if(!is.null(trt_delay)){
       for(i in 1:length(trt_delay)){
         diag(trt[,-(1:i)]) <- trt_delay[i]  ## doesnt work if length(delay)>=length(timepoints)-1
       }
     }
-    trtBlk <- trt[rep(1:sequences,Cl),]
+    trtBlk <- trt[rep(1:(timepoints-1),Cl),]
     trtvec <- as.numeric(t(trtBlk))
   }else
   if(design=="parallel"){
@@ -161,7 +161,6 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 construct_timeadjust <- function(Cl,timepoints,time_adjust){
 
   SumCl    <- sum(Cl)
-  totalobs <-
 
   timeBlk <- switch (time_adjust,
     factor = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
