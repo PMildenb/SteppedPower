@@ -186,7 +186,7 @@ utils::str(myTrack)
 
 ###########################################################################################
 ## there are cases where one does not gain anything by adding clusters+timepoints in swd
-## in terms of number of observations needed
+## in terms of number of individual observations needed
 
 N4 <- wlsMixedPower(Cl=rep(1,4),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
 N4*4*5
@@ -201,6 +201,17 @@ N4_3 <- wlsMixedPower(Cl=c(rep(1,4),0,0,0),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
 N4*4*8
 
 wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
+
+
+
+###########################################################################################
+## why tau := .5 and not 1 to reach 90% power?
+
+673/4
+wlsMixedPower(Cl=c(673,673),timepoints=1,EffSize=.25,design="parallel",sigma=1,tau=1, N=1)
+wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,tau=.5,N=1)
+
+
 
 
 

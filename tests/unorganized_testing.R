@@ -58,7 +58,16 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
 Cov_PB <- construct_CovMat(4,3,1,0.1)
 
 
+construct_CovMat(SumCl=10,timepoints=1,sigma=1,tau=0)
+construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
+
+
 ## wlsInnerFunction
+
+wlsInnerFunction(construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
+                 EffSize=.25,sigma=1,tau=1,N=1,sig.level=.05,verbose=F)
+
+
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
 DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
