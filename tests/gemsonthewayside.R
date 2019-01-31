@@ -171,7 +171,7 @@ prime_dist <- primes - c(0,primes[1:(length(primes)-1)])
 car::densityPlot(prime_dist)
 
 ###########################################################################################
-## special class for design matrix
+## special class for design matrix?
 
 setClass("design.matrix",contains="matrix",
          slots=c(SumCl="numeric"))
@@ -184,11 +184,23 @@ slot(myTrack, "y") <- log(slot(myTrack, "y"))
 utils::str(myTrack)
 
 
+###########################################################################################
+## there are cases where one does not gain anything by adding clusters+timepoints in swd
+## in terms of number of observations needed
 
+N4 <- wlsMixedPower(Cl=rep(1,4),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
+N4*4*5
 
+N5 <- wlsMixedPower(Cl=rep(1,5),EffSize=.1,sigma=1,tau=.1,Power=.9)$N
+N5*5*6
 
+N8 <- wlsMixedPower(Cl=rep(1,8),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
+N8*8*9
 
+N4_3 <- wlsMixedPower(Cl=c(rep(1,4),0,0,0),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
+N4*4*8
 
+wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
 
 
 
