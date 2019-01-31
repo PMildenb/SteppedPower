@@ -205,7 +205,7 @@ wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
 
 
 ###########################################################################################
-## why tau := .5 and not 1 to reach 90% power?
+## tau := .5 and not 1 to reach 90% power
 
 673/4
 wlsMixedPower(Cl=c(673,673),timepoints=1,EffSize=.25,design="parallel",sigma=1,tau=1, N=1)
@@ -214,5 +214,7 @@ wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,t
 
 
 
+SteppedPower::wlsMixedPower(Cl=c(6,0),EffSize=.25,sigma=1,tau=1,N=1)
+construct_DesMat(c(6,0))
 
 
