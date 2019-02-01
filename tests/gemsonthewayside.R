@@ -37,6 +37,33 @@ swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
 ## KidSafe Setting Cl
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",
       n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.00131, rho=-.25, retDATA=FALSE)
+swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
+      n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
+
+tauKid <- 0.0044
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="none",
+             tau=tauKid,trt_delay=NULL, N=250,verbose=F)
+wlsGlmmPower(Cl=c(6,6),timepoints=7,trt_delay=NULL,design="parallel", time_adjust="none",
+             mu0=0.03, mu1=0.02, tau=tauKid,N=250,verbose=F)
+wlsGlmmPower(Cl=c(6,6),timepoints=1,trt_delay=NULL,design="parallel", time_adjust="none",
+             mu0=0.03, mu1=0.02, tau=tauKid,N=1750,verbose=F)
+
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
+wlsGlmmPower(Cl=c(3,3,0,0,3,3),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
+wlsGlmmPower(Cl=c(5,1,0,0,1,5),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
+wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=T)
+
+wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=0, tau=0.00262,N=250,verbose=F)
+wlsGlmmPower(Cl=c(6,6),timepoints=c(7),design="parallel_baseline",
+             mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
+
+
+sd <- sqrt( 0.00262^2 + 0.025*.975/250 )
+pwr::pwr.t.test(d=0.01/sd,n=6)
+
+sd <- sqrt( 0.00262^2 + 0.025*.975/1750 )
+pwr::pwr.t.test(d=0.01/sd,n=6)
+
 
 
 ########################################################################################
@@ -205,7 +232,8 @@ wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
 
 
 ###########################################################################################
-## tau := .5 and not 1 to reach 90% power
+## tau := .5 and not 1 to reach 90% power :)
+## theory: quotient of taus is sqrt of quotient of timepoints
 
 673/4
 wlsMixedPower(Cl=c(673,673),timepoints=1,EffSize=.25,design="parallel",sigma=1,tau=1, N=1)
@@ -216,5 +244,14 @@ wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,t
 
 SteppedPower::wlsMixedPower(Cl=c(6,0),EffSize=.25,sigma=1,tau=1,N=1)
 construct_DesMat(c(6,0))
+
+
+###########################################################################################
+## actual power of a t-test instead of a z-test with 80% power
+actual.power <- function(df,zpower=0.8) {
+  eff   <- qnorm(zpower)+qnorm(.975)
+  pnorm(eff-qnorm(.975))
+  pt(eff - qt(.975,df),df)
+}
 
 
