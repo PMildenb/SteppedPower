@@ -28,7 +28,7 @@
 
 
 wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoints=NULL,
-                         family="binomial",N=NULL,sig.level=0.05,delay=NULL,
+                         family="binomial",N=NULL,sig.level=0.05,trt_delay=NULL,time_adjust="factor",
                          verbose=TRUE){
 
   if(is.null(timepoints)){
@@ -36,12 +36,13 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
     if(design=="parallel"){ timepoints  <- 1            } else
     if(design=="parallel_baseline") {timepoints <- 2    }
   }
-  DesMat <- construct_DesMat(Cl=Cl,delay=delay,design=design,timepoints=timepoints)
+  DesMat <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
+                             timepoints=timepoints,time_adjust=time_adjust)$matrix
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
 
   if(family =="binomial"){
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
-    print(paste("The assumed odds ratio is",round(OR,4)))
+    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
 
     sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
     sigtmp   <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
@@ -52,7 +53,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
     tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
-    wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, delay=delay,
+    wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, trt_delay=trt_delay,
                   design=design, EffSize=EffSize, sigma=Sigmas,tau=Taus,
                   N=N,Power=NULL,sig.level=sig.level,verbose=verbose)
   }
