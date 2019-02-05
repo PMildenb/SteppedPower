@@ -41,11 +41,11 @@ swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
       n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 
 tauKid <- 0.0044
-wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="none",
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="linear",
              tau=tauKid,trt_delay=NULL, N=250,verbose=F)
-wlsGlmmPower(Cl=c(6,6),timepoints=7,trt_delay=NULL,design="parallel", time_adjust="none",
+wlsGlmmPower(Cl=c(6,6),timepoints=7,trt_delay=NULL,design="parallel", time_adjust="factor",
              mu0=0.03, mu1=0.02, tau=tauKid,N=250,verbose=F)
-wlsGlmmPower(Cl=c(6,6),timepoints=1,trt_delay=NULL,design="parallel", time_adjust="none",
+wlsGlmmPower(Cl=c(6,6),timepoints=1,trt_delay=NULL,design="parallel", time_adjust="factor",
              mu0=0.03, mu1=0.02, tau=tauKid,N=1750,verbose=F)
 
 wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
@@ -65,6 +65,15 @@ sd <- sqrt( 0.00262^2 + 0.025*.975/1750 )
 pwr::pwr.t.test(d=0.01/sd,n=6)
 
 
+KidSafe     <- wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="factor",
+                        tau=0.00262,trt_delay=.5, N=250,verbose=T)
+KidSafe_lin <- wlsMixedPower(Cl=c(2,2,2,2,2,2),EffSize=.01,sigma=sqrt(.025*.975), time_adjust="factor",
+                        tau=0.00262,trt_delay=.5, N=250,verbose=T)
+KidSafe[[1]]
+KidSafe_lin[[1]]
+
+plot_wlsPower(KidSafe)[[1]]
+plot_wlsPower(KidSafe_lin)[[1]]
 
 ########################################################################################
 ## Plot von gmds vortrag reloaded
