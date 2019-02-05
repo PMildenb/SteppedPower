@@ -25,6 +25,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * uniroot prduces error if max N_range doesnt reach target power. More informative feedback needed. **DONE**
 
+* 
+
 ## optFunction
 
 * does not work for parallel designs! but why ??  **done**
@@ -32,6 +34,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ## non-normal-wrapper
 
 * add design selection option **DONE**
+
+* doesn't work for time_adjust=none (!!)
+* doesn't work for parallel_baseline. But why? ... passing of timepoints 
 
 ## construct_CovMat
 
