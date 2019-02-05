@@ -36,6 +36,8 @@ construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7))
 construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel")
 construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline")
 
+construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="none")
+construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
 
 ## CovBlk
 timepoints=3; sigma=2; tau=rep(2,3)
@@ -64,8 +66,8 @@ construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
 
 ## wlsInnerFunction
 
-wlsInnerFunction(construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
-                 EffSize=.25,sigma=1,tau=1,N=1,sig.level=.05,verbose=F)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
+                 EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
 
 
 Cl <- rep(10,10)
@@ -73,15 +75,13 @@ DesMat <- construct_DesMat(Cl=Cl)
 DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
-wlsInnerFunction(DesMat=DesMat, EffSize=.05,
-                 sigma=1,tau=.3,N=1,
-                 Power=NULL,sig.level=.05,verbose=F)
+wlsInnerFunction(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
+                 Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
-wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5,
-                 sigma=1,tau=.3,N=1,
-                 Power=NULL,sig.level=.05,verbose=F)
+wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
+                 Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
               EffSize=.5,sigma=1,tau=.3,verbose=F)
@@ -94,10 +94,10 @@ wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
 SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
             sigma=1,tau=.3,N=1,
-            Power=.9,sig.level=.05)
+            Power=.9,df_adjust="none",sig.level=.05)
 
 uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
-        sigma=1,tau=.15,Power=.9,sig.level=.05,
+        sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
@@ -131,7 +131,7 @@ wls_swd$Power
 
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
-swPwr(swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,mu0=0,mu1=.1,tau=.3,eta=0,sigma=1)
+swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,mu0=0,mu1=.1,tau=.3,eta=0,sigma=1)
 
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
@@ -162,9 +162,9 @@ swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 
 ## plot_wlsPower
-plot_wlsPower(wlsMixedPower(1,Cl=c(2,5),1,0.1,family="gaussian",
-                            timepoints=NULL,design="parallel",verbose=T))
-plot_wlsPower(wls_parBl2)[[1]]
+plot_wlsPower(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
+                            timepoints=5,design="parallel",verbose=T))
+
 
 
 
