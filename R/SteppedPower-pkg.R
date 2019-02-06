@@ -2,7 +2,7 @@
 #'
 #' Assesses Power of mixed models for the evaluation of a intervention.
 #'
-#' @importFrom stats coef family gaussian optim pnorm qnorm rbinom rnorm uniroot
+#' @importFrom stats coef family gaussian optim pnorm qnorm rbinom rnorm uniroot pt qt
 #' @import Matrix
 #' @importFrom ggplot2 aes_string geom_point geom_tile ggplot scale_fill_gradient2
 #' theme_minimal
