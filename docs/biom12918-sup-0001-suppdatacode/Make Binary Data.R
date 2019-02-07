@@ -4,7 +4,7 @@
 
 # Feb 2018
 
-# Ref: Qaqish, B. F. (2003). A family of multivariate binary distributions 
+# Ref: Qaqish, B. F. (2003). A family of multivariate binary distributions
 # for simulating correlated binary variables. Biometrika 90, 455-463.
 
 # INPUT
@@ -13,18 +13,18 @@
 # t: Number of periods
 # delta: Effect size in log odds ratio
 # beta: Vector of period effects
-# alpha: Vector of correlations 
+# alpha: Vector of correlations
 #        alpha_0=within period correlation
 #        alpha_1=inter-period correlation
 #        alpha_2=within-individual correlation
 #############################################################
 
 binGEN<-function(n,m,t,delta,beta,alpha){
-  
+
   ########################################################
   # Create block exchangeable correlation matrix.
   ########################################################
-  
+
   bxch<-function(alpha){
     rho<-alpha[1]
     nu<-alpha[2]
@@ -35,15 +35,15 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     bm4<-nu*matrix(1,t*m,t*m)
     return(bm1+bm2+bm3+bm4)
   }
-  
+
   ########################################################
   # a[1:n, 1:n] is the input covariance matrix of Y[1:n].
-  # Returns  b[1:n,1:n] such that b[1:t-1, t] are the 
+  # Returns  b[1:n,1:n] such that b[1:t-1, t] are the
   # slopes for regression of y[t] on y[1:t-1], for t=2:n.
   # Diagonals and lower half of b[,] are copied from a[,].
   # a[,] is assumed +ve definite symmetric, not checked.
   ########################################################
-  
+
   allreg<-function(a){
     n<-nrow(a)
     b<-a
@@ -56,17 +56,17 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     }
     return(b)
   }
-  
+
   ########################################################
   # returns variance matrix of binary variables with mean
   # vector u[] and corr matrix r[,].
   ########################################################
-  
+
   cor2var<-function(r,u){
     s<-diag(sqrt(u*(1-u)))
     return(s%*%r%*%s)
   }
-  
+
   ########################################################
   # r[1:n, 1:n] is the corr mtx
   # u[1:n] is the mean of a binary vector
@@ -75,7 +75,7 @@ binGEN<-function(n,m,t,delta,beta,alpha){
   # return 0 if ok
   # return 1 if out of range
   ########################################################
-  
+
   chkbinc<-function(r,u){
     n<-length(u)
     s<-sqrt(u*(1-u))
@@ -88,17 +88,17 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     }
     return(0)
   }
-  
+
   ########################################################
   # Multivariate Binary Simulation by Linear Regression.
   # Simulate a single vector.
-  # Returns a simulated binary random vector y[1:n] with mean 
-  # u[1:n] and regression coefs matrix b[1:n,1:n] (obtained 
+  # Returns a simulated binary random vector y[1:n] with mean
+  # u[1:n] and regression coefs matrix b[1:n,1:n] (obtained
   # by calling allreg() above).
   # y[] and u[] are column vectors.
   # Returns -1 if the cond. linear family not reproducible
   ########################################################
-  
+
   mbslr1<-function(b,u){
     n<-nrow(b)
     y<-rep(-1,n)
@@ -115,17 +115,17 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     }
     return(y)
   }
-  
+
   ########################################################
   # Multivariate Binary Simulation by Linear Regression.
   # Simulate m independent columns (stored in columns).
   # Returns a simulated binary random matrix y[1:n, 1:m].
-  # Each column will be a binary random vector y[1:n] with mean 
-  # u[1:n] and regression coefs matrix b[1:n,1:n] (obtained 
+  # Each column will be a binary random vector y[1:n] with mean
+  # u[1:n] and regression coefs matrix b[1:n,1:n] (obtained
   # by calling allreg() above).
   # u[] is a column vector.
   ########################################################
-  
+
   mbslrm<-function(b,u,m){
     n<-nrow(b)
     y<-matrix(-1,n,m)
@@ -134,12 +134,12 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     }
     return(y)
   }
-  
+
   # Create treatment sequences
   trtSeq<-matrix(0,t-1,t)
   trtSeq[upper.tri(trtSeq)]<-1
   g<-n/(t-1)                          # number of clusters per step
-  
+
   # Simulate correlated binary outcomes
   y<-NULL
   r<-bxch(alpha)
@@ -154,7 +154,7 @@ binGEN<-function(n,m,t,delta,beta,alpha){
     b<-allreg(v)                      # prepare coeffs
     y<-cbind(y,mbslrm(b,u,g))         # simulate data matrix
   }
-  
+
   # Return simulated data matrix
   return(y)
 }
@@ -185,7 +185,21 @@ ind<-rep(rep(1:m,t),n)             # create individual id
 period<-rep(rep(1:t,each=m),n)     # create period label
 
 simdata_bin<-data.frame(cbind(y,ind,cluster,period,X))
-setwd("D:/Research/CRT Methodology/SWDSampSize/Latex/Submission/R Code")
-write.csv(simdata_bin, file = "simdata_bin.csv", row.names = FALSE)
+# setwd("D:/Research/CRT Methodology/SWDSampSize/Latex/Submission/R Code")
+# write.csv(simdata_bin, file = "simdata_bin.csv", row.names = FALSE)
+
+
+### pm tests
+n<-250
+m<-12
+t<-5
+delta<-log(.67)
+# beta=cumsum(c(log(0.65/(1-0.65)),-0.1,-0.1/2,-0.1/(2^2),-0.1/(2^3)))
+beta <- rep(log(.03/.97),t)
+alpha<-c(0.03,0.015,0.2)
+# Generate outcome
+y<-binGEN(n,m,t,delta,beta,alpha)
+y<-c(y)
+mean(y)
 
 
