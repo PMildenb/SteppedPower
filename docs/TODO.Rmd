@@ -65,4 +65,4 @@ knitr::opts_chunk$set(echo = TRUE)
 * inflated test size (esp. for smaller number of clusters)
 * try to find balance 
 * maybe hinting at GEE approaches?
-* Visualisations of cluster influences -> 
+* Visualisations of cluster influences -> in pkg already begun

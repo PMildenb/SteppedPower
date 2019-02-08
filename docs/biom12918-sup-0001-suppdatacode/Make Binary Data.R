@@ -189,17 +189,35 @@ simdata_bin<-data.frame(cbind(y,ind,cluster,period,X))
 # write.csv(simdata_bin, file = "simdata_bin.csv", row.names = FALSE)
 
 
+
+#############################################################################
 ### pm tests
-n<-250
+
+n<-8
 m<-12
 t<-5
-delta<-log(.67)
+delta<-log(.67) ## why log and not logit used?
 # beta=cumsum(c(log(0.65/(1-0.65)),-0.1,-0.1/2,-0.1/(2^2),-0.1/(2^3)))
 beta <- rep(log(.03/.97),t)
 alpha<-c(0.03,0.015,0.2)
 # Generate outcome
 y<-binGEN(n,m,t,delta,beta,alpha)
 y<-c(y)
-mean(y)
+mean(y);length(y)
+
+X<-NULL
+trtSeq<-matrix(0,t-1,t)
+trtSeq[upper.tri(trtSeq)]<-1
+g<-n/(t-1) # number of clusters per step
+for(i in 1:(t-1)){
+  for(j in 1:g){
+    X<-rbind(X,kronecker(cbind(diag(t),trtSeq[i,]),rep(1,m)))}
+}
+colnames(X)<-c("period1","period2","period3","period4","period5","treatment")
+cluster<-rep(1:n,each=t*m)         # create cluster id
+ind<-rep(rep(1:m,t),n)             # create individual id
+period<-rep(rep(1:t,each=m),n)     # create period label
+
+simdata_bin<-data.frame(cbind(y,ind,cluster,period,X))
 
 
