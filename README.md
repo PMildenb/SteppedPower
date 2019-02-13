@@ -1,1 +1,1 @@
-Calculation of Power in Stepped Wedge Designs for various covariance matrices.
+power and sample size calculation in mixed model settings with a special focus on stepped wedge designs
