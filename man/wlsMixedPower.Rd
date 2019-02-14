@@ -5,9 +5,10 @@
 \title{wlsMixedPower}
 \usage{
 wlsMixedPower(Cl = NULL, timepoints = NULL, DesMat = NULL,
-  delay = NULL, design = "SWD", EffSize, sigma, tau, eta = NULL,
-  rho = NULL, N = NULL, Power = NULL, N_range = c(1, 1000),
-  sig.level = 0.05, verbose = FALSE)
+  trt_delay = NULL, time_adjust = "factor", design = "SWD", EffSize,
+  sigma, tau, eta = NULL, rho = NULL, N = NULL, Power = NULL,
+  N_range = c(0.5, 1e+05), sig.level = 0.05, df_adjust = "None",
+  verbose = FALSE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD),
@@ -19,8 +20,10 @@ If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for paralle
 
 \item{DesMat}{matrix of dimension ... , if supplied, timepoints and Cl are ignored.}
 
-\item{delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
-intervention effect in the first (second ... ) intervention phase  *not implemented*}
+\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+intervention effect in the first (second ... ) intervention phase}
+
+\item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
 \item{design}{character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".}
 
@@ -34,13 +37,15 @@ intervention effect in the first (second ... ) intervention phase  *not implemen
 
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
 
-\item{N}{Integer,}
+\item{N}{integer, number of individuals per cluster.}
 
-\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned **work in progress**}
+\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 
 \item{N_range}{numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
+
+\item{df_adjust}{character, use t-test ? If yes, what df approx **wording!!**}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }

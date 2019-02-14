@@ -6,7 +6,8 @@
 \usage{
 wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
   design = "SWD", timepoints = NULL, family = "binomial", N = NULL,
-  sig.level = 0.05, delay = NULL, verbose = TRUE)
+  sig.level = 0.05, trt_delay = NULL, time_adjust = "factor",
+  verbose = TRUE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
@@ -29,12 +30,12 @@ wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
-intervention effect in the first (second ... ) intervention phase *not implemented*}
-
 \item{verbose}{Logical}
 
 \item{Power}{Target power. If between 0 and 1, function returns needed `N`}
+
+\item{delay}{numeric (possibly vector), value between 0 and 1 specifing the
+intervention effect in the first (second ... ) intervention phase *not implemented*}
 }
 \value{
 as `wlsMixedPower`

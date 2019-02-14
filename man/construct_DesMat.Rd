@@ -10,7 +10,10 @@ construct_DesMat(Cl, trt_delay = NULL, design = "SWD",
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{trt_delay}{*implemented for swd, parallel and parallel w baseline*}
+\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+intervention effect in the first (second ... ) intervention phase}
+
+\item{design}{character, specifies the study design. Defaults to "SWD".}
 
 \item{timepoints}{numeric, scalar}
 
