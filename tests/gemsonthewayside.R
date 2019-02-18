@@ -263,4 +263,3 @@ actual.power <- function(df,zpower=0.8) {
   pt(eff - qt(.975,df),df)
 }
 
-

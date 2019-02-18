@@ -66,9 +66,20 @@ construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
 
 ## wlsInnerFunction
 
+## some tests for denomDF adjustment:
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="none",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="containment",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
+                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+
+
+
 wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
                  EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
-
 
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
@@ -85,6 +96,7 @@ wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
               EffSize=.5,sigma=1,tau=.3,verbose=F)
+
 
 
 ## optFunction
