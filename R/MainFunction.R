@@ -25,7 +25,7 @@
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
-#' @param df_adjust character, use t-test ? If yes, what df approx **wording!!**
+#' @param df_adjust character, one of the following: **not implemented**
 #' @param verbose logical, should the function return the design and covariance matrix?
 #'
 #' @return a list. First element is the power,
@@ -111,6 +111,7 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #' @param tau numeric, standard deviation of random intercepts
 #' @param N integer, number of individuals per cluster.
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
+#' @param df_adjust character, one of the following: **not implemented**
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
 
@@ -126,11 +127,19 @@ wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
   WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
-  if(df_adjust!="None"){
+  df <- switch(df_adjust,
+               "none"           = Inf,
+               "between-within" = SumCl - rankMatrix(dsnmatrix),
+               "containment"    = dim(dsnmatrix)[1] - SumCl,
+               "residual"       = dim(dsnmatrix)[1] - rankMatrix(dsnmatrix))
+  if(df<3){
+    df <- Inf
+    warning(paste0(df_adjust,"-method not applicable. No DDF adjustment used."))
   }
-  out <- list(Power=zTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), sig.level=sig.level))
+
+  out <- list(Power=tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level))
   if(verbose)
-    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=dsnmatrix,
+    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=dsnmatrix, denomDF=df,
                             First_CovarianceBlk=CovMat[1:timepoints,1:timepoints ]))
   return(out)
 }
@@ -189,7 +198,7 @@ tTestPwr <- function(d,se,df,sig.level=0.05){
 #' zTestSampSize
 #'s
 #' calculate needed sample size for given target power, effect size and individual variance
-#' does it work ? i fear not (gotta think about it ...)
+#' does it work ? i fear not (got to think about it ...)
 #'
 #' @param d numeric, raw effect
 #' @param sd numeric, standard deviaton (on individual level)
