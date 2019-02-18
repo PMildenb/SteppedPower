@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * uniroot prduces error if max N_range doesnt reach target power. More informative feedback needed. **DONE**
 
-* 
+* for samp size: think about what really needs to be kept constant and what should be able to vary (eg icc and tau)
 
 ## optFunction
 
