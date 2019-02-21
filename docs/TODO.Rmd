@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # general
 
 * Nicer names needed !!
+* New wrapper that interprets timepoints as individuals (for non-longitutinal settings)
 
 ## compare_designs
 
@@ -36,7 +37,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * add design selection option **DONE**
 
 * doesn't work for time_adjust=none (!!)
-* doesn't work for parallel_baseline. But why? ... passing of timepoints 
+* doesn't work for parallel_baseline. But why? ... passing of timepoints !
 
 ## construct_CovMat
 
