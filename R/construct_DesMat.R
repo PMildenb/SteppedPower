@@ -165,7 +165,8 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust){
   timeBlk <- switch (time_adjust,
     factor = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
     none   = matrix(rep(1,timepoints*SumCl)),
-    linear = matrix(rep(1:timepoints/timepoints,SumCl))
+    linear = matrix(rep(1:timepoints/timepoints,SumCl)),
+    period = cbind(sin(0:(timepoints-1)*(2*pi/timepoints)),cos(0:(timepoints-1)*(2*pi/timepoints)))
   )
 
   return(timeBlk)
