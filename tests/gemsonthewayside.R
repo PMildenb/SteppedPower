@@ -107,22 +107,22 @@ swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.4,.03),eta=0,sigma=s
 # 0.186691687   0.005011320   0.004970041
 
 ## linear function can reproduce the linear results
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
+wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
 wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
 
 
 ## binomial wrapper fits nicely in between
 ## exp for tau=0
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0,verbose=F)
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0,verbose=F)
-wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200,verbose=F)
+wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0,verbose=F)
+wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0,verbose=F)
+wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200,verbose=F,df_adjust = "none")
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.025,0.025))
 swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.03,0.03))
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0,eta=0) ## swPwr and wlsGlmm are ridiciously close
 
 ## for tau =!= 0
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025),verbose=F)
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ),verbose=F)
+wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025),verbose=F)
+wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ),verbose=F)
 wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200,verbose=F) ##
 swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=tau.fct(.4,.0275),eta=0)
 

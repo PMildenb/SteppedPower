@@ -23,7 +23,10 @@ Für eine Analyseart deiner Wahl, die das alpha=0.05 hält.
 
 
 ```{r}
+library(swCRTdesign)
 swPwr(swDsn(c(3,4,3)), distn="binomial", 
+        n=38, mu0=0.33, mu1=0.22, tau=0.04, eta=0, rho=0, alpha=0.05, retDATA=FALSE)
+swPwr(swDsn(c(4,2,4)), distn="binomial", 
         n=38, mu0=0.33, mu1=0.22, tau=0.04, eta=0, rho=0, alpha=0.05, retDATA=FALSE)
 ```
 
@@ -31,7 +34,7 @@ swPwr(swDsn(c(3,4,3)), distn="binomial",
 # Power mit unterschiedlichern Varianzen zwischen Kontrolle/Intervention
 
 ```{r}
-wlsGlmmPower(Cl=c(3,4,3),mu0=0.33,mu1=0.22,tau=0.04,N=38,verbose=F)
+wlsGlmmPower(Cl=c(3,4,3),mu0=0.33,mu1=0.22,tau=0.04,N=38,verbose=F,df=12)
 ```
 Dabei ist der zufэllige Clustereffekt als normalverteilt aus dem linearen Prädiktor interpretiert,
 dadurch ist tau unter Kontrolle und unter Intervention gleich.

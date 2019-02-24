@@ -38,7 +38,7 @@
 
 wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,time_adjust="factor",
                           design="SWD",EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,N_range=c(0.5,100000),sig.level=0.05,df_adjust="None",
+                          N=NULL,Power=NULL,N_range=c(0.5,100000),sig.level=0.05,df_adjust="none",
                           verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")

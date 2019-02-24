@@ -12,6 +12,7 @@
 #' @param N Number of Individuals per cluster/period
 #' @param Power Target power. If between 0 and 1, function returns needed `N`
 #' @param sig.level numeric, significance level, defaults to 0.05
+#' @param df_adjust character, one of the following: **not implemented**
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
 #' intervention effect in the first (second ... ) intervention phase *not implemented*
 #' @param verbose Logical
@@ -29,7 +30,7 @@
 
 wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoints=NULL,
                          family="binomial",N=NULL,sig.level=0.05,trt_delay=NULL,time_adjust="factor",
-                         verbose=TRUE){
+                         df_adjust="none",verbose=TRUE){
 
   if(is.null(timepoints)){
     if(design=="SWD"){      timepoints  <- length(Cl)+1 } else
@@ -55,7 +56,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
 
     wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, trt_delay=trt_delay,
                   design=design, EffSize=EffSize, sigma=Sigmas,tau=Taus,
-                  N=N,Power=NULL,sig.level=sig.level,verbose=verbose)
+                  N=N,Power=NULL,df_adjust=df_adjust,sig.level=sig.level,verbose=verbose)
   }
 }
 
