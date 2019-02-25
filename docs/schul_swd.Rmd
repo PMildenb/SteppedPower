@@ -10,17 +10,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Vorgedanken
-Schulfehltage $s_h$ im Halbjahr $h$ als Summe der 
+Schulfehltage $s_h$ im Halbjahr $h$ darstellbar als Summe der 
 $j_{ih}$, Fehltage der Jahrgaenge $i$ im Halbjahr $h$.
+Dabei entspricht $i \in \{1,\ldots,5\}$ dem Jahrgang im zweiten Studienjahr, und 
+$h \in \{1,\ldots,4\}$ den Halbjahren ab Studienbeginn.
 $$
-\left(\begin{array}{c}
+\underbrace{\left(\begin{array}{c}
 s_1 \\ s_2 \\ s_3 \\ s_4 
-\end{array}\right) =
+\end{array}\right)}_{=:S} =
 \underbrace{\left(\begin{array}{cccccccccccccccc}
-0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 \\
-1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 
+0 &0& 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 &0\\
+0 &0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 \\
+1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0&0\\
+0 & 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0
 \end{array}\right)}_{=:X}
 \cdot
 \underbrace{\left(\begin{array}{c}
@@ -29,26 +31,52 @@ j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
 \end{array}\right)}_{=:J}
 $$ 
 
-## Korrelation von $J$
+## Kovarianz von $J$ (in random-effects-Denkweise)
+
+Gesamtvarianz auf Ebene Jahrgang pro Halbjahr laesst sich zerlegen in:
+
+* $\Sigma_0$ := Schuleffekt (ein "random intercept" auf Clusterebene)
+* $\Sigma_1$ := Jahrgangseffekt (d.h. Kohorteneffekt)
+* $\Sigma_2$ := Intra-Schuljahrseffekt (?) (denkbar, aber ich weiss nicht genau, wie ich mir den vorstellen sollte..)
+* $\Sigma_3$ := residuelle Varianz
+
+Schul- und Jahrgangseffekt sollten sich aus ikids am ehesten schaetzen lassen, diese erscheinen mir auch als die sinnigsten ...
 
 $$
-\text{Cor}(J)=
+\text{Cov}(J)=
 \left(\begin{array}{cccccccccccccccc}
-1 & \alpha_0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-\alpha_0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1
+\Sigma_0 + \Sigma_1 + \Sigma_3 &\Sigma_0+ \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1\\
+\Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3
 \end{array}\right)
 $$
+
+## Kovarianz von $S$
+Die Kovarianzmatrix zu einem Cluster (also auf Schulebene) saehe dann so aus:
+$$
+\text{Cov}(S)= X \,\, \text{Cov}(J) \,\, X' =
+\left(\begin{array}{cccc}
+16\Sigma_0+4\Sigma_1+4\Sigma_3 & 16\Sigma_0+4\Sigma_1 & 16\Sigma_0+3\Sigma_1& 16\Sigma_0+3\Sigma_1\\
+16\Sigma_0+4\Sigma_1 & 16\Sigma_0+4\Sigma_1+4\Sigma_3 & 16\Sigma_0+3\Sigma_1& 16\Sigma_0+3\Sigma_1\\
+16\Sigma_0+3\Sigma_1& 16\Sigma_0+3\Sigma_1& 16\Sigma_0+4\Sigma_1+4\Sigma_3 & 16\Sigma_0+4\Sigma_1 \\
+16\Sigma_0+3\Sigma_1& 16\Sigma_0+3\Sigma_1& 16\Sigma_0+4\Sigma_1 & 16\Sigma_0+4\Sigma_1+4\Sigma_3 \\
+\end{array}\right)
+$$
+Sieht sogar noch verhaeltnismaessig brav aus. Was denkst du?
+
+
+p.s. `SteppedPower` koennte mit so einer Kovarianzstruktur umgehen :) 
+

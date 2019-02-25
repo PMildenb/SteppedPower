@@ -11,7 +11,7 @@
 
 <meta name="author" content="PM" />
 
-<meta name="date" content="2019-02-24" />
+<meta name="date" content="2019-02-25" />
 
 <title>schul_swd</title>
 
@@ -124,22 +124,22 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">schul_swd</h1>
 <h4 class="author"><em>PM</em></h4>
-<h4 class="date"><em>2019-02-24</em></h4>
+<h4 class="date"><em>2019-02-25</em></h4>
 
 </div>
 
 
 <div id="vorgedanken" class="section level2">
 <h2>Vorgedanken</h2>
-<p>Schulfehltage <span class="math inline">\(s_h\)</span> im Halbjahr <span class="math inline">\(h\)</span> als Summe der <span class="math inline">\(j_{ih}\)</span>, Fehltage der Jahrgaenge <span class="math inline">\(i\)</span> im Halbjahr <span class="math inline">\(h\)</span>. <span class="math display">\[
-\left(\begin{array}{c}
+<p>Schulfehltage <span class="math inline">\(s_h\)</span> im Halbjahr <span class="math inline">\(h\)</span> darstellbar als Summe der <span class="math inline">\(j_{ih}\)</span>, Fehltage der Jahrgaenge <span class="math inline">\(i\)</span> im Halbjahr <span class="math inline">\(h\)</span>. Dabei entspricht <span class="math inline">\(i \in \{1,\ldots,5\}\)</span> dem Jahrgang im zweiten Studienjahr, und <span class="math inline">\(h \in \{1,\ldots,4\}\)</span> den Halbjahren ab Studienbeginn. <span class="math display">\[
+\underbrace{\left(\begin{array}{c}
 s_1 \\ s_2 \\ s_3 \\ s_4 
-\end{array}\right) =
+\end{array}\right)}_{=:S} =
 \underbrace{\left(\begin{array}{cccccccccccccccc}
-0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
-1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 
+0 &amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0\\
+0 &amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 \\
+1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0\\
+0 &amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0&amp;0&amp; 1 &amp;0&amp;0
 \end{array}\right)}_{=:X}
 \cdot
 \underbrace{\left(\begin{array}{c}
@@ -148,29 +148,50 @@ j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
 \end{array}\right)}_{=:J}
 \]</span></p>
 </div>
-<div id="korrelation-von-j" class="section level2">
-<h2>Korrelation von <span class="math inline">\(J\)</span></h2>
+<div id="kovarianz-von-j-in-random-effects-denkweise" class="section level2">
+<h2>Kovarianz von <span class="math inline">\(J\)</span> (in random-effects-Denkweise)</h2>
+<p>Gesamtvarianz auf Ebene Jahrgang pro Halbjahr laesst sich zerlegen in:</p>
+<ul>
+<li><span class="math inline">\(\Sigma_0\)</span> := Schuleffekt (ein “random intercept” auf Clusterebene)</li>
+<li><span class="math inline">\(\Sigma_1\)</span> := Jahrgangseffekt (d.h. Kohorteneffekt)</li>
+<li><span class="math inline">\(\Sigma_2\)</span> := Intra-Schuljahrseffekt (?) (denkbar, aber ich weiss nicht genau, wie ich mir den vorstellen sollte..)</li>
+<li><span class="math inline">\(\Sigma_3\)</span> := residuelle Varianz</li>
+</ul>
+<p>Schul- und Jahrgangseffekt sollten sich aus ikids am ehesten schaetzen lassen, diese erscheinen mir auch als die sinnigsten …</p>
 <p><span class="math display">\[
-\text{Cor}(J)=
+\text{Cov}(J)=
 \left(\begin{array}{cccccccccccccccc}
-1 &amp; \alpha_0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-\alpha_0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
-0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1
+\Sigma_0 + \Sigma_1 + \Sigma_3 &amp;\Sigma_0+ \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1\\
+\Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3
 \end{array}\right)
 \]</span></p>
+</div>
+<div id="kovarianz-von-s" class="section level2">
+<h2>Kovarianz von <span class="math inline">\(S\)</span></h2>
+<p>Die Kovarianzmatrix zu einem Cluster (also auf Schulebene) saehe dann so aus: <span class="math display">\[
+\text{Cov}(S)= X \,\, \text{Cov}(J) \,\, X' =
+\left(\begin{array}{cccc}
+16\Sigma_0+4\Sigma_1+4\Sigma_3 &amp; 16\Sigma_0+4\Sigma_1 &amp; 16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+3\Sigma_1\\
+16\Sigma_0+4\Sigma_1 &amp; 16\Sigma_0+4\Sigma_1+4\Sigma_3 &amp; 16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+3\Sigma_1\\
+16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+4\Sigma_1+4\Sigma_3 &amp; 16\Sigma_0+4\Sigma_1 \\
+16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+3\Sigma_1&amp; 16\Sigma_0+4\Sigma_1 &amp; 16\Sigma_0+4\Sigma_1+4\Sigma_3 \\
+\end{array}\right)
+\]</span> Sieht sogar noch verhaeltnismaessig brav aus. Was denkst du?</p>
+<p>p.s. <code>SteppedPower</code> koennte mit so einer Kovarianzstruktur umgehen :)</p>
 </div>
 
 

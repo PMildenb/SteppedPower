@@ -4,7 +4,7 @@
 `SteppedPower` offers options for power calculation as well as sample size calculation (by the use of uniroot() ) for
 longitudinal mixed model settings. All calculations are oracle estimates i.e. assume random effect variances to be known (or guessed) in advance.
 A stepped wedge design is thought as a mixed model:
-$$y_{ij}= \mu + \alpha_i + X (\theta_{ij} + \c_j) + b_j + e_{ij}$$
+$$y_{ij}= \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ij}$$
 where  
 * $y_{ij}$ is the mean response in cluster $j$ at time $i$
 * $\mu$ is a grand total mean
