@@ -80,3 +80,20 @@ Sieht sogar noch verhaeltnismaessig brav aus. Was denkst du?
 
 p.s. `SteppedPower` koennte mit so einer Kovarianzstruktur umgehen :) 
 
+## power in wlsMixed
+```{r}
+Sig0 <- .1 
+Sig1 <- .2
+Sig3 <- .2
+
+CovBlk1 <- matrix(16*Sig0+4*Sig1,nrow=2,ncol=2)
+CovBlk2 <- matrix(16*Sig0+3*Sig1,nrow=2,ncol=2)
+
+CovBlk <- cbind(rbind(CovBlk1,CovBlk2),rbind(CovBlk2,CovBlk1))
+diag(CovBlk) <- diag(CovBlk)+4*Sig3
+
+wlsMixedPower(Cl=c(3,3,3), EffSize=.5, sigma=1,tau=1,CovBlk=CovBlk)
+```
+
+
+

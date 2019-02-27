@@ -1,3 +1,4 @@
+
 #' construct_CovBlk
 #'
 #' constructs the covariance matrix for multiple measurements of one cluster
@@ -49,36 +50,46 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 #'                  tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))
 
 
-construct_CovMat <- function(SumCl, timepoints, sigma, tau, N=NULL){
 
-  timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
-  siglength   <- length(sigma)
 
-  if(is.null(N)) {               NVec <- rep(1,SumCl)
-  }else if(length(N)==1){        NVec <- rep(N,SumCl)
-  }else if(length(N)==SumCl) {   NVec <- N
-  }else stop('length of cluster sizes does not fit to total number of clusters')
 
-  ## sigma on cluster level depending on cluster size
-  if(siglength==1){
-    Sigmas <- sigma / sqrt(NVec)
-  }else if(siglength==timepoints){
-    sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
-    Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
-    print("sigma is assumed to change over time, but not between clusters")
-  } else if(siglength==SumCl){
-      if(length(sigma[[1]])==timepoints){
-        Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
-      }else if(length(sigma[[1]])==1){
-        sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
-        Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
-      }
-  } else
-    stop("Cannot handle length of vector sigma")
+construct_CovMat <- function(SumCl, timepoints, sigma, tau, N=NULL, CovBlk=NULL){
 
-  CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
-                    MoreArgs=list(timepoints=timepoints),
-                    SIMPLIFY = FALSE)
-  return(Matrix::bdiag(CovBlks))
+  if(!is.null(CovBlk)){
+    CovBlks <- rep(list(CovBlk),SumCl)
+    return(Matrix::bdiag(CovBlks))
+    stop()
+  }
+  {
+    timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
+    siglength   <- length(sigma)
+
+    if(is.null(N)) {               NVec <- rep(1,SumCl)
+    }else if(length(N)==1){        NVec <- rep(N,SumCl)
+    }else if(length(N)==SumCl) {   NVec <- N
+    }else stop('length of cluster sizes does not fit to total number of clusters')
+
+    ## sigma on cluster level depending on cluster size
+    if(siglength==1){
+      Sigmas <- sigma / sqrt(NVec)
+    }else if(siglength==timepoints){
+      sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
+      Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
+      print("sigma is assumed to change over time, but not between clusters")
+    } else if(siglength==SumCl){
+        if(length(sigma[[1]])==timepoints){
+          Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
+        }else if(length(sigma[[1]])==1){
+          sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
+          Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
+        }
+    } else
+      stop("Cannot handle length of vector sigma")
+
+    CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
+                      MoreArgs=list(timepoints=timepoints),
+                      SIMPLIFY = FALSE)
+    return(Matrix::bdiag(CovBlks))
+  }
 }
 

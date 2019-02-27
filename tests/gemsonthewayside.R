@@ -263,3 +263,22 @@ actual.power <- function(df,zpower=0.8) {
   pt(eff - qt(.975,df),df)
 }
 
+###########################################################################################
+## ... - test dotMethods
+
+outer  <- function(x,...) middle(x,...)+2
+middle <- function(y,...) inner(y,...)+3
+inner  <- function(z,a)ifelse(missing(a),z,z+a)
+
+outer(2,a=2)
+outer(2)
+
+CovBlk <- construct_CovBlk(4,1,.1)
+
+construct_CovMat(3,Null,NULL,NULL,1,CovBlk=CovBlk)
+
+DesMat <- construct_DesMat(c(2,2,2))
+wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,df_adjust="none",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,
+                 df_adjust="none",sig.level=.05,verbose=T,CovBlk=CovBlk)
+

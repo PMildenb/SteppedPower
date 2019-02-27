@@ -36,9 +36,9 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,time_adjust="factor",
-                          design="SWD",EffSize,sigma,tau,eta=NULL,rho=NULL,
-                          N=NULL,Power=NULL,N_range=c(0.5,100000),sig.level=0.05,df_adjust="none",
+wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL, time_adjust="factor",
+                          design="SWD", EffSize,sigma, tau,eta=NULL, rho=NULL, CovBlk=NULL,
+                          N=NULL, Power=NULL, N_range=c(0.5,100000), sig.level=0.05, df_adjust="none",
                           verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
@@ -64,7 +64,7 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
   if(is.null(Power)){
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,
                             sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
-                            df_adjust=df_adjust,verbose=verbose)
+                            df_adjust=df_adjust,CovBlk=CovBlk,verbose=verbose)
   }else if(Power<0 | Power>1){
     stop("Power needs to be between 0 and 1.")
   }else {
@@ -75,7 +75,8 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
                                                     ". Increase argument N_range."))
                                      return(N_range[2])})
     out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                            N=N_opt,sig.level=sig.level,df_adjust=df_adjust, verbose=verbose)
+                            N=N_opt,sig.level=sig.level,df_adjust=df_adjust, CovBlk=CovBlk,
+                            verbose=verbose)
     out <- append(list(N=N_opt),out)
   }
   return(out)
@@ -97,7 +98,8 @@ wlsMixedPower <- function(Cl=NULL,timepoints=NULL,DesMat=NULL,trt_delay=NULL,tim
 optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
   diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                                    N=N,df_adjust=df_adjust,sig.level=sig.level,verbose=F)$Power)
+                                    N=N,df_adjust=df_adjust,sig.level=sig.level,
+                                    CovBlk=CovBlk, verbose=F)$Power)
   return(diff)}
 
 
@@ -116,12 +118,12 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #' @param verbose logical, should the function return the design and covariance matrix?
 
 wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
-                             Power,df_adjust=df_adjust,sig.level,verbose){
+                             Power,CovBlk=NULL,df_adjust=df_adjust,sig.level,verbose){
   dsnmatrix  <- DesMat$matrix
   timepoints <- DesMat$timepoints
   SumCl      <- DesMat$SumCl
   CovMat     <- construct_CovMat(SumCl=SumCl, timepoints=timepoints,
-                                    sigma=sigma, tau=tau, N=N)
+                                    sigma=sigma, tau=tau, N=N, CovBlk=CovBlk)
 
   tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
