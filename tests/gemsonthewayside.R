@@ -30,19 +30,18 @@ microbenchmark(
 ########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
 
-wlsGlmmPower(Cl=c(3,3,3,3),mu0=.5,mu1=.24,tau=0.1)
-swPwr(swDsn(c(3,3,3,3)),mu0=.5,mu1=.24,tau=0.1,eta=0,n=1,distn="binomial")
+wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=F)
+swPwr(swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,n=20,distn="binomial")
+## in extremen Situationen gibt es einige % Unterschied. swPwr-Methode ist konservativ.
 
 ########################################################################################
 ## KidSafe Setting Cl
-swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1,tx.effect=.5), distn="binomial",
-      n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.00131, rho=-.25, retDATA=FALSE)
+swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
+      n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
       n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 
 tauKid <- 0.0044
-wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="linear",
-             tau=tauKid,trt_delay=NULL, N=250,verbose=F)
 wlsGlmmPower(Cl=c(6,6),timepoints=7,trt_delay=NULL,design="parallel", time_adjust="factor",
              mu0=0.03, mu1=0.02, tau=tauKid,N=250,verbose=F)
 wlsGlmmPower(Cl=c(6,6),timepoints=1,trt_delay=NULL,design="parallel", time_adjust="factor",
@@ -74,6 +73,52 @@ KidSafe_lin[[1]]
 
 plot_wlsPower(KidSafe)[[1]]
 plot_wlsPower(KidSafe_lin)[[1]]
+
+########################################################################################
+## KidSafe Setting 2019-03-06
+
+## tatsaechliche (geschaetzte ) Aufnahmen aus Teiln.-praxen pro Quartal
+N_cl <- 80
+
+## Optionen zur FZP-optimierung
+# - Inzidenz anheben
+# - Perioden hinzufuegen
+# - Zeiteffektsanpassung periodisch, o.ae.
+# - staerkerer Effekt (moeglweise nur in Subgruppe)
+
+
+## aktuelle FZP
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
+## hoehere Inzidenz (5% statt 3%)
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.05, mu1=2/3*0.05,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
+## hoehere Inzidenz (5% statt 3%)  +  eine Periode mehr
+wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.05, mu1=2/3*.05,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
+## hoehere Inzidenz (5% statt 3%)  +  zwei Perioden mehr
+wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.05, mu1=2/3*.05,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
+## hoehere Inzidenz (5% statt 3%)  +  eine Periode mehr  +
+wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.05, mu1=2/3*.05,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
+
+library(swCRTdesign)
+swPwr(swDsn(c(2,2,1,1,1,1,2,2),tx.effect=.5), distn="binomial",
+      n=N_cl, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
+
+wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
+                            tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+wlsGlmmPower(Cl=c(2,2,2,0,2,0,2,2),mu0=0.03, mu1=0.02,
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+
 
 ########################################################################################
 ## Plot von gmds vortrag reloaded

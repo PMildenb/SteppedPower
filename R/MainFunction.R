@@ -38,7 +38,7 @@
 
 wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL, time_adjust="factor",
                           design="SWD", EffSize,sigma, tau,eta=NULL, rho=NULL, CovBlk=NULL,
-                          N=NULL, Power=NULL, N_range=c(0.5,100000), sig.level=0.05, df_adjust="none",
+                          N=NULL, Power=NULL, N_range=c(1,1000), sig.level=0.05, df_adjust="none",
                           verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
@@ -99,7 +99,7 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
   diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
                                     N=N,df_adjust=df_adjust,sig.level=sig.level,
-                                    CovBlk=CovBlk, verbose=F)$Power)
+                                    CovBlk=NULL, verbose=F)$Power)
   return(diff)}
 
 
