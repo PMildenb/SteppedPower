@@ -67,18 +67,18 @@ construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
 ## wlsInnerFunction
 
 ## some tests for denomDF adjustment:
-wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
                  EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="none",sig.level=.05,verbose=T)
-wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
                  EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
-wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
                  EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="containment",sig.level=.05,verbose=T)
-wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
+SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
                  EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
 
 
 
-wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
+SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
                  EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
 
 Cl <- rep(10,10)
@@ -86,12 +86,12 @@ DesMat <- construct_DesMat(Cl=Cl)
 DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
-wlsInnerFunction(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
+SteppedPower:::wlsInnerFunction(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
                  Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
-wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
+SteppedPower:::wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
                  Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
@@ -101,8 +101,10 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 ## optFunction
 
+DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+
 
 SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
             sigma=1,tau=.3,N=1,
@@ -157,7 +159,7 @@ wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
 
 
 wlsMixedPower(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.1,verbose=T)
-wlsMixedPower(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
 wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
 wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
@@ -198,17 +200,6 @@ microbenchmark(
   ,
   wlsMixedPower(EffSize=0.005,Cl=c(25,25,25,25),sigma=sigtmp,tau=0.01)[[1]]
   ,times=100)
-
-
-
-
-
-
-## try switch
-N <- rep(2,6)
-SumCl <- 6
-
-Cl <- c(2,2) ; timepoints <- 3 ; time_adjust <- "none"
 
 
 
