@@ -203,17 +203,6 @@ microbenchmark(
 
 
 
-
-
-
-## try switch
-N <- rep(2,6)
-SumCl <- 6
-
-Cl <- c(2,2) ; timepoints <- 3 ; time_adjust <- "none"
-
-
-
 ## really large designs
 
 Cl_swd <- rep(10,60) ; EffSize <- .01 ; sigma <- 1 ; tau <- 0 ; design <- "SWD"
