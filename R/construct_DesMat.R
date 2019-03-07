@@ -27,9 +27,23 @@ construct_DesMat <- function(Cl, trt_delay=NULL, design="SWD", timepoints=NULL, 
 
   DesMat  <- list(cbind(trtvec,timeBlk),timepoints,sum(Cl))
   names(DesMat) <- c("matrix","timepoints","SumCl")
+  class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
 }
+
+## Methods for class DesMat
+print.DesMat <- function(DesMat){
+  cat("Timepoints         = ", DesMat$timepoints,"\n")
+  cat("Number of Clusters = ", DesMat$SumCl,"\n")
+  cat("Design matrix = \n")
+  print(DesMat$matrix)
+}
+
+plot.DesMat <- function(DesMat){
+
+}
+
 
 
 #' construct_trtvec

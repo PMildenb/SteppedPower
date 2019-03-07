@@ -208,8 +208,8 @@ microbenchmark(
 Cl_swd <- rep(10,60) ; EffSize <- .01 ; sigma <- 1 ; tau <- 0 ; design <- "SWD"
 Cl_prl <- c(300,300) ; timepoints <- 61
 system.time(
-  wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
+  pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
 system.time(
-  wlsMixedPower(Cl=Cl_prl, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau,
+  pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
                 timepoints=timepoints, verbose=T))
-
+SteppedPower::plot_wlsPower(pwrPRL)
