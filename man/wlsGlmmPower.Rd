@@ -7,7 +7,7 @@
 wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
   design = "SWD", timepoints = NULL, family = "binomial", N = NULL,
   sig.level = 0.05, trt_delay = NULL, time_adjust = "factor",
-  verbose = TRUE)
+  df_adjust = "none", verbose = TRUE)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
@@ -29,6 +29,8 @@ wlsGlmmPower(Cl, mu0, mu1, tau, eta = NULL, rho = NULL,
 \item{N}{Number of Individuals per cluster/period}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
+
+\item{df_adjust}{character, one of the following: **not implemented**}
 
 \item{verbose}{Logical}
 

@@ -21,6 +21,8 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 
+\item{df_adjust}{character, one of the following: **not implemented**}
+
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}

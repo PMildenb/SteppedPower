@@ -5,7 +5,7 @@
 \title{zTestSampSize
 s
 calculate needed sample size for given target power, effect size and individual variance
-does it work ? i fear not (gotta think about it ...)}
+does it work ? i fear not (got to think about it ...)}
 \usage{
 zTestSampSize(d, sd, Power, sig.level = 0.05)
 }
@@ -25,7 +25,7 @@ a scalar
 zTestSampSize
 s
 calculate needed sample size for given target power, effect size and individual variance
-does it work ? i fear not (gotta think about it ...)
+does it work ? i fear not (got to think about it ...)
 }
 \examples{
 zTestPwr(4,1)

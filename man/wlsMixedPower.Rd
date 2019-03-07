@@ -7,7 +7,7 @@
 wlsMixedPower(Cl = NULL, timepoints = NULL, DesMat = NULL,
   trt_delay = NULL, time_adjust = "factor", design = "SWD", EffSize,
   sigma, tau, eta = NULL, rho = NULL, N = NULL, Power = NULL,
-  N_range = c(0.5, 1e+05), sig.level = 0.05, df_adjust = "None",
+  N_range = c(0.5, 1e+05), sig.level = 0.05, df_adjust = "none",
   verbose = FALSE)
 }
 \arguments{
@@ -45,7 +45,7 @@ intervention effect in the first (second ... ) intervention phase}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{df_adjust}{character, use t-test ? If yes, what df approx **wording!!**}
+\item{df_adjust}{character, one of the following: **not implemented**}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }

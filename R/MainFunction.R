@@ -114,6 +114,8 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #' @param df_adjust character, one of the following: **not implemented**
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
+#'
+#' @export
 
 wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
                              Power,df_adjust=df_adjust,sig.level,verbose){
