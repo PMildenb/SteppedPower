@@ -2,11 +2,14 @@
 title: "schul_swd"
 author: "PM"
 date: "`r Sys.Date()`"
-output: html_document
+header-includes:
+   - \usepackage{amsmath}
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# library(SteppedPower)
 ```
 
 ## Vorgedanken
@@ -23,13 +26,14 @@ s_1 \\ s_2 \\ s_3 \\ s_4
 0 &0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 \\
 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0&0\\
 0 & 1 &0&0&0& 1 &0&0&0& 1 &0&0&0& 1 &0&0
-\end{array}\right)}_{=:X}
+\end{array}\right)}_\textrm{=:X}
 \cdot
-\underbrace{\left(\begin{array}{c}
-{j_{13}\\j_{14}\\j_{21}\\j_{22}\\j_{23}\\j_{24}\\j_{31}\\j_{32}\\j_{33}\\j_{34}\\
-j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
-\end{array}\right)}_{=:J}
-$$ 
+\underbrace{\begin{pmatrix}
+j_{13}\\j_{14}\\j_{21}\\j_{22}\\j_{23}\\j_{24}\\j_{31}\\j_{32}\\j_{33}\\j_{34}\\
+j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}
+\end{pmatrix}
+}_\textrm{=:J}
+$$
 
 ## Kovarianz von $J$ (in random-effects-Denkweise)
 
@@ -42,9 +46,9 @@ Gesamtvarianz auf Ebene Jahrgang pro Halbjahr laesst sich zerlegen in:
 
 Schul- und Jahrgangseffekt sollten sich aus ikids am ehesten schaetzen lassen, diese erscheinen mir auch als die sinnigsten ...
 
+$\text{Cov}(J)=$
 $$
-\text{Cov}(J)=
-\left(\begin{array}{cccccccccccccccc}
+\left(\begin{smallmatrix}
 \Sigma_0 + \Sigma_1 + \Sigma_3 &\Sigma_0+ \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
 \Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
 \Sigma_0 &\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0\\
@@ -61,7 +65,7 @@ $$
 \Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0&\Sigma_0\\
 \Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1 + \Sigma_3&\Sigma_0 + \Sigma_1\\
 \Sigma_0 &\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0&\Sigma_0 + \Sigma_1&\Sigma_0 + \Sigma_1 + \Sigma_3
-\end{array}\right)
+\end{smallmatrix}\right)
 $$
 
 ## Kovarianz von $S$
@@ -78,22 +82,22 @@ $$
 Sieht sogar noch verhaeltnismaessig brav aus. Was denkst du?
 
 
-p.s. `SteppedPower` koennte mit so einer Kovarianzstruktur umgehen :) 
+p.s. `SteppedPower` koennte mit so einer Kovarianzstruktur - allerdings recht unelegant - umgehen :) 
 
-## power in wlsMixed
-```{r}
-Sig0 <- .1 
-Sig1 <- .2
-Sig3 <- .2
+<!-- ## power in wlsMixed -->
+<!-- ```{r} -->
+<!-- Sig0 <- .1  -->
+<!-- Sig1 <- .2 -->
+<!-- Sig3 <- .2 -->
 
-CovBlk1 <- matrix(16*Sig0+4*Sig1,nrow=2,ncol=2)
-CovBlk2 <- matrix(16*Sig0+3*Sig1,nrow=2,ncol=2)
+<!-- CovBlk1 <- matrix(16*Sig0+4*Sig1,nrow=2,ncol=2) -->
+<!-- CovBlk2 <- matrix(16*Sig0+3*Sig1,nrow=2,ncol=2) -->
 
-CovBlk <- cbind(rbind(CovBlk1,CovBlk2),rbind(CovBlk2,CovBlk1))
-diag(CovBlk) <- diag(CovBlk)+4*Sig3
+<!-- CovBlk <- cbind(rbind(CovBlk1,CovBlk2),rbind(CovBlk2,CovBlk1)) -->
+<!-- diag(CovBlk) <- diag(CovBlk)+4*Sig3 -->
 
-wlsMixedPower(Cl=c(3,3,3), EffSize=.5, sigma=1,tau=1,CovBlk=CovBlk)
-```
+<!-- wlsMixedPower(Cl=c(3,3,3), EffSize=.5, sigma=1,tau=1,CovBlk=CovBlk) -->
+<!-- ``` -->
 
 
 
