@@ -36,6 +36,13 @@ swPwr(swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,n=20,distn="binomial")
 
 ########################################################################################
 ## KidSafe Setting Cl
+
+devtools::install_github("PMildenb/SteppedPower")
+library(SteppedPower)
+wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=F)
+wlsGlmmPower(Cl=c(2,2,2,1,1,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=F)
+
+
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
       n=250, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
@@ -114,7 +121,7 @@ swPwr(swDsn(c(2,2,1,1,1,1,2,2),tx.effect=.5), distn="binomial",
 
 wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
                             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
-wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
+wlsGlmmPower(Cl=c(2,2,1,1,1,1,2,2),mu0=0.03, mu1=0.02,
              tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
 wlsGlmmPower(Cl=c(2,2,2,0,2,0,2,2),mu0=0.03, mu1=0.02,
              tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
@@ -326,4 +333,16 @@ DesMat <- construct_DesMat(c(2,2,2))
 wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,df_adjust="none",sig.level=.05,verbose=T)
 wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,
                  df_adjust="none",sig.level=.05,verbose=T,CovBlk=CovBlk)
+
+
+
+
+
+
+y <- 1:3
+b <- permutation(y)
+b <- permutation.next(y)
+b <- permutation.prev(y)
+g <- bincomb(3)
+
 

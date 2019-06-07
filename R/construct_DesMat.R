@@ -41,6 +41,8 @@ print.DesMat <- function(DesMat){
 }
 
 plot.DesMat <- function(DesMat){
+  # trt_matrix <- matrix(nrow=DesMat$SumCl, ncol=DesMat$timepoints)
+  trt_matrix <- matrix(DesMat$matrix[,1],nrow = DesMat$SumCl, byrow = T)
 
 }
 
