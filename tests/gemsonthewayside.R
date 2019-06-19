@@ -31,7 +31,7 @@ microbenchmark(
 ## difference in binom setting (for high diff mu0-mu1)
 
 wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=F)
-swPwr(swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,n=20,distn="binomial")
+swCRTdesign::swPwr(swCRTdesign::swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,n=20,distn="binomial")
 ## in extremen Situationen gibt es einige % Unterschied. swPwr-Methode ist konservativ.
 
 ########################################################################################

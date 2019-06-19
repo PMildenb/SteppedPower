@@ -33,8 +33,8 @@ construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
 Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
 
 construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7))
-construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel")
-construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline")
+construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel")
+construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel_baseline")
 
 construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="none")
 construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
@@ -114,7 +114,7 @@ uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
         sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.4,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
 
 ## wlsMixedPower

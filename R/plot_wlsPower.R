@@ -7,7 +7,7 @@
 #' @return three ggplot2 objects.
 #' @export
 #' @examples
-#' # wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+#' # wlsPowerOut <- wlsMixedPower(EffSize=.1,Cl=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10,verbose=TRUE)
 #' # plot_wlsPower(wlsPowerOut)
 #'
 

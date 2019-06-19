@@ -36,9 +36,22 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL, time_adjust="factor",
-                          design="SWD", EffSize,sigma, tau,eta=NULL, rho=NULL, CovBlk=NULL,
-                          N=NULL, Power=NULL, N_range=c(1,1000), sig.level=0.05, df_adjust="none",
+wlsMixedPower <- function(Cl=NULL,
+                          timepoints=NULL,
+                          DesMat=NULL,
+                          trt_delay=NULL,
+                          time_adjust="factor",
+                          design="SWD",
+                          EffSize,sigma,
+                          tau,
+                          eta=NULL,
+                          rho=NULL,
+                          CovBlk=NULL,
+                          N=NULL,
+                          Power=NULL,
+                          N_range=c(1,1000),
+                          sig.level=0.05,
+                          df_adjust="none",
                           verbose=FALSE){
 
   if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
@@ -46,15 +59,17 @@ wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL,
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
                                     timepoints=timepoints,time_adjust=time_adjust)
-  } else if(inherits(DesMat,"list")){
+  }
+  else if(inherits(DesMat,"list")){
     if(!inherits(DesMat[[1]],"matrix") |
        !inherits(DesMat[[2]],"numeric")|
-       !inherits(DesMat[[2]],"numeric")) stop("In wlsMixedPower: Cannot interpret input for DesMat.")
+       !inherits(DesMat[[3]],"numeric")) stop("In wlsMixedPower: Cannot interpret input for DesMat.")
     dsnmatrix     <- DesMat[[1]]
     timepoints    <- DesMat[[2]]
     SumCl         <- DesMat[[3]]
     names(DesMat) <- c("matrix","timepoints","SumCl")
-  } else if(inherits(DesMat,"matrix")){
+  }
+  else if(inherits(DesMat,"matrix")){
     dsnmatrix   <- DesMat
     timepoints  <- dim(DesMat)[2]-1
     SumCl       <- dim(DesMat)[1]/timepoints
@@ -62,20 +77,42 @@ wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL,
   }
 
   if(is.null(Power)){
-    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,
-                            sigma=sigma,tau=tau,Power=NULL,N=N,sig.level=sig.level,
-                            df_adjust=df_adjust,CovBlk=CovBlk,verbose=verbose)
-  }else if(Power<0 | Power>1){
+    out <- wlsInnerFunction(DesMat=DesMat,
+                            EffSize=EffSize,
+                            sigma=sigma,
+                            tau=tau,
+                            Power=NULL,
+                            N=N,
+                            sig.level=sig.level,
+                            df_adjust=df_adjust,
+                            CovBlk=CovBlk,
+                            verbose=verbose)
+  }
+  else if(Power<0 | Power>1){
     stop("Power needs to be between 0 and 1.")
-  }else {
-    N_opt <- tryCatch(ceiling(uniroot(optFunction,DesMat=DesMat,EffSize=EffSize,sigma=1,tau=tau,
-                             Power=Power,df_adjust=df_adjust,sig.level=.05,interval=N_range)$root),
+  }
+  else {
+    N_opt <- tryCatch(ceiling(uniroot(optFunction,
+                                      DesMat=DesMat,
+                                      EffSize=EffSize,
+                                      sigma=1,  ## why did i set this to 1 ??
+                                      tau=tau,
+                                      Power=Power,
+                                      df_adjust=df_adjust,
+                                      sig.level=.05,
+                                      interval=N_range)$root),
                       error=function(cond){
                                      message(paste0("Maximal N yields power below ",Power,
                                                     ". Increase argument N_range."))
                                      return(N_range[2])})
-    out <- wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                            N=N_opt,sig.level=sig.level,df_adjust=df_adjust, CovBlk=CovBlk,
+    out <- wlsInnerFunction(DesMat=DesMat,
+                            EffSize=EffSize,
+                            sigma=sigma,
+                            tau=tau,
+                            N=N_opt,
+                            sig.level=sig.level,
+                            df_adjust=df_adjust,
+                            CovBlk=CovBlk,
                             verbose=verbose)
     out <- append(list(N=N_opt),out)
   }
@@ -97,9 +134,15 @@ wlsMixedPower <- function(Cl=NULL, timepoints=NULL, DesMat=NULL, trt_delay=NULL,
 
 optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
-  diff <- (Power - wlsInnerFunction(DesMat=DesMat,EffSize=EffSize,sigma=sigma,tau=tau,
-                                    N=N,df_adjust=df_adjust,sig.level=sig.level,
-                                    CovBlk=NULL, verbose=F)$Power)
+  diff <- (Power - wlsInnerFunction(DesMat=DesMat,
+                                    EffSize=EffSize,
+                                    sigma=sigma,
+                                    tau=tau,
+                                    N=N,
+                                    df_adjust=df_adjust,
+                                    sig.level=sig.level,
+                                    CovBlk=NULL,
+                                    verbose=F)$Power)
   return(diff)}
 
 
@@ -119,8 +162,16 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #'
 #' @export
 
-wlsInnerFunction <- function(DesMat,EffSize,sigma,tau,N,
-                             Power,CovBlk=NULL,df_adjust=df_adjust,sig.level,verbose){
+wlsInnerFunction <- function(DesMat,
+                             EffSize,
+                             sigma,
+                             tau,
+                             N,
+                             Power,
+                             CovBlk=NULL,
+                             df_adjust=df_adjust,
+                             sig.level,
+                             verbose){
   dsnmatrix  <- DesMat$matrix
   timepoints <- DesMat$timepoints
   SumCl      <- DesMat$SumCl

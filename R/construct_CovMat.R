@@ -16,7 +16,9 @@
 #' construct_CovBlk(timepoints=5, sigma=2, tau=2)
 
 
-construct_CovBlk <- function(timepoints,sigma,tau){
+construct_CovBlk <- function(timepoints,
+                             sigma,
+                             tau){
   if(length(sigma)>1 && length(sigma)!=timepoints)
     stop("length of vector sigma does not fit to number of timepoints")
 
@@ -52,9 +54,12 @@ construct_CovBlk <- function(timepoints,sigma,tau){
 
 
 
-
-construct_CovMat <- function(SumCl, timepoints, sigma, tau, N=NULL, CovBlk=NULL){
-
+construct_CovMat <- function(SumCl,
+                             timepoints,
+                             sigma,
+                             tau,
+                             N=NULL,
+                             CovBlk=NULL){
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
     return(Matrix::bdiag(CovBlks))
@@ -89,7 +94,10 @@ construct_CovMat <- function(SumCl, timepoints, sigma, tau, N=NULL, CovBlk=NULL)
     CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
                       MoreArgs=list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
-    return(Matrix::bdiag(CovBlks))
+    CovMat  <- Matrix::bdiag(CovBlks)
+    class(CovMat) <- append(class(DesMat),"CovMat")
+
+    return()
   }
 }
 
