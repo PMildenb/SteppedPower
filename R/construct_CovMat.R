@@ -94,10 +94,11 @@ construct_CovMat <- function(SumCl,
     CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
                       MoreArgs=list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
+    # CovMat  <- list(Matrix=Matrix::bdiag(CovBlks))
+    # class(CovMat) <- append(class(CovMat),"CovMat")
     CovMat  <- Matrix::bdiag(CovBlks)
-    class(CovMat) <- append(class(DesMat),"CovMat")
 
-    return()
+    return(CovMat)
   }
 }
 

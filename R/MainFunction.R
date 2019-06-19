@@ -193,12 +193,25 @@ wlsInnerFunction <- function(DesMat,
   }
 
   out <- list(Power=tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level))
-  if(verbose)
-    out <- append(out, list(WeightMatrix=WgtMat, DesignMatrix=dsnmatrix, denomDF=df,
-                            First_CovarianceBlk=CovMat[1:timepoints,1:timepoints ]))
+  out <- append(out, list(denomDF=df,
+                          df_adjust=df_adjust,
+                          sig.level=sig.level,
+                          WeightMatrix=WgtMat,
+                          DesignMatrix=dsnmatrix,
+                          CovarianceMatrix=CovMat))
+  class(out) <- append(class(out),"wlsPower")
   return(out)
 }
 
+
+## Methods for swdPower
+
+print.swdPower <- function(wlsPower){
+  cat("Power                                = ", wlsPower$Power,    "\n")
+  cat("ddf adjustment                       = ", wlsPower$df_adjust,"\n")
+  cat("Denominator degrees of freedom       = ", wlsPower$denomDF,  "\n")
+  cat("Significance level (two sided)       = ", wlsPower$sig.level,"\n")
+}
 
 
 #' zTestPwr
