@@ -4,7 +4,7 @@
 \alias{wlsInnerFunction}
 \title{wlsInnerFunction}
 \usage{
-wlsInnerFunction(DesMat, EffSize, sigma, tau, N, Power,
+wlsInnerFunction(DesMat, EffSize, sigma, tau, N, Power, CovBlk = NULL,
   df_adjust = df_adjust, sig.level, verbose)
 }
 \arguments{

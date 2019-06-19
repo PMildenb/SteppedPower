@@ -4,7 +4,8 @@
 \alias{construct_CovMat}
 \title{construct_CovMat}
 \usage{
-construct_CovMat(SumCl, timepoints, sigma, tau, N = NULL)
+construct_CovMat(SumCl, timepoints, sigma, tau, N = NULL,
+  CovBlk = NULL)
 }
 \arguments{
 \item{SumCl}{total number of clusters}

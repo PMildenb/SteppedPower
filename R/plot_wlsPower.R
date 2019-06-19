@@ -1,5 +1,26 @@
+
+## Methods for swdPower
+
+#'  print.wlsPower
+#'  print methond for wlsPower class
 #'
-#'  plot_wlsPower
+#'  @export
+#'
+print.wlsPower <- function(wlsPower){
+  cat("Power                                = ", wlsPower$Power,    "\n")
+  cat("ddf adjustment                       = ", wlsPower$df_adjust,"\n")
+  cat("Denominator degrees of freedom       = ", wlsPower$denomDF,  "\n")
+  cat("Significance level (two sided)       = ", wlsPower$sig.level,"\n")
+}
+
+
+
+
+
+
+
+#'
+#'  plot.wlsPower
 #'
 #' visual interpretation of cluster and period influences on intervention estimate
 #' @param wlsPower Output of function wlsMixedPower
@@ -7,13 +28,13 @@
 #' @return three ggplot2 objects.
 #' @export
 #' @examples
-#' # wlsPowerOut <- wlsMixedPower(EffSize=.1,I=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10)
+#' # wlsPowerOut <- wlsMixedPower(EffSize=.1,Cl=c(1,2,1,0,1),sigma=.2,tau=0.05,N=10,verbose=TRUE)
 #' # plot_wlsPower(wlsPowerOut)
 #'
 
 
 
-plot_wlsPower <- function(wlsPower){
+plot.wlsPower <- function(wlsPower){
   WgtMat <- wlsPower$WeightMatrix
   HatData <- reshape2::melt(t(WgtMat[c(nrow(WgtMat):1),]))
   names(HatData) <- c("Time","Cluster","Weight")

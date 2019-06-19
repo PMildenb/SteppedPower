@@ -11,7 +11,7 @@
 
 <meta name="author" content="PM" />
 
-<meta name="date" content="2019-02-25" />
+<meta name="date" content="2019-03-10" />
 
 <title>schul_swd</title>
 
@@ -124,7 +124,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">schul_swd</h1>
 <h4 class="author"><em>PM</em></h4>
-<h4 class="date"><em>2019-02-25</em></h4>
+<h4 class="date"><em>2019-03-10</em></h4>
 
 </div>
 
@@ -160,7 +160,7 @@ j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
 <p>Schul- und Jahrgangseffekt sollten sich aus ikids am ehesten schaetzen lassen, diese erscheinen mir auch als die sinnigsten …</p>
 <p><span class="math display">\[
 \text{Cov}(J)=
-\left(\begin{array}{cccccccccccccccc}
+\left(\begin{smallmatrix}
 \Sigma_0 + \Sigma_1 + \Sigma_3 &amp;\Sigma_0+ \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
 \Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
 \Sigma_0 &amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0\\
@@ -177,7 +177,7 @@ j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
 \Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0&amp;\Sigma_0\\
 \Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1 + \Sigma_3&amp;\Sigma_0 + \Sigma_1\\
 \Sigma_0 &amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0&amp;\Sigma_0 + \Sigma_1&amp;\Sigma_0 + \Sigma_1 + \Sigma_3
-\end{array}\right)
+\end{smallmatrix}\right)
 \]</span></p>
 </div>
 <div id="kovarianz-von-s" class="section level2">
@@ -192,6 +192,17 @@ j_{41}\\j_{42}\\j_{43}\\j_{44}\\j_{51}\\j_{52}}
 \end{array}\right)
 \]</span> Sieht sogar noch verhaeltnismaessig brav aus. Was denkst du?</p>
 <p>p.s. <code>SteppedPower</code> koennte mit so einer Kovarianzstruktur umgehen :)</p>
+<!-- ## power in wlsMixed -->
+<!-- ```{r} -->
+<!-- Sig0 <- .1  -->
+<!-- Sig1 <- .2 -->
+<!-- Sig3 <- .2 -->
+<!-- CovBlk1 <- matrix(16*Sig0+4*Sig1,nrow=2,ncol=2) -->
+<!-- CovBlk2 <- matrix(16*Sig0+3*Sig1,nrow=2,ncol=2) -->
+<!-- CovBlk <- cbind(rbind(CovBlk1,CovBlk2),rbind(CovBlk2,CovBlk1)) -->
+<!-- diag(CovBlk) <- diag(CovBlk)+4*Sig3 -->
+<!-- wlsMixedPower(Cl=c(3,3,3), EffSize=.5, sigma=1,tau=1,CovBlk=CovBlk) -->
+<!-- ``` -->
 </div>
 
 

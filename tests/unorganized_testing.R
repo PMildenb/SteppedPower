@@ -33,8 +33,8 @@ construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
 Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
 
 construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7))
-construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel")
-construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline")
+construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel")
+construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel_baseline")
 
 construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="none")
 construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
@@ -114,7 +114,7 @@ uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
         sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,Power=.9,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.4,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
 
 ## wlsMixedPower
@@ -175,8 +175,8 @@ wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
 swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 
-## plot_wlsPower
-plot_wlsPower(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
+## plot.wlsPower
+plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
 
 
@@ -208,8 +208,8 @@ microbenchmark(
 Cl_swd <- rep(10,60) ; EffSize <- .01 ; sigma <- 1 ; tau <- 0 ; design <- "SWD"
 Cl_prl <- c(300,300) ; timepoints <- 61
 system.time(
-  wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
+  pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
 system.time(
-  wlsMixedPower(Cl=Cl_prl, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau,
+  pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
                 timepoints=timepoints, verbose=T))
-
+SteppedPower::plot_wlsPower(pwrPRL)
