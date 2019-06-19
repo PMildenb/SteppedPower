@@ -204,15 +204,6 @@ wlsInnerFunction <- function(DesMat,
 }
 
 
-## Methods for swdPower
-
-print.swdPower <- function(wlsPower){
-  cat("Power                                = ", wlsPower$Power,    "\n")
-  cat("ddf adjustment                       = ", wlsPower$df_adjust,"\n")
-  cat("Denominator degrees of freedom       = ", wlsPower$denomDF,  "\n")
-  cat("Significance level (two sided)       = ", wlsPower$sig.level,"\n")
-}
-
 
 #' zTestPwr
 #'

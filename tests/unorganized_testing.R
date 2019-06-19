@@ -175,8 +175,8 @@ wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
 swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 
-## plot_wlsPower
-plot_wlsPower(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
+## plot.wlsPower
+plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
 
 
