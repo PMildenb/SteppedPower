@@ -38,7 +38,8 @@ construct_DesMat <- function(Cl,
 
 ## Methods for class DesMat
 
-
+#'  print.DesMat
+#'
 #' @export
 #'
 print.DesMat <- function(DesMat){
@@ -49,6 +50,8 @@ print.DesMat <- function(DesMat){
 }
 
 
+#' plot.DesMat
+#'
 #' @export
 #'
 plot.DesMat <- function(DesMat){

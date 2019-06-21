@@ -91,6 +91,7 @@ SteppedPower:::wlsInnerFunction(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
+
 SteppedPower:::wlsInnerFunction(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
                  Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
@@ -103,7 +104,7 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+out <- wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
 
 SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
