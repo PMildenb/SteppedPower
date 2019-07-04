@@ -121,7 +121,7 @@ utils::globalVariables("cluster.var")
 #' @export
 
 realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
-                               whichModel=c("AGQ","PQL","GEE"),nAGQ=1){
+                               whichModel=c("AGQ","PQL","GEE"),gee_corstr="exchangeable",nAGQ=1){
 
   sizes      <- rep(nInd,design$n.clusters*design$total.time)
   SimHHshort <- Simslim(design,n=nInd,car::logit(mu0),car::logit(mu1),
@@ -156,8 +156,8 @@ realpower.simulate <- function(n=1,nInd=100,tau,eta=0,rho=0,mu0,mu1,design,
     modGEE <- suppressMessages(gee(
       cbind(response.var,nInd-response.var) ~ tx.var + time.var,
       id = cluster.var,
-      # corstr = "exchangeable",
-      corstr = "AR-M", Mv=1,
+      corstr = gee_corstr,
+      Mv=1, ## for ar-m structure . cannot (!) be specified in function call  atm
       maxiter = 1000,
       family = "binomial",SimHHshort))
     tx.est.GEE   <- as.numeric(modGEE$coefficients[2])
