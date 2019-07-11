@@ -74,7 +74,7 @@ pwr::pwr.t.test(d=0.01/sd,n=6)
 KidSafe     <- wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="factor",
                         tau=0.00262,trt_delay=.5, N=250,verbose=T)
 KidSafe_lin <- wlsMixedPower(Cl=c(2,2,2,2,2,2),EffSize=.01,sigma=sqrt(.025*.975), time_adjust="factor",
-                        tau=0.00262,trt_delay=.5, N=250,verbose=T)
+                        tau=0.00254,trt_delay=.5, N=250,verbose=T)
 KidSafe[[1]]
 KidSafe_lin[[1]]
 

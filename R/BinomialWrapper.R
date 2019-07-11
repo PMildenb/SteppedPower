@@ -28,8 +28,13 @@
 ## sigma is derived by mu_i*(1-mu_i) for control and intervention separately
 
 
-wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoints=NULL,
-                         family="binomial",N=NULL,sig.level=0.05,trt_delay=NULL,time_adjust="factor",
+wlsGlmmPower <- function(Cl,mu0,mu1,
+                         marginal_mu=TRUE,
+                         tau=NULL,tau_lin=NULL,
+                         eta=NULL,rho=NULL,
+                         design="SWD",timepoints=NULL,family="binomial",
+                         N=NULL,sig.level=0.05,
+                         trt_delay=NULL,time_adjust="factor",
                          df_adjust="none",verbose=TRUE){
 
   if(is.null(timepoints)){
@@ -42,6 +47,19 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
 
   if(family =="binomial"){
+
+    if(marginal_mu){
+      pmarg<-function(mu,tau) { i<-function(x,mu,tau){ dnorm(x,0,tau)/(1+exp(-x-mu))}
+        ifelse(tau<1e-3,1/(1+exp(-mu)),integrate(i,-Inf,Inf,mu=mu,tau=tau)$value)}
+      pcond_to_pmarglin <- function(pcond,tau,low=-10){
+        uniroot(function(x) {pmarg(x,tau=tau)-pcond},c(low,0))$root}
+      inv_logit <- function(x) exp(x)/(1+exp(x))
+
+      mu0 <-inv_logit(pcond_to_pmarglin(mu0,tau=tau_lin))
+      mu1 <-inv_logit(pcond_to_pmarglin(mu1,tau=tau_lin))
+      print(paste("mu0_marg=",mu0,", mu1_marg=",mu1,"."))
+    }
+
     EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
 
@@ -49,8 +67,15 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
     sigtmp   <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
     Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
-#    tau01    <- c(tau0=tau/(mu0*(1-mu0)),tau1=tau/(mu1*(1-mu1)))
-    tau01  <- c(tau0=tau,tau1=tau)
+    if(!is.null(tau_lin)){
+      logit.deriv <- function(x){1/(x-x^2)}
+      tau.lin_to_tau.expit <- function(tau.lin,mu){tau.lin/logit.deriv(mu)}
+      tau01  <- c(tau0=tau.lin_to_tau.expit(tau_lin,mu0),
+                  tau1=tau.lin_to_tau.expit(tau_lin,mu1))
+    } else {
+      tau01  <- c(tau0=tau,tau1=tau)
+    }
+    print(tau01)
     tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
@@ -59,6 +84,8 @@ wlsGlmmPower <- function(Cl,mu0,mu1,tau,eta=NULL,rho=NULL,design="SWD",timepoint
                   N=N,Power=NULL,df_adjust=df_adjust,sig.level=sig.level,verbose=verbose)
   }
 }
+
+
 
 
 #'  split_sd
