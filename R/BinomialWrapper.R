@@ -86,8 +86,6 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
 }
 
 
-
-
 #'  split_sd
 #'
 #'  small helper function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
