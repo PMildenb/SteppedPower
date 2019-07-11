@@ -47,20 +47,22 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
 
   if(family =="binomial"){
+    logit.deriv <- function(x){1/(x-x^2)}
+    inv_logit   <- function(x) exp(x)/(1+exp(x))
 
     if(marginal_mu){
-      pmarg<-function(mu,tau) { i<-function(x,mu,tau){ dnorm(x,0,tau)/(1+exp(-x-mu))}
-        ifelse(tau<1e-3,1/(1+exp(-mu)),integrate(i,-Inf,Inf,mu=mu,tau=tau)$value)}
-      pcond_to_pmarglin <- function(pcond,tau,low=-10){
-        uniroot(function(x) {pmarg(x,tau=tau)-pcond},c(low,0))$root}
-      inv_logit <- function(x) exp(x)/(1+exp(x))
 
-      mu0 <-inv_logit(pcond_to_pmarglin(mu0,tau=tau_lin))
-      mu1 <-inv_logit(pcond_to_pmarglin(mu1,tau=tau_lin))
+      pmarg<-function(mu,tau_lin) { i<-function(x,mu,tau_lin){ dnorm(x,0,tau_lin)/(1+exp(-x-mu))}
+        ifelse(tau_lin<1e-3,1/(1+exp(-mu)),integrate(i,-Inf,Inf,mu=mu,tau_lin=tau_lin)$value)}
+      pcond_to_pmarglin <- function(pcond,tau_lin,low=-10){
+        uniroot(function(x) {pmarg(x,tau_lin=tau_lin)-pcond},c(low,0))$root}
+
+      mu0_marg <-inv_logit(pcond_to_pmarglin(mu0,tau=tau_lin) )
+      mu1_marg <-inv_logit(pcond_to_pmarglin(mu1,tau=tau_lin) )
       print(paste("mu0_marg=",mu0,", mu1_marg=",mu1,"."))
     }
 
-    EffSize <- mu1-mu0  ; OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+    EffSize <- mu1-mu0  ; OR <- (mu1_marg*(1-mu0_marg))/(mu0_marg*(1-mu1_marg))
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
 
     sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
@@ -68,8 +70,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
     Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
     if(!is.null(tau_lin)){
-      logit.deriv <- function(x){1/(x-x^2)}
-      tau.lin_to_tau.expit <- function(tau.lin,mu){tau.lin/logit.deriv(mu)}
+      tau.lin_to_tau.expit <- function(tau_lin,mu){tau_lin/logit.deriv(mu)}
       tau01  <- c(tau0=tau.lin_to_tau.expit(tau_lin,mu0),
                   tau1=tau.lin_to_tau.expit(tau_lin,mu1))
     } else {
