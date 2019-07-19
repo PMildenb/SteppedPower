@@ -137,54 +137,6 @@ sig.fct <- function(nInd,mu0,mu1){
   sigma  <- sqrt(mu_bar*(1-mu_bar)/nInd)
   return(sigma)}
 
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.515,.025),eta=0,sigma=sig.fct(200,0.025,0.025))
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.515,.03),eta=0,sigma=sig.fct(200,0.03,0.03))
-
-# > rowMeans(p.25.4_0.515<0.05)[1:3]
-# p.ztest.1a p.ztest.2b_min p.ztest.2b_max
-# 0.8296         0.8236         0.7434
-# > rowMeans(abs(p.25.4_0.515))[4:6]
-# tx.est.1a tx.est.2b_min tx.est.2b_max
-# 0.188413018   0.004973754   0.005005962
-
-
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.4,.025),eta=0,sigma=sig.fct(200,0.025,0.025))
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=tau.fct(.4,.03),eta=0,sigma=sig.fct(200,0.03,0.03))
-
-# > rowMeans(p.25.4_0.4<0.05)[1:3]
-# p.ztest.1a p.ztest.2b_min p.ztest.2b_max
-# 0.8258         0.8356         0.7704
-# > rowMeans(abs(p.25.4_0.4))[4:6]
-# tx.est.1a tx.est.2b_min tx.est.2b_max
-# 0.186691687   0.005011320   0.004970041
-
-## linear function can reproduce the linear results
-wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025))
-wlsMixedPower(0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ))
-
-
-## binomial wrapper fits nicely in between
-## exp for tau=0
-wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=0,verbose=F)
-wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=0,verbose=F)
-wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=0,N=200,verbose=F,df_adjust = "none")
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.025,0.025))
-swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0,eta=0,sigma=sig.fct(200,0.03,0.03))
-swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0,eta=0) ## swPwr and wlsGlmm are ridiciously close
-
-## for tau =!= 0
-wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.025,0.025),tau=tau.fct(.4,.025),verbose=F)
-wlsMixedPower(EffSize=0.005,Cl=rep(25,4),sigma=sig.fct(200,0.03 ,0.03 ),tau=tau.fct(.4,.03 ),verbose=F)
-wlsGlmmPower(Cl=rep(25,4),mu0=0.03,mu1=0.025,tau=tau.fct(.4,0.025),N=200,verbose=F) ##
-swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=tau.fct(.4,.0275),eta=0)
-
-
-
-########################################################################################
-## What about package longpower ??
-## -> different setting. not suitable
-
-
 ########################################################################################
 ## sampsize calculation works
 
@@ -245,19 +197,6 @@ wlsMixedPower(Cl=ClPrl,timepoints=timepoints,design="parallel",
 
 
 
-#################################
-## Verteilungen hoeren ...
-
-# switch()
-  for(i in 1:1000){ beepr::beep() ; Sys.sleep(rexp(1,2)) }
-  for(i in 1:1000){ beepr::beep() ; Sys.sleep(runif(1,0,1)) }
-
-N <- 1e8
-primes <- which(as.logical(matlab::isprime(1:N)))
-prime_dist <- primes - c(0,primes[1:(length(primes)-1)])
-
-car::densityPlot(prime_dist)
-
 ###########################################################################################
 ## special class for design matrix?
 
@@ -300,49 +239,5 @@ wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
 wlsMixedPower(Cl=c(673,673),timepoints=1,EffSize=.25,design="parallel",sigma=1,tau=1, N=1)
 wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,tau=.5,N=1)
 
-
-
-
 SteppedPower::wlsMixedPower(Cl=c(6,0),EffSize=.25,sigma=1,tau=1,N=1)
 construct_DesMat(c(6,0))
-
-
-###########################################################################################
-## actual power of a t-test instead of a z-test with 80% power
-actual.power <- function(df,zpower=0.8) {
-  eff   <- qnorm(zpower)+qnorm(.975)
-  pnorm(eff-qnorm(.975))
-  pt(eff - qt(.975,df),df)
-}
-
-###########################################################################################
-## ... - test dotMethods
-
-outer  <- function(x,...) middle(x,...)+2
-middle <- function(y,...) inner(y,...)+3
-inner  <- function(z,a)ifelse(missing(a),z,z+a)
-
-outer(2,a=2)
-outer(2)
-
-CovBlk <- construct_CovBlk(4,1,.1)
-
-construct_CovMat(3,Null,NULL,NULL,1,CovBlk=CovBlk)
-
-DesMat <- construct_DesMat(c(2,2,2))
-wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,df_adjust="none",sig.level=.05,verbose=T)
-wlsInnerFunction(DesMat,EffSize=.5,sigma=.1,tau=.1,1,Power=NULL,
-                 df_adjust="none",sig.level=.05,verbose=T,CovBlk=CovBlk)
-
-
-
-
-
-
-y <- 1:3
-b <- permutation(y)
-b <- permutation.next(y)
-b <- permutation.prev(y)
-g <- bincomb(3)
-
-

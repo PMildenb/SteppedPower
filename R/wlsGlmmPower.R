@@ -2,9 +2,10 @@
 #'
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param mu0 average under control
-#' @param mu1 average under intervention
-#' @param tau numeric, standard deviation of random intercepts (soon) to be understood on the linear predictor level
+#' @param mu0 numeric, (marginal) average under control
+#' @param mu1 numeric, (marginal) average under intervention
+#' @param tau numeric, standard deviation of random intercepts, interpreted as normal noise on the proportions
+#' @param tau_lin numeric, standard deviation of random intercepts on the linear predictor
 #' @param eta *not implemented*
 #' @param rho *not implemented*
 #' @param design study design. One of the following values: "SWD", "parallel", "parallel_baseline" ...
@@ -14,8 +15,8 @@
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param df_adjust character, one of the following: **not implemented**
 #' @param delay numeric (possibly vector), value between 0 and 1 specifing the
-#' intervention effect in the first (second ... ) intervention phase *not implemented*
-#' @param verbose Logical
+#' dose of intervention in the first (second ... ) intervention phase *not implemented*
+#' @param verbose logical, shall the function be chatty about what it did?
 #'
 #' @return as `wlsMixedPower`
 #' @export
@@ -24,7 +25,7 @@
 #' wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 
 
-## Convenience wrapper for non-normal outcomes, still in progress ...
+## Convenience wrapper for non-normal outcomes, **still experimental**
 ## sigma is derived by mu_i*(1-mu_i) for control and intervention separately
 
 
@@ -89,14 +90,13 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
 
 #'  split_sd
 #'
-#'  small helper function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
-#'  for interventional periods for each cluster.
+#'  small auxiliary function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
+#'  for interventional periods for each cluster. Not to be called directly.
 #'
 #' @param trtvec a vector
 #' @param sd  vector of length 2 (or 3).
 #'
 #' @return numeric, scalar.
-#' @export
 #'
 
 split_sd <- function(trtvec,sd){
