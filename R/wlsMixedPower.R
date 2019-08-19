@@ -204,6 +204,10 @@ wlsInnerFunction <- function(DesMat,
 }
 
 
+
+
+## Methods for class wlsPower
+
 #'  print.wlsPower
 #'
 #'  @export

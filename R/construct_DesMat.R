@@ -45,7 +45,7 @@ construct_DesMat <- function(Cl,
 print.DesMat <- function(DesMat){
   cat("Timepoints         = ", DesMat$timepoints,"\n")
   cat("Number of Clusters = ", DesMat$SumCl,"\n")
-  cat("Design matrix = \n")
+  cat("Design matrix      = \n")
   print(DesMat$matrix)
 }
 
