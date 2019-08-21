@@ -67,7 +67,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
 
     sigma01  <- c(sigma0=sqrt(mu0*(1-mu0)),sigma1=sqrt(mu1*(1-mu1)) )
-    sigtmp   <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
+    sigtmp   <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=sigma01),SIMPLIFY=T)
     Sigmas   <- split(sigtmp,rep(1:sum(Cl),each=timepoints))
 
     if(!is.null(tau_lin)){
@@ -78,7 +78,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
       tau01  <- c(tau0=tau,tau1=tau)
     }
     print(tau01)
-    tautmp <- mapply(SteppedPower::split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
+    tautmp <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
     wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, trt_delay=trt_delay,

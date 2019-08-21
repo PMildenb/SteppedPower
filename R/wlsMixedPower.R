@@ -203,32 +203,40 @@ wlsInnerFunction <- function(DesMat,
   return(out)
 }
 
-
-
-
-## Methods for class wlsPower
-
-#'  print.wlsPower
+#' print.wlsPower
 #'
-#'  @export
+#' @param x w
+#' @param ... Arguments to be passed to methods
 #'
-print.wlsPower <- function(wlsPower){
-  cat("Power                                = ", wlsPower$Power,    "\n")
-  cat("ddf adjustment                       = ", wlsPower$df_adjust,"\n")
-  cat("Denominator degrees of freedom       = ", wlsPower$denomDF,  "\n")
-  cat("Significance level (two sided)       = ", wlsPower$sig.level,"\n")
+#' @method print wlsPower
+#'
+#' @export
+#'
+#'
+print.wlsPower <- function(x, ...){
+  cat("Power                                = ", x$Power,    "\n")
+  cat("ddf adjustment                       = ", x$df_adjust,"\n")
+  cat("Denominator degrees of freedom       = ", x$denomDF,  "\n")
+  cat("Significance level (two sided)       = ", x$sig.level,"\n")
 }
 
 
 
-#'  plot.wlsPower
+#' plot.wlsPower
+#'
+#' @param x w
+#' @param ... Arguments to be passed to methods
+#'
+#' @method plot wlsPower
 #'
 #' @export
 #'
-plot.wlsPower <- function(wlsPower){
-  WgtMat <- wlsPower$WeightMatrix
+plot.wlsPower <- function(x, ...){
+
+  WgtMat <- x$WeightMatrix
   HatData <- reshape2::melt(t(WgtMat[c(nrow(WgtMat):1),]))
   names(HatData) <- c("Time","Cluster","Weight")
+
   plotraw <- ggplot2::ggplot(HatData,ggplot2::aes_string("Time","Cluster")) +
     ggplot2::theme_minimal()  + ggplot2::scale_fill_gradient2(low="steelblue",mid="white",high="red") +
     ggplot2::geom_tile(ggplot2::aes_string(fill="Weight"),colour="white")
@@ -238,6 +246,7 @@ plot.wlsPower <- function(wlsPower){
   plotCluster <- ggplot2::ggplot(data.frame(Cluster=1:dim(WgtMat)[1],
                                             Clusterweights=rowSums(abs(WgtMat))),
                                  ggplot2::aes_string("Cluster","Clusterweights")) +
+
     ggplot2::geom_point() + ggplot2::theme_minimal()
   plotPeriods <- ggplot2::ggplot(data.frame(Periods=1:dim(WgtMat)[2],
                                             Weights=colSums(abs(WgtMat))),
@@ -246,3 +255,4 @@ plot.wlsPower <- function(wlsPower){
 
   return(list(plotraw,plotCluster,plotPeriods))
 }
+

@@ -13,6 +13,9 @@ construct_timeadjust(Cl, timepoints, time_adjust)
 
 \item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 }
+\value{
+What is returned? TODO
+}
 \description{
 construct_timeadjust
 }

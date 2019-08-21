@@ -40,24 +40,32 @@ construct_DesMat <- function(Cl,
 
 #'  print.DesMat
 #'
+#' @param x d
+#' @param ... Arguments to be passed to methods
+#'
+#' @method print DesMat
 #' @export
 #'
-print.DesMat <- function(DesMat){
-  cat("Timepoints         = ", DesMat$timepoints,"\n")
-  cat("Number of Clusters = ", DesMat$SumCl,"\n")
+print.DesMat <- function(x, ...){
+  cat("Timepoints         = ", x$timepoints,"\n")
+  cat("Number of Clusters = ", x$SumCl,"\n")
   cat("Design matrix      = \n")
-  print(DesMat$matrix)
+  print(x$matrix)
 }
 
 
 #' plot.DesMat
 #'
+#' @param x d
+#' @param ... Arguments to be passed to methods
+#'
+#' @method plot DesMat
 #' @export
 #'
-plot.DesMat <- function(DesMat){
+plot.DesMat <- function(x, ...){
   # trt_matrix <- matrix(nrow=DesMat$SumCl, ncol=DesMat$timepoints)
-  trt_matrix <- matrix(DesMat$matrix[,1],nrow = DesMat$SumCl, byrow = T)
-  plot(trt_matrix)
+  trt_matrix <- matrix(x$matrix[,1],nrow = x$SumCl, byrow = T)
+  graphics::plot(trt_matrix)
 }
 
 
@@ -183,7 +191,7 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
 #'
-#' @return
+#' @return What is returned? TODO
 #' @export
 #'
 #' @examples
