@@ -22,6 +22,7 @@
 #' @param eta numeric, standard deviation of random slopes **not implemented**
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N integer, number of individuals per cluster.
+#' @param family character, distribution family. Defaults to "gaussian" **not implemented**
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
@@ -49,12 +50,14 @@ wlsMixedPower <- function(Cl=NULL,
                           CovBlk=NULL,
                           N=NULL,
                           Power=NULL,
+                          family="gaussian",
                           N_range=c(1,1000),
                           sig.level=0.05,
                           df_adjust="none",
                           verbose=FALSE){
 
-  if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
+  if(!is.null(N) & !is.null(Power))
+    stop("Both target power and individuals per cluster not NULL.")
 
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
@@ -63,7 +66,8 @@ wlsMixedPower <- function(Cl=NULL,
   else if(inherits(DesMat,"list")){
     if(!inherits(DesMat[[1]],"matrix") |
        !inherits(DesMat[[2]],"numeric")|
-       !inherits(DesMat[[3]],"numeric")) stop("In wlsMixedPower: Cannot interpret input for DesMat.")
+       !inherits(DesMat[[3]],"numeric"))
+      stop("In wlsMixedPower: Cannot interpret input for DesMat.")
     dsnmatrix     <- DesMat[[1]]
     timepoints    <- DesMat[[2]]
     SumCl         <- DesMat[[3]]
