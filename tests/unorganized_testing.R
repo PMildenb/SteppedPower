@@ -205,11 +205,14 @@ microbenchmark(
 
 ## really large designs
 
-Cl_swd <- rep(10,60) ; EffSize <- .01 ; sigma <- 1 ; tau <- 0 ; design <- "SWD"
-Cl_prl <- c(300,300) ; timepoints <- 61
+Cl_swd <- rep(10,30) ; EffSize <- .1 ; sigma <- 1 ; tau <- 1 ; design <- "SWD"
+Cl_prl <- c(150,150) ; timepoints <- 61
 system.time(
   pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
 system.time(
   pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
                 timepoints=timepoints, verbose=T))
-SteppedPower::plot_wlsPower(pwrPRL)
+
+system.time(
+  HuHuPwrSWD <- swPwr(design=swDsn(rep(10,30)),distn="gaussian",n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
+

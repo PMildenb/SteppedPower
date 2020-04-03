@@ -4,7 +4,7 @@
 #' constructs the covariance matrix for multiple measurements of one cluster
 #'
 #' @param timepoints numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix
-#' @param sigma numeric (scalar or vector of length timepoints),
+#' @param sigma numeric (scalar or vector of length `timepoints`),
 #' residual error (usually of cluster means)
 #' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
