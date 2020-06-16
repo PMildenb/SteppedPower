@@ -200,6 +200,7 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
 
   SumCl   <- sum(Cl)
+  if(timepoints==1) time_adjust <- "none"
   if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
   timeBlk <- switch (time_adjust,
