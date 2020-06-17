@@ -41,7 +41,7 @@ wlsMixedPower <- function(Cl=NULL,
                           timepoints=NULL,
                           DesMat=NULL,
                           trt_delay=NULL,
-                          time_adjust="factor",
+                          time_adjust="factor", period=NULL,
                           design="SWD",
                           EffSize,sigma,
                           tau,
@@ -61,7 +61,8 @@ wlsMixedPower <- function(Cl=NULL,
 
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
-                                    timepoints=timepoints,time_adjust=time_adjust)
+                                  timepoints=timepoints,time_adjust=time_adjust,
+                                  period=period)
   }
   else if(inherits(DesMat,"list")){
     if(!inherits(DesMat[[1]],"matrix") |
@@ -117,7 +118,8 @@ wlsMixedPower <- function(Cl=NULL,
                             sig.level=sig.level,
                             df_adjust=df_adjust,
                             CovBlk=CovBlk,
-                            verbose=verbose)
+                            verbose=verbose,
+                            ...)
     out$N_opt <- N_opt
   }
   return(out)
@@ -222,6 +224,9 @@ print.wlsPower <- function(x, ...){
   cat("ddf adjustment                       = ", x$df_adjust,"\n")
   cat("Denominator degrees of freedom       = ", x$denomDF,  "\n")
   cat("Significance level (two sided)       = ", x$sig.level,"\n")
+
+  if("N_opt" %in% names(x))
+  cat("Needed N per cluster per period      = ", x$N_opt,"\n" )
 }
 
 

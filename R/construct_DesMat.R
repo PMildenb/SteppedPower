@@ -18,16 +18,22 @@
 #'
 
 construct_DesMat <- function(Cl,
-                             trt_delay=NULL,
-                             design="SWD",
-                             timepoints=NULL,
-                             time_adjust="factor"){
+                             trt_delay   =NULL,
+                             design      ="SWD",
+                             timepoints  =NULL,
+                             time_adjust ="factor", period=NULL){
 
-  trt_Lst    <- construct_trtvec(Cl=Cl, trt_delay=trt_delay, design=design, timepoints=timepoints)
+  trt_Lst    <- construct_trtvec(Cl=Cl,
+                                 trt_delay=trt_delay,
+                                 design=design,
+                                 timepoints=timepoints)
   trtvec     <- trt_Lst[[1]]
   timepoints <- trt_Lst[[2]]
 
-  timeBlk <- construct_timeadjust(Cl=Cl, timepoints=timepoints, time_adjust=time_adjust)
+  timeBlk <- construct_timeadjust(Cl          =Cl,
+                                  timepoints  =timepoints,
+                                  time_adjust =time_adjust,
+                                  period      =period)
 
   DesMat  <- list(cbind(trtvec,timeBlk),timepoints,sum(Cl))
   names(DesMat) <- c("matrix","timepoints","SumCl")
@@ -207,8 +213,8 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
     factor   = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
     linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
-      periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
-                       cos(0:(timepoints-1)*(2*pi/period)))
+    periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
+                     cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]
   )
 
   return(timeBlk)

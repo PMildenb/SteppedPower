@@ -13,12 +13,17 @@ library(microbenchmark)
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "factor")
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "none"  )
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "linear")
+tmp <- construct_timeadjust(Cl=c(1,1,1), timepoints=6, "periodic")
+matplot(tmp)
+tmp <- construct_timeadjust(Cl=c(1,1,1), timepoints=12, "periodic", period=6)
+matplot(tmp)
 
 ## costruct_trtvec
 construct_trtvec(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
 construct_trtvec(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
 construct_trtvec(Cl=c(1,1,1), trt_delay=c(.2,.4),  design="SWD",      timepoints=4)
 construct_trtvec(Cl=c(1,1),   trt_delay=c(.2,.4),  design="parallel", timepoints=4)
+construct_trtvec(Cl=c(2,2),   trt_delay=NULL,  design="parallel_baseline", timepoints=3)
 
 ## costruct_DesMat
 construct_DesMat(Cl=c(2,0,1))
@@ -39,11 +44,14 @@ construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel_baseline")
 construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="none")
 construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
 
+construct_DesMat(Cl=c(1,1,1,1),time_adjust="factor")
+construct_DesMat(Cl=c(1,1,1,1),time_adjust="periodic")
+construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
+
 ## CovBlk
 timepoints=3; sigma=2; tau=rep(2,3)
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
 construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
-
 
 ## CovMat
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
@@ -51,10 +59,8 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=list(c(.2,.2,.1),c(.2,.1,.1)))
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(4,4))
-
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(1,1))
-
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(25,16))
 Cov_PB <- construct_CovMat(4,3,1,0.1)
@@ -67,19 +73,19 @@ construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
 ## wlsInnerFunction
 
 ## some tests for denomDF adjustment:
-SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="none",sig.level=.05,verbose=T)
-SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
-SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="containment",sig.level=.05,verbose=T)
-SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
-                 EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="none",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
+    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="containment",sig.level=.05,verbose=T)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
+    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
 
 
 
-SteppedPower:::wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
-                 EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
+wlsInnerFunction(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
+    EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
 
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
@@ -165,6 +171,14 @@ wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,s
 wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
+
+wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
+              sigma=sqrt(.025*.975), time_adjust="none",
+              tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
+wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
+              sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
+              tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
+a$DesignMatrix
 
 ## wlsGlmmPower
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
