@@ -20,7 +20,10 @@ library(microbenchmark) ; library(swCRTdesign)
 Cl <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
 
 microbenchmark(
-  swPwr(swDsn(Cl),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
+  swPwr(design=swDsn(Cl),
+        distn="gaussian",
+        n=1, mu0=0.03, mu1=0.025,
+        tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
   ,
   wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
   ,times=5)

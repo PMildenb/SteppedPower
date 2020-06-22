@@ -4,7 +4,12 @@
 \alias{plot.DesMat}
 \title{plot.DesMat}
 \usage{
-\method{plot}{DesMat}(DesMat)
+\method{plot}{DesMat}(x, ...)
+}
+\arguments{
+\item{x}{d}
+
+\item{...}{Arguments to be passed to methods}
 }
 \description{
 plot.DesMat

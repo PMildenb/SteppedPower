@@ -12,6 +12,8 @@
 #' @importFrom car logit
 #' @importFrom MASS glmmPQL
 #' @importFrom lme4 glmer lmer
+#' @importFrom graphics plot
+#' @importFrom stats dnorm integrate
 #'
 #' @author Philipp Mildenberger \email{pmildenb@@uni-mainz.de}
 #' @name SteppedPower-pkg

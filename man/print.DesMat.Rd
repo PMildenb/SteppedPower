@@ -4,7 +4,12 @@
 \alias{print.DesMat}
 \title{print.DesMat}
 \usage{
-print.DesMat(DesMat)
+\method{print}{DesMat}(x, ...)
+}
+\arguments{
+\item{x}{d}
+
+\item{...}{Arguments to be passed to methods}
 }
 \description{
 print.DesMat

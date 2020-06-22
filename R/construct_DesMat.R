@@ -18,16 +18,22 @@
 #'
 
 construct_DesMat <- function(Cl,
-                             trt_delay=NULL,
-                             design="SWD",
-                             timepoints=NULL,
-                             time_adjust="factor"){
+                             trt_delay   =NULL,
+                             design      ="SWD",
+                             timepoints  =NULL,
+                             time_adjust ="factor", period=NULL){
 
-  trt_Lst    <- construct_trtvec(Cl=Cl, trt_delay=trt_delay, design=design, timepoints=timepoints)
+  trt_Lst    <- construct_trtvec(Cl=Cl,
+                                 trt_delay=trt_delay,
+                                 design=design,
+                                 timepoints=timepoints)
   trtvec     <- trt_Lst[[1]]
   timepoints <- trt_Lst[[2]]
 
-  timeBlk <- construct_timeadjust(Cl=Cl, timepoints=timepoints, time_adjust=time_adjust)
+  timeBlk <- construct_timeadjust(Cl          =Cl,
+                                  timepoints  =timepoints,
+                                  time_adjust =time_adjust,
+                                  period      =period)
 
   DesMat  <- list(cbind(trtvec,timeBlk),timepoints,sum(Cl))
   names(DesMat) <- c("matrix","timepoints","SumCl")
@@ -40,24 +46,32 @@ construct_DesMat <- function(Cl,
 
 #'  print.DesMat
 #'
+#' @param x d
+#' @param ... Arguments to be passed to methods
+#'
+#' @method print DesMat
 #' @export
 #'
-print.DesMat <- function(DesMat){
-  cat("Timepoints         = ", DesMat$timepoints,"\n")
-  cat("Number of Clusters = ", DesMat$SumCl,"\n")
-  cat("Design matrix = \n")
-  print(DesMat$matrix)
+print.DesMat <- function(x, ...){
+  cat("Timepoints         = ", x$timepoints,"\n")
+  cat("Number of Clusters = ", x$SumCl,"\n")
+  cat("Design matrix      = \n")
+  print(x$matrix)
 }
 
 
 #' plot.DesMat
 #'
+#' @param x d
+#' @param ... Arguments to be passed to methods
+#'
+#' @method plot DesMat
 #' @export
 #'
-plot.DesMat <- function(DesMat){
+plot.DesMat <- function(x, ...){
   # trt_matrix <- matrix(nrow=DesMat$SumCl, ncol=DesMat$timepoints)
-  trt_matrix <- matrix(DesMat$matrix[,1],nrow = DesMat$SumCl, byrow = T)
-  plot(trt_matrix)
+  trt_matrix <- matrix(x$matrix[,1],nrow = x$SumCl, byrow = T)
+  graphics::plot(trt_matrix)
 }
 
 
@@ -182,21 +196,25 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
+#' @param period number of timepoints per period. Defaults to `timepoints`
 #'
-#' @return
+#' @return What is returned? TODO
 #' @export
 #'
 #' @examples
 #'
-construct_timeadjust <- function(Cl,timepoints,time_adjust){
+construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
 
-  SumCl    <- sum(Cl)
+  SumCl   <- sum(Cl)
+  if(timepoints==1) time_adjust <- "none"
+  if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
   timeBlk <- switch (time_adjust,
-    factor = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
-    none   = matrix(rep(1,timepoints*SumCl)),
-    linear = matrix(rep(1:timepoints/timepoints,SumCl)),
-    period = cbind(sin(0:(timepoints-1)*(2*pi/timepoints)),cos(0:(timepoints-1)*(2*pi/timepoints)))
+    factor   = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
+    none     = matrix(rep(1,timepoints*SumCl)),
+    linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
+    periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
+                     cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]
   )
 
   return(timeBlk)

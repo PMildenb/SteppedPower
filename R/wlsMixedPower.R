@@ -22,6 +22,7 @@
 #' @param eta numeric, standard deviation of random slopes **not implemented**
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N integer, number of individuals per cluster.
+#' @param family character, distribution family. Defaults to "gaussian" **not implemented**
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
@@ -40,7 +41,7 @@ wlsMixedPower <- function(Cl=NULL,
                           timepoints=NULL,
                           DesMat=NULL,
                           trt_delay=NULL,
-                          time_adjust="factor",
+                          time_adjust="factor", period=NULL,
                           design="SWD",
                           EffSize,sigma,
                           tau,
@@ -49,21 +50,25 @@ wlsMixedPower <- function(Cl=NULL,
                           CovBlk=NULL,
                           N=NULL,
                           Power=NULL,
+                          family="gaussian",
                           N_range=c(1,1000),
                           sig.level=0.05,
                           df_adjust="none",
                           verbose=FALSE){
 
-  if(!is.null(N) & !is.null(Power)) stop("Both target power and individuals per cluster not NULL.")
+  if(!is.null(N) & !is.null(Power))
+    stop("Both target power and individuals per cluster not NULL.")
 
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
-                                    timepoints=timepoints,time_adjust=time_adjust)
+                                  timepoints=timepoints,time_adjust=time_adjust,
+                                  period=period)
   }
   else if(inherits(DesMat,"list")){
     if(!inherits(DesMat[[1]],"matrix") |
        !inherits(DesMat[[2]],"numeric")|
-       !inherits(DesMat[[3]],"numeric")) stop("In wlsMixedPower: Cannot interpret input for DesMat.")
+       !inherits(DesMat[[3]],"numeric"))
+      stop("In wlsMixedPower: Cannot interpret input for DesMat.")
     dsnmatrix     <- DesMat[[1]]
     timepoints    <- DesMat[[2]]
     SumCl         <- DesMat[[3]]
@@ -113,8 +118,9 @@ wlsMixedPower <- function(Cl=NULL,
                             sig.level=sig.level,
                             df_adjust=df_adjust,
                             CovBlk=CovBlk,
-                            verbose=verbose)
-    out <- append(list(N=N_opt),out)
+                            verbose=verbose,
+                            ...)
+    out$N_opt <- N_opt
   }
   return(out)
 }
@@ -203,73 +209,59 @@ wlsInnerFunction <- function(DesMat,
   return(out)
 }
 
-
-
-#' zTestPwr
+#' print.wlsPower
 #'
-#' computes the power of a z-test given a standard error, an effect size and a significance level.
-#' Computes the exact power, see second example
+#' @param x w
+#' @param ... Arguments to be passed to methods
 #'
-#' @param d numeric, raw effect
-#' @param se numeric, standard error
-#' @param sig.level numeric, significance level, defaults to 0.05
+#' @method print wlsPower
 #'
-#' @return a scalar
 #' @export
 #'
-#' @examples zTestPwr(4,1) :
-#' zTestPwr(qnorm(.975),1) == pnorm(qnorm(.975),qnorm(.975),1) + pnorm(-qnorm(.975),qnorm(.975),1)
-
-
-zTestPwr <- function(d,se,sig.level=0.05){
-  dsz <- abs(d/se)
-  Pwr <- pnorm(dsz+qnorm(sig.level/2)) + pnorm(-dsz+qnorm(sig.level/2))
-  return(Pwr)
-}
-
-
-#' tTestPwr
 #'
-#' computes the power of a t-test given a standard error, an effect size,
-#' the degrees of freedom of the t-distribution and a significance level.
-#' Computes the exact power, see second example
-#'
-#' @param d numeric, raw effect
-#' @param se numeric, standard error
-#' @param df numeric, degrees of freedom of the t-distribution
-#' @param sig.level numeric, significance level, defaults to 0.05
-#'
-#' @return a scalar
-#' @export
-#'
-#' @examples tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; zTestPwr(4,1)
+print.wlsPower <- function(x, ...){
+  cat("Power                                = ", x$Power,    "\n")
+  cat("ddf adjustment                       = ", x$df_adjust,"\n")
+  cat("Denominator degrees of freedom       = ", x$denomDF,  "\n")
+  cat("Significance level (two sided)       = ", x$sig.level,"\n")
 
-tTestPwr <- function(d,se,df,sig.level=0.05){
-  dsz <- abs(d/se)
-  Pwr <- pt(dsz+qt(sig.level/2,df=df),df=df) + pt(-dsz+qt(sig.level/2,df=df),df=df)
-  return(Pwr)
+  if("N_opt" %in% names(x))
+  cat("Needed N per cluster per period      = ", x$N_opt,"\n" )
 }
 
 
 
-
-
-#' zTestSampSize
-#'s
-#' calculate needed sample size for given target power, effect size and individual variance
-#' does it work ? i fear not (got to think about it ...)
+#' plot.wlsPower
 #'
-#' @param d numeric, raw effect
-#' @param sd numeric, standard deviaton (on individual level)
-#' @param sig.level numeric, significance level, defaults to 0.05
-#' @param Power target power
+#' @param x w
+#' @param ... Arguments to be passed to methods
 #'
-#' @return a scalar
+#' @method plot wlsPower
+#'
 #' @export
 #'
-#' @examples zTestPwr(4,1)
+plot.wlsPower <- function(x, ...){
 
-zTestSampSize <- function(d,sd,Power,sig.level=0.05){
-  nInd <- ((qnorm(1-sig.level/2)+qnorm(Power))*sd/d)^2
-  return(nInd)
+  WgtMat <- x$WeightMatrix
+  HatData <- reshape2::melt(t(WgtMat[c(nrow(WgtMat):1),]))
+  names(HatData) <- c("Time","Cluster","Weight")
+
+  plotraw <- ggplot2::ggplot(HatData,ggplot2::aes_string("Time","Cluster")) +
+    ggplot2::theme_minimal()  + ggplot2::scale_fill_gradient2(low="steelblue",mid="white",high="red") +
+    ggplot2::geom_tile(ggplot2::aes_string(fill="Weight"),colour="white")
+
+
+  Timeweights    <- colSums(abs(WgtMat))
+  plotCluster <- ggplot2::ggplot(data.frame(Cluster=1:dim(WgtMat)[1],
+                                            Clusterweights=rowSums(abs(WgtMat))),
+                                 ggplot2::aes_string("Cluster","Clusterweights")) +
+
+    ggplot2::geom_point() + ggplot2::theme_minimal()
+  plotPeriods <- ggplot2::ggplot(data.frame(Periods=1:dim(WgtMat)[2],
+                                            Weights=colSums(abs(WgtMat))),
+                                 ggplot2::aes_string("Periods","Weights")) +
+    ggplot2::geom_point() + ggplot2::theme_minimal()
+
+  return(list(plotraw,plotCluster,plotPeriods))
 }
+
