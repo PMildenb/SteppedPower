@@ -13,6 +13,8 @@ wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(1:10,10:1))
 wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(10:1,1:10))
+swPwr(swDsn(c(2,2,2,2)), sigma=sigtmp, tau=0.01, n=10, mu0=0.03, mu1=0.025,
+      rho=0, eta=0, gamma=0, distn="gaussian")
 
 ########################################################################################
 ## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
@@ -27,8 +29,23 @@ microbenchmark(
   ,
   wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
   ,times=5)
-(swPwr(swDsn(Cl),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
-  -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]])  ## differenz (nahezu) null
+
+## differenz  null
+swPwr(design=swDsn(Cl),
+      distn="gaussian",
+      n=1, mu0=0.03, mu1=0.025,
+      tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp) -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]]
+
+## speed-test 2 viele Cluster, wenige Zeitpunkte
+Cl <- rep(25,6);
+microbenchmark(
+  swPwr(design=swDsn(Cl),
+        distn="gaussian",
+        n=1, mu0=0.03, mu1=0.025,
+        tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
+  ,
+  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
+  ,times=5)
 
 ########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
@@ -242,5 +259,5 @@ wlsMixedPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
 wlsMixedPower(Cl=c(673,673),timepoints=1,EffSize=.25,design="parallel",sigma=1,tau=1, N=1)
 wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,tau=.5,N=1)
 
-SteppedPower::wlsMixedPower(Cl=c(6,0),EffSize=.25,sigma=1,tau=1,N=1)
+SteppedPower::wlsMixedPower(Cl=c(6,15,3),EffSize=.25,sigma=(1/10),tau=1,N=1)
 construct_DesMat(c(6,0))
