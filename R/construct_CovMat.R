@@ -39,7 +39,7 @@ construct_CovBlk <- function(timepoints,
 #' @param sigma numeric, residual error of cluster means.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param N integer (vector), number of individuals per cluster.
-#' Defaults to 'rep(1,sum(Cl))' if not passed.
+#' Defaults to 'rep(1,sum(Cl))' if not passed. **deprecated**
 #'
 #' @return a covariance matrix
 #' @export
@@ -62,14 +62,8 @@ construct_CovMat <- function(SumCl=NULL,
     CovBlks <- rep(list(CovBlk),SumCl)
     return(Matrix::bdiag(CovBlks))
   } else {
-  #   timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
+    timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
   #   siglength   <- length(sigma)
-  #
-  #   if(is.null(N)) {               NVec <- rep(1,SumCl)
-  #   }else if(length(N)==1){        NVec <- rep(N,SumCl)
-  #   }else if(length(N)==SumCl) {   NVec <- N
-  #   # }else if(length(N)==SumCl*timepoints){ NVec <- splitN
-  #   }else stop('length of cluster sizes does not fit to total number of clusters')
   #
   #   ## sigma on cluster level depending on cluster size
   #   if(siglength==1){
@@ -91,8 +85,6 @@ construct_CovMat <- function(SumCl=NULL,
     CovBlks <- mapply(construct_CovBlk,sigma=sigma,tau=tau,
                       MoreArgs=list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
-    # CovMat  <- list(Matrix=Matrix::bdiag(CovBlks))
-    # class(CovMat) <- append(class(CovMat),"CovMat")
     CovMat  <- Matrix::bdiag(CovBlks)
 
     return(CovMat)
