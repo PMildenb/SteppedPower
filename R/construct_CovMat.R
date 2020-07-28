@@ -19,9 +19,8 @@
 construct_CovBlk <- function(timepoints,
                              sigma,
                              tau){
-  if(length(sigma)>1 && length(sigma)!=timepoints)
-    stop("length of vector sigma does not fit to number of timepoints")
-
+  # if(length(sigma)>1 && length(sigma)!=timepoints)
+  #   stop("length of vector sigma does not fit to number of timepoints")
   if (length(tau)==1)            taus <- rep(tau,timepoints)  else
   if (length(tau)==timepoints)   taus <- tau                  else
     stop("length of vector tau does not fit to number of timepoints")
@@ -37,8 +36,7 @@ construct_CovBlk <- function(timepoints,
 #'
 #' @param SumCl total number of clusters
 #' @param timepoints numeric, scalar
-#' @param sigma numeric, residual error of cluster means if no N given.
-#' Else residual error on individual level
+#' @param sigma numeric, residual error of cluster means.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param N integer (vector), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
@@ -54,8 +52,8 @@ construct_CovBlk <- function(timepoints,
 
 
 
-construct_CovMat <- function(SumCl,
-                             timepoints,
+construct_CovMat <- function(SumCl=NULL,
+                             timepoints=NULL,
                              sigma,
                              tau,
                              N=NULL,
@@ -63,35 +61,34 @@ construct_CovMat <- function(SumCl,
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
     return(Matrix::bdiag(CovBlks))
-    stop()
-  }
-  {
-    timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
-    siglength   <- length(sigma)
+  } else {
+  #   timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
+  #   siglength   <- length(sigma)
+  #
+  #   if(is.null(N)) {               NVec <- rep(1,SumCl)
+  #   }else if(length(N)==1){        NVec <- rep(N,SumCl)
+  #   }else if(length(N)==SumCl) {   NVec <- N
+  #   # }else if(length(N)==SumCl*timepoints){ NVec <- splitN
+  #   }else stop('length of cluster sizes does not fit to total number of clusters')
+  #
+  #   ## sigma on cluster level depending on cluster size
+  #   if(siglength==1){
+  #     Sigmas <- sigma / sqrt(NVec)
+  #   }else if(siglength==timepoints){
+  #     sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
+  #     Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
+  #     print("sigma is assumed to change over time, but not between clusters")
+  #   }else if(siglength==SumCl){
+  #     if(length(sigma[[1]])==timepoints){
+  #        Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
+  #     }else if(length(sigma[[1]])==1){
+  #        sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
+  #        Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
+  #     }
+  #   }else
+  #     stop("Cannot handle length of vector sigma")
 
-    if(is.null(N)) {               NVec <- rep(1,SumCl)
-    }else if(length(N)==1){        NVec <- rep(N,SumCl)
-    }else if(length(N)==SumCl) {   NVec <- N
-    }else stop('length of cluster sizes does not fit to total number of clusters')
-
-    ## sigma on cluster level depending on cluster size
-    if(siglength==1){
-      Sigmas <- sigma / sqrt(NVec)
-    }else if(siglength==timepoints){
-      sigtmp <- rep(sigma,SumCl)/sqrt(rep(NVec,each=timepoints))
-      Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
-      print("sigma is assumed to change over time, but not between clusters")
-    } else if(siglength==SumCl){
-        if(length(sigma[[1]])==timepoints){
-          Sigmas <- Map('/',sigma,sqrt(NVec))      ## used for binomial
-        }else if(length(sigma[[1]])==1){
-          sigtmp <- rep(sigma/sqrt(NVec),each=timepoints)
-          Sigmas <- split.default(sigtmp,rep(1:SumCl,each=timepoints))
-        }
-    } else
-      stop("Cannot handle length of vector sigma")
-
-    CovBlks <- mapply(construct_CovBlk,sigma=Sigmas,tau=tau,
+    CovBlks <- mapply(construct_CovBlk,sigma=sigma,tau=tau,
                       MoreArgs=list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
     # CovMat  <- list(Matrix=Matrix::bdiag(CovBlks))

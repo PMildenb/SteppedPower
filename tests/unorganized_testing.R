@@ -52,6 +52,7 @@ construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
 timepoints=3; sigma=2; tau=rep(2,3)
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
 construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
+construct_CovBlk(timepoints=3, sigma=c(1,2,3), tau=2)
 
 ## CovMat
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
@@ -63,7 +64,11 @@ construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(1,1))
 construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
                  tau=0,N=c(25,16))
-Cov_PB <- construct_CovMat(4,3,1,0.1)
+Cov_PB <- construct_CovMat(4,3,list(c(1,1,1),
+                                    c(1,1,1),
+                                    c(1,1,1),
+                                    c(1,1,1)),0.1)
+Cov_PB
 
 
 construct_CovMat(SumCl=10,timepoints=1,sigma=1,tau=0)

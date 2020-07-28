@@ -181,8 +181,27 @@ wlsInnerFunction <- function(DesMat,
   dsnmatrix  <- DesMat$matrix
   timepoints <- DesMat$timepoints
   SumCl      <- DesMat$SumCl
-  CovMat     <- construct_CovMat(SumCl=SumCl, timepoints=timepoints,
-                                    sigma=sigma, tau=tau, N=N, CovBlk=CovBlk)
+
+
+  N    <- ifelse(is.null(N),1,N)
+  NMat <- if(length(N) %in% c(1,timepoints,SumCl*timepoints)) {
+            matrix(N, nrow=SumCl, ncol=timepoints)
+          }else stop('length of cluster sizes does not fit to total number of clusters and timepoints')
+
+  lenS <- length(sigma)
+  sigmaMat <- if(lenS==1){                      matrix(sigma, nrow=SumCl, ncol=timepoints)
+              }else if(lenS==timepoints){       matrix(sigma, nrow=SumCl, ncol=timepoints)
+              }else if(lenS==SumCl){            matrix(sigma, nrow=SumCl, ncol=timepoints, byrow=TRUE)
+              }else if(lenS==timepoints*SumCl) {matrix(sigma, nrow=SumCl, ncol=timepoints)
+              }else stop('length does not fit.')
+  if(timepoints==SumCl & lenS==SumCl) warning("sigma is assumed to change over time. If you wanted sigma
+                                              to change between clusters, please provide as matrix of dimension
+                                              #Cluster x timepoints")
+
+  sigmaMat <- sigmaMat / sqrt(NMat)
+  sigmaLst <- split(sigmaMat,row(sigmaMat))
+
+  CovMat   <- construct_CovMat(timepoints=timepoints, sigma=sigmaLst, tau=tau)
 
   tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
