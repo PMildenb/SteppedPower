@@ -186,14 +186,17 @@ wlsInnerFunction <- function(DesMat,
   N    <- ifelse(is.null(N),1,N)
   NMat <- if(length(N) %in% c(1,timepoints,SumCl*timepoints)) {
             matrix(N, nrow=SumCl, ncol=timepoints)
-          }else stop('length of cluster sizes does not fit to total number of clusters and timepoints')
+          }else stop(paste('length of cluster size vector N is ', N,
+                     '. This does not fit to given number of clusters, which is ',SumCl))
 
   lenS <- length(sigma)
   sigmaMat <- if(lenS==1){                      matrix(sigma, nrow=SumCl, ncol=timepoints)
               }else if(lenS==timepoints){       matrix(sigma, nrow=SumCl, ncol=timepoints)
               }else if(lenS==SumCl){            matrix(sigma, nrow=SumCl, ncol=timepoints, byrow=TRUE)
               }else if(lenS==timepoints*SumCl) {matrix(sigma, nrow=SumCl, ncol=timepoints)
-              }else stop('length does not fit.')
+              }else stop(paste('length of sigma is ', N,
+                               '. This does not fit to given number of timepoints, which is ',timepoints,
+                               ' or to the given number of Clusters, which is ', SumCl))
   if(timepoints==SumCl & lenS==SumCl) warning("sigma is assumed to change over time. If you wanted sigma
                                               to change between clusters, please provide as matrix of dimension
                                               #Cluster x timepoints")
