@@ -118,8 +118,7 @@ wlsMixedPower <- function(Cl=NULL,
                             sig.level=sig.level,
                             df_adjust=df_adjust,
                             CovBlk=CovBlk,
-                            verbose=verbose,
-                            ...)
+                            verbose=verbose)
     out$N_opt <- N_opt
   }
   return(out)
@@ -148,7 +147,7 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
                                     df_adjust=df_adjust,
                                     sig.level=sig.level,
                                     CovBlk=NULL,
-                                    verbose=F)$Power)
+                                    verbose=FALSE)$Power)
   return(diff)}
 
 
@@ -220,13 +219,14 @@ wlsInnerFunction <- function(DesMat,
     warning(paste0(df_adjust,"-method not applicable. No DDF adjustment used."))
   }
 
-  out <- list(Power=tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level))
-  out <- append(out, list(denomDF=df,
-                          df_adjust=df_adjust,
-                          sig.level=sig.level,
-                          WeightMatrix=WgtMat,
-                          DesignMatrix=dsnmatrix,
-                          CovarianceMatrix=CovMat))
+  out <- list(Power     =tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level),
+              denomDF   =df,
+              df_adjust =df_adjust,
+              sig.level =sig.level)
+  if(verbose) out <- append(out,list(
+                WeightMatrix=WgtMat,
+                DesignMatrix=dsnmatrix,
+                CovarianceMatrix=CovMat))
   class(out) <- append(class(out),"wlsPower")
   return(out)
 }
@@ -244,7 +244,9 @@ wlsInnerFunction <- function(DesMat,
 print.wlsPower <- function(x, ...){
   cat("Power                                = ", x$Power,    "\n")
   cat("ddf adjustment                       = ", x$df_adjust,"\n")
+  if(x$df_adjust!="none")
   cat("Denominator degrees of freedom       = ", x$denomDF,  "\n")
+
   cat("Significance level (two sided)       = ", x$sig.level,"\n")
 
   if("N_opt" %in% names(x))
