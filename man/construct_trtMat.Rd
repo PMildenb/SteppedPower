@@ -4,7 +4,7 @@
 \alias{construct_trtMat}
 \title{construct_trtMat}
 \usage{
-construct_trtMat(Cl, trt_delay, design, timepoints)
+construct_trtMat(Cl, trt_delay, design, timepoints = NULL)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
