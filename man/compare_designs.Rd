@@ -4,9 +4,18 @@
 \alias{compare_designs}
 \title{compare_designs}
 \usage{
-compare_designs(EffSize, sigma, tau, family = gaussian(),
-  timepoints = NULL, N = NULL, sig.level = 0.05, DesMat = NULL,
-  Cl = NULL, trt_delay = NULL)
+compare_designs(
+  EffSize,
+  sigma,
+  tau,
+  family = gaussian(),
+  timepoints = NULL,
+  N = NULL,
+  sig.level = 0.05,
+  DesMat = NULL,
+  Cl = NULL,
+  trt_delay = NULL
+)
 }
 \description{
 a short wrapper that compares parallel, sw, and parallel+ baseline design

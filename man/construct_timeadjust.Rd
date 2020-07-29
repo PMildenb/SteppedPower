@@ -4,7 +4,7 @@
 \alias{construct_timeadjust}
 \title{construct_timeadjust}
 \usage{
-construct_timeadjust(Cl, timepoints, time_adjust)
+construct_timeadjust(Cl, timepoints, time_adjust, period = NULL)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
@@ -12,6 +12,8 @@ construct_timeadjust(Cl, timepoints, time_adjust)
 \item{timepoints}{numeric, scalar}
 
 \item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+
+\item{period}{number of timepoints per period. Defaults to `timepoints`}
 }
 \value{
 What is returned? TODO

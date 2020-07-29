@@ -18,12 +18,12 @@ matplot(tmp)
 tmp <- construct_timeadjust(Cl=c(1,1,1), timepoints=12, "periodic", period=6)
 matplot(tmp)
 
-## costruct_trtvec
-construct_trtvec(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
-construct_trtvec(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
-construct_trtvec(Cl=c(1,1,1), trt_delay=c(.2,.4),  design="SWD",      timepoints=4)
-construct_trtvec(Cl=c(1,1),   trt_delay=c(.2,.4),  design="parallel", timepoints=4)
-construct_trtvec(Cl=c(2,2),   trt_delay=NULL,  design="parallel_baseline", timepoints=3)
+## costruct_trtMat
+construct_trtMat(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
+construct_trtMat(Cl=c(1,1,1), trt_delay=c(.2,.4),  design="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trt_delay=c(.2,.4),  design="parallel", timepoints=4)
+construct_trtMat(Cl=c(2,2),   trt_delay=NULL,  design="parallel_baseline", timepoints=3)
 
 ## costruct_DesMat
 construct_DesMat(Cl=c(2,0,1))
@@ -114,7 +114,7 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 ## optFunction
 
 DesMat <- construct_DesMat(rep(1,8))
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=46,verbose=F)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
 out <- wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
 SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
@@ -124,8 +124,8 @@ SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
 uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
         sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.15,N=14,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.4,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,N=14,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
 
 ## wlsMixedPower

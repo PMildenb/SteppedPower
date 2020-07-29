@@ -4,21 +4,26 @@
 \alias{construct_CovMat}
 \title{construct_CovMat}
 \usage{
-construct_CovMat(SumCl, timepoints, sigma, tau, N = NULL,
-  CovBlk = NULL)
+construct_CovMat(
+  SumCl = NULL,
+  timepoints = NULL,
+  sigma,
+  tau,
+  N = NULL,
+  CovBlk = NULL
+)
 }
 \arguments{
 \item{SumCl}{total number of clusters}
 
 \item{timepoints}{numeric, scalar}
 
-\item{sigma}{numeric, residual error of cluster means if no N given.
-Else residual error on individual level}
+\item{sigma}{numeric, residual error of cluster means.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
 \item{N}{integer (vector), number of individuals per cluster.
-Defaults to 'rep(1,sum(Cl))' if not passed.}
+Defaults to 'rep(1,sum(Cl))' if not passed. **deprecated**}
 }
 \value{
 a covariance matrix

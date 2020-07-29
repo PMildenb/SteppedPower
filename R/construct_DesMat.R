@@ -23,20 +23,21 @@ construct_DesMat <- function(Cl,
                              timepoints  =NULL,
                              time_adjust ="factor", period=NULL){
 
-  trt_Lst    <- construct_trtvec(Cl=Cl,
-                                 trt_delay=trt_delay,
-                                 design=design,
-                                 timepoints=timepoints)
-  trtvec     <- trt_Lst[[1]]
-  timepoints <- trt_Lst[[2]]
+  trtMat  <- construct_trtMat(Cl=Cl,
+                              trt_delay=trt_delay,
+                              design=design,
+                              timepoints=timepoints)
+  timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
 
   timeBlk <- construct_timeadjust(Cl          =Cl,
                                   timepoints  =timepoints,
                                   time_adjust =time_adjust,
                                   period      =period)
 
-  DesMat  <- list(cbind(trtvec,timeBlk),timepoints,sum(Cl))
-  names(DesMat) <- c("matrix","timepoints","SumCl")
+  DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
+                  timepoints = timepoints,
+                  SumCl      = sum(Cl),
+                  trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
@@ -56,7 +57,7 @@ print.DesMat <- function(x, ...){
   cat("Timepoints         = ", x$timepoints,"\n")
   cat("Number of Clusters = ", x$SumCl,"\n")
   cat("Design matrix      = \n")
-  print(x$matrix)
+  print(x$dsnmatrix)
 }
 
 
@@ -76,7 +77,7 @@ plot.DesMat <- function(x, ...){
 
 
 
-#' construct_trtvec
+#' construct_trtMat
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifing the
@@ -90,24 +91,23 @@ plot.DesMat <- function(x, ...){
 #' @examples
 #'
 #'
-construct_trtvec <- function(Cl,trt_delay,design,timepoints){
+construct_trtMat <- function(Cl,trt_delay,design,timepoints=NULL){
 
   SumCl         <- sum(Cl)
+  lenCl         <- length(Cl)
 
   if(design=="SWD"){
     if(is.null(timepoints)) timepoints <- length(Cl) + 1
-    trt    <- matrix(0,timepoints-1,timepoints)
+    trt    <- matrix(0,lenCl,timepoints)
     trt[upper.tri(trt)] <- 1
     if(!is.null(trt_delay)){
       for(i in 1:length(trt_delay)){
         diag(trt[,-(1:i)]) <- trt_delay[i]  ## doesnt work if length(delay)>=length(timepoints)-1
       }
     }
-    trtBlk <- trt[rep(1:(timepoints-1),Cl),]
-    trtvec <- as.numeric(t(trtBlk))
   }else
   if(design=="parallel"){
-    if(length(Cl)!=2) {stop("In construct_DesMat: Cannot handle length of vector Cl")}
+    if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(is.null(timepoints)){
       if(is.null(trt_delay)){
         timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")
@@ -116,12 +116,11 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
         message("timepoints unspecified. Defaults to length(trt_delay)+1")
       }
     }
-    ctl_cluster <- rep(0,timepoints)
-    trt_cluster <- c(trt_delay,rep(1,(timepoints-length(trt_delay))))
-    trtvec      <- c(rep(ctl_cluster,Cl[1]),rep(trt_cluster,Cl[2]))
+    trt     <- matrix(0,nrow=2,ncol=timepoints)
+    trt[2,] <- c(trt_delay,rep(1,(timepoints-length(trt_delay))))
   }else
   if(design=="parallel_baseline"){
-    if(length(Cl)!=2) {stop("In construct_DesMat: Cannot handle length of vector Cl")}
+    if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
       message(paste("assumes 1 baseline period and",timepoints-1,"parallel period(s)"))
@@ -133,13 +132,13 @@ construct_trtvec <- function(Cl,trt_delay,design,timepoints){
       timepoints   <- sum(timepoints01)
       message("timepoints unspecified. Defaults to 1 baseline,",length(trt_delay)+1, " parallel period(s).")
     }
-    ctl_cluster <- rep(0,sum(timepoints01))
-    trt_cluster <- c(rep(0,timepoints01[1]),
-                     trt_delay,rep(1,(timepoints01[2]-length(trt_delay))))
-    trtvec      <- c(rep(ctl_cluster,Cl[1]),rep(trt_cluster,Cl[2]))
+    trt     <- matrix(0,nrow=2,ncol=timepoints)
+    trt[2,] <- c(rep(0,timepoints01[1]),
+                trt_delay,rep(1,(timepoints01[2]-length(trt_delay))))
   }
+  trtMat <- as.matrix(trt[rep(1:lenCl,Cl),]) ## force matrix type (needed for timepoints==1)
 
-  return(list(trtvec,timepoints))
+  return(trtMat)
 }
 
 

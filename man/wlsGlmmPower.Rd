@@ -4,11 +4,25 @@
 \alias{wlsGlmmPower}
 \title{wlsGlmmPower}
 \usage{
-wlsGlmmPower(Cl, mu0, mu1, marginal_mu = TRUE, tau = NULL,
-  tau_lin = NULL, eta = NULL, rho = NULL, design = "SWD",
-  timepoints = NULL, family = "binomial", N = NULL,
-  sig.level = 0.05, trt_delay = NULL, time_adjust = "factor",
-  df_adjust = "none", verbose = TRUE)
+wlsGlmmPower(
+  Cl,
+  mu0,
+  mu1,
+  marginal_mu = TRUE,
+  tau = NULL,
+  tau_lin = NULL,
+  eta = NULL,
+  rho = NULL,
+  design = "SWD",
+  timepoints = NULL,
+  family = "binomial",
+  N = NULL,
+  sig.level = 0.05,
+  trt_delay = NULL,
+  time_adjust = "factor",
+  df_adjust = "none",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
