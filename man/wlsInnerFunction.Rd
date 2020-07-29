@@ -4,8 +4,18 @@
 \alias{wlsInnerFunction}
 \title{wlsInnerFunction}
 \usage{
-wlsInnerFunction(DesMat, EffSize, sigma, tau, N, Power, CovBlk = NULL,
-  df_adjust = df_adjust, sig.level, verbose)
+wlsInnerFunction(
+  DesMat,
+  EffSize,
+  sigma,
+  tau,
+  N,
+  Power,
+  CovBlk = NULL,
+  df_adjust = df_adjust,
+  sig.level,
+  verbose
+)
 }
 \arguments{
 \item{DesMat}{list, containing a matrix, the design matrix,

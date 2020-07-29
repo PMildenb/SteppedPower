@@ -4,11 +4,28 @@
 \alias{wlsMixedPower}
 \title{wlsMixedPower}
 \usage{
-wlsMixedPower(Cl = NULL, timepoints = NULL, DesMat = NULL,
-  trt_delay = NULL, time_adjust = "factor", design = "SWD", EffSize,
-  sigma, tau, eta = NULL, rho = NULL, CovBlk = NULL, N = NULL,
-  Power = NULL, N_range = c(1, 1000), sig.level = 0.05,
-  df_adjust = "none", verbose = FALSE)
+wlsMixedPower(
+  Cl = NULL,
+  timepoints = NULL,
+  DesMat = NULL,
+  trt_delay = NULL,
+  time_adjust = "factor",
+  period = NULL,
+  design = "SWD",
+  EffSize,
+  sigma,
+  tau,
+  eta = NULL,
+  rho = NULL,
+  CovBlk = NULL,
+  N = NULL,
+  Power = NULL,
+  family = "gaussian",
+  N_range = c(1, 1000),
+  sig.level = 0.05,
+  df_adjust = "none",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD),
@@ -37,9 +54,12 @@ intervention effect in the first (second ... ) intervention phase}
 
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
 
-\item{N}{integer, number of individuals per cluster.}
+\item{N}{numeric, number of individuals per cluster. Either a scalar, vector
+of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
+
+\item{family}{character, distribution family. Defaults to "gaussian" **not implemented**}
 
 \item{N_range}{numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.}
 

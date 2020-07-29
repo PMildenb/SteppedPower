@@ -3,7 +3,6 @@
 \docType{package}
 \name{SteppedPower-pkg}
 \alias{SteppedPower-pkg}
-\alias{SteppedPower-pkg-package}
 \title{SteppedPower}
 \description{
 Assesses Power of mixed models for the evaluation of a intervention.
