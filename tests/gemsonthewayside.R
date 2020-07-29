@@ -261,3 +261,107 @@ wlsMixedPower(Cl=c(169,169),timepoints=4,EffSize=.25,design="parallel",sigma=1,t
 
 SteppedPower::wlsMixedPower(Cl=c(6,15,3),EffSize=.25,sigma=(1/10),tau=1,N=1)
 construct_DesMat(c(6,0))
+
+###########################################################################################
+## KidSafe
+
+## momentaner Stand
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2),EffSize=.01,
+                            sigma=sqrt(.025*.975), time_adjust="factor",
+                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
+
+## ohne Faktorvariable  fuer Periodeneffekt
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2),EffSize=.01,
+                            sigma=sqrt(.025*.975), time_adjust="none",
+                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
+
+## Mit Saisoneffekt (d.h. Faktorvariable mit 4 Kategorien)
+trtMat <- construct_trtMat(Cl=c(2,2,2,0,2,2,2), trt_delay=.5, design="SWD", timepoints=8)
+DesMat <- list(dsnmatrix=cbind(as.numeric(t(trtMat)),diag(4)[rep(1:4,24),]), timepoints=8, SumCl=12)
+DesMat$dsnmatrix[,2] <- rep(1,96)
+class(DesMat) <- append(class(DesMat),"DesMat")
+SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01,
+                            sigma=sqrt(0.025*.975),
+                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
+
+## mit Nichtteilnehmer unter Kontrollbedingunen
+NMat      <- ifelse(trtMat>0,57,438)
+# sigmaLst8 <- split(sqrt(.025*.975/NMat), row(NMat))
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
+                            tau=0.00254, trt_delay=.5, N=NMat, verbose=FALSE)
+
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, tau=0.00254,
+                            sigma=sqrt(.025*.975), trt_delay=.5, N=NMat)
+
+## mit Nichtteilnehmern und mit Saisoneffekt
+SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01, sigma=sqrt(.025*.975),
+                            tau=0.00254, trt_delay=.5, N=NMat, verbose=TRUE)
+
+## mit Nichtteilnehmern und ohne Faktorvariable fuer Periodeneffekt
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
+                            sigma=sqrt(.02*.975), time_adjust="none",
+                            tau=0.00254, trt_delay=.5, N=1, verbose=TRUE)
+
+
+# Feinere Quartalsannahmen
+NMat2      <- ifelse(trtMat>0,.13/12,1/12)
+quartale  <- c(5000,5400,6200,5850,
+               4900,5600,6100,3000)
+QuatMat   <- t(matrix(quartale))[rep(1,12),]
+NMat2 <- NMat2 * QuatMat
+# sigmaLst8F <- split(sqrt(.025*.975/NMat), row(NMat))
+
+## mit Nichtteilnehmer unter Kontrollbedingunen
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
+                            sigma=sqrt(.025*.975), tau=0.00254,
+                            trt_delay=.5, N=NMat2)
+
+## mit Nichtteilnehmern und mit Saisoneffekt
+SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01,
+                            sigma=sqrt(.025*.975),
+                            tau=0.00254, trt_delay=.5, N=NMat2)
+
+## Zusaetzlicher Corona-Effekt in 2020 Q2
+DesMatCov19   <- DesMat
+DesMatCov19$dsnmatrix <- cbind(DesMatCov19$dsnmatrix, rep(c(rep(0,7),1),12))
+
+SteppedPower::wlsMixedPower(DesMat=DesMatCov19, EffSize=.01,
+                            sigma=sqrt(.025*.975),
+                            tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
+
+
+## Zusaetzliche Aufnahmen in zuruechliegenden Quartalen
+
+NMat3      <- ifelse(trtMat>0,.13/12,1/12)
+X <- 750
+quartale  <- c(5000+X,5400+X,6200+X,5850+X,
+               4900+X,5600+X,6100+X,3000)
+QuatMat   <- t(matrix(quartale))[rep(1,12),]
+NMat3 <- NMat3 * QuatMat
+
+wlsMixedPower(DesMat=DesMatCov19, EffSize=.01,
+              sigma=sqrt(.025*.975),
+              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
+
+wlsMixedPower(DesMat=DesMat, EffSize=.01,
+              sigma=sqrt(.025*.975),
+              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
+
+wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
+              sigma=sqrt(.025*.975),
+              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
+
+## Mit Covid-Faktor und feineren Quartalszahlen werden ca +1800 * 7 in den
+## Nicht-Covid-Quartalen benoetigt.
+## Ohne Covid-Faktor aber mit feineren Quartalszahlen sind es ca 750 * 7
+
+
+## Inzidenz 3.5
+wlsMixedPower(DesMat=DesMatCov19, EffSize=.0116667,
+              sigma=sqrt(.03*.97),
+              tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
+
+## Inzidenz 4
+wlsMixedPower(DesMat=DesMatCov19, EffSize=.0133333,
+              sigma=sqrt(.035*.965),
+              tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)

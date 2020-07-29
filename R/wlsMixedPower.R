@@ -21,7 +21,8 @@
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes **not implemented**
 #' @param rho numeric, correlation of tau and eta **not implemented**
-#' @param N integer, number of individuals per cluster.
+#' @param N numeric, number of individuals per cluster. Either a scalar, vector
+#' of length #Clusters or a matrix of dimension #Clusters x timepoints
 #' @param family character, distribution family. Defaults to "gaussian" **not implemented**
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
@@ -43,7 +44,8 @@ wlsMixedPower <- function(Cl=NULL,
                           trt_delay=NULL,
                           time_adjust="factor", period=NULL,
                           design="SWD",
-                          EffSize,sigma,
+                          EffSize,
+                          sigma,
                           tau,
                           eta=NULL,
                           rho=NULL,
@@ -63,23 +65,14 @@ wlsMixedPower <- function(Cl=NULL,
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
                                   timepoints=timepoints,time_adjust=time_adjust,
                                   period=period)
-  }
-  else if(inherits(DesMat,"list")){
-    if(!inherits(DesMat[[1]],"matrix") |
-       !inherits(DesMat[[2]],"numeric")|
-       !inherits(DesMat[[3]],"numeric"))
-      stop("In wlsMixedPower: Cannot interpret input for DesMat.")
-    dsnmatrix     <- DesMat[[1]]
-    timepoints    <- DesMat[[2]]
-    SumCl         <- DesMat[[3]]
-    names(DesMat) <- c("matrix","timepoints","SumCl")
-  }
-  else if(inherits(DesMat,"matrix")){
-    dsnmatrix   <- DesMat
-    timepoints  <- dim(DesMat)[2]-1
-    SumCl       <- dim(DesMat)[1]/timepoints
-    DesMat      <- list(matrix=dsnmatrix, timepoints=timepoints, SumCl=SumCl)
-  }
+  }else
+  if(inherits(DesMat,"matrix")){
+    ## not implemented. Should be passed to construct_DesMat
+  }else
+  if(!inherits(DesMat,"DesMat"))
+    stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
+         "It must be either an object of class DsnMat or a matrix")
+
 
   if(is.null(Power)){
     out <- wlsInnerFunction(DesMat=DesMat,
@@ -100,7 +93,7 @@ wlsMixedPower <- function(Cl=NULL,
     N_opt <- tryCatch(ceiling(uniroot(optFunction,
                                       DesMat=DesMat,
                                       EffSize=EffSize,
-                                      sigma=1,  ## why did i set this to 1 ??
+                                      sigma=1,  ## It works, but why did i set this to 1 ??
                                       tau=tau,
                                       Power=Power,
                                       df_adjust=df_adjust,
@@ -177,12 +170,12 @@ wlsInnerFunction <- function(DesMat,
                              df_adjust=df_adjust,
                              sig.level,
                              verbose){
-  dsnmatrix  <- DesMat$matrix
+  dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
   SumCl      <- DesMat$SumCl
 
 
-  N    <- ifelse(is.null(N),1,N)
+  if(is.null(N)) N <- 1
   NMat <- if(length(N) %in% c(1,timepoints,SumCl*timepoints)) {
             matrix(N, nrow=SumCl, ncol=timepoints)
           }else stop(paste('length of cluster size vector N is ', N,
@@ -202,6 +195,10 @@ wlsInnerFunction <- function(DesMat,
 
   sigmaMat <- sigmaMat / sqrt(NMat)
   sigmaLst <- split(sigmaMat,row(sigmaMat))
+
+  # if(!is.null(rho)){
+  #   matrix(dsnmatrix$matrix[,"trtvec"],
+  # }
 
   CovMat   <- construct_CovMat(timepoints=timepoints, sigma=sigmaLst, tau=tau)
 
