@@ -18,11 +18,10 @@ swPwr(swDsn(c(2,2,2,2)), sigma=sigtmp, tau=0.01, n=10, mu0=0.03, mu1=0.025,
 
 ########################################################################################
 ## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
-library(microbenchmark) ; library(swCRTdesign)
 Cl <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
 
-microbenchmark(
-  swPwr(design=swDsn(Cl),
+microbenchmark::microbenchmark()microbenchmark(
+  swCRTdesign::swPwr(design=swDsn(Cl),
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
@@ -31,15 +30,15 @@ microbenchmark(
   ,times=5)
 
 ## differenz  null
-swPwr(design=swDsn(Cl),
+microbenchmark::swPwr(design=swDsn(Cl),
       distn="gaussian",
       n=1, mu0=0.03, mu1=0.025,
       tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp) -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]]
 
 ## speed-test 2 viele Cluster, wenige Zeitpunkte
 Cl <- rep(25,6);
-microbenchmark(
-  swPwr(design=swDsn(Cl),
+microbenchmark::microbenchmark(
+  swCRTdesign::swPwr(design=swDsn(Cl),
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
@@ -135,8 +134,7 @@ wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.05, mu1=2/3*.05,
              tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
 
 
-library(swCRTdesign)
-swPwr(swDsn(c(2,2,1,1,1,1,2,2),tx.effect=.5), distn="binomial",
+swCRTdesign::swPwr(swDsn(c(2,2,1,1,1,1,2,2),tx.effect=.5), distn="binomial",
       n=N_cl, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 
 wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
@@ -158,10 +156,6 @@ sig.fct <- function(nInd,mu0,mu1){
   return(sigma)}
 
 ########################################################################################
-## sampsize calculation works
-
-devtools::install_github("PMildenb/SteppedPower")
-library(SteppedPower) ; library(swCRTdesign)
 
 ## Wie viele Individuen pro Cluster braucht man bei 4 Clustern in 4 Sequenzen je nach Design fuer 90% pwr?
 EffSize <- .5 ; sigma <- 1 ; tau <- .1
