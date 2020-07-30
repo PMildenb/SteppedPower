@@ -17,17 +17,28 @@
 #' @examples construct_DesMat(Cl=c(2,0,1))
 #'
 
-construct_DesMat <- function(Cl,
+construct_DesMat <- function(Cl          =NULL,
                              trt_delay   =NULL,
                              design      ="SWD",
                              timepoints  =NULL,
-                             time_adjust ="factor", period=NULL){
+                             time_adjust ="factor",
+                             period      =NULL,
+                             trtmatrix   =NULL){
 
-  trtMat  <- construct_trtMat(Cl=Cl,
-                              trt_delay=trt_delay,
-                              design=design,
-                              timepoints=timepoints)
-  timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
+  if(!is.null(trtmatrix)){
+    trtMat <- trtmatrix
+    if(inherits(trtMat,"matrix")){
+      SumCl      <- nrow(trtMat)
+      timepoints <- ncol(trtMat)
+      Cl         <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: add checks TODO: find better alternative
+    }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
+  }else{
+    trtMat  <- construct_trtMat(Cl            =Cl,
+                                trt_delay     =trt_delay,
+                                design        =design,
+                                timepoints    =timepoints)
+    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
+  }
 
   timeBlk <- construct_timeadjust(Cl          =Cl,
                                   timepoints  =timepoints,

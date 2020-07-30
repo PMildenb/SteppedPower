@@ -20,8 +20,8 @@ swPwr(swDsn(c(2,2,2,2)), sigma=sigtmp, tau=0.01, n=10, mu0=0.03, mu1=0.025,
 ## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
 Cl <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
 
-microbenchmark::microbenchmark()microbenchmark(
-  swCRTdesign::swPwr(design=swDsn(Cl),
+microbenchmark::microbenchmark(
+  swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
@@ -30,7 +30,7 @@ microbenchmark::microbenchmark()microbenchmark(
   ,times=5)
 
 ## differenz  null
-microbenchmark::swPwr(design=swDsn(Cl),
+swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
       distn="gaussian",
       n=1, mu0=0.03, mu1=0.025,
       tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp) -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]]
@@ -38,7 +38,7 @@ microbenchmark::swPwr(design=swDsn(Cl),
 ## speed-test 2 viele Cluster, wenige Zeitpunkte
 Cl <- rep(25,6);
 microbenchmark::microbenchmark(
-  swCRTdesign::swPwr(design=swDsn(Cl),
+  swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)

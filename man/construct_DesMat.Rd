@@ -5,12 +5,13 @@
 \title{construct_DesMat}
 \usage{
 construct_DesMat(
-  Cl,
+  Cl = NULL,
   trt_delay = NULL,
   design = "SWD",
   timepoints = NULL,
   time_adjust = "factor",
-  period = NULL
+  period = NULL,
+  trtmatrix = NULL
 )
 }
 \arguments{

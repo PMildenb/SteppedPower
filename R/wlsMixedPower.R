@@ -66,8 +66,8 @@ wlsMixedPower <- function(Cl=NULL,
                                   timepoints=timepoints,time_adjust=time_adjust,
                                   period=period)
   }else
-  if(inherits(DesMat,"matrix")){
-    ## not implemented. Should be passed to construct_DesMat
+  if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
+    DesMat <- construct_DesMat(trtmatrix=DesMat) ## TODO : dimension checks
   }else
   if(!inherits(DesMat,"DesMat"))
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
