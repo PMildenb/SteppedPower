@@ -75,7 +75,7 @@ wlsMixedPower <- function(Cl=NULL,
 
 
   if(is.null(Power)){
-    out <- wlsInnerFunction(DesMat=DesMat,
+    out <- compute_wlsPower(DesMat=DesMat,
                             EffSize=EffSize,
                             sigma=sigma,
                             tau=tau,
@@ -103,7 +103,7 @@ wlsMixedPower <- function(Cl=NULL,
                                      message(paste0("Maximal N yields power below ",Power,
                                                     ". Increase argument N_range."))
                                      return(N_range[2])})
-    out <- wlsInnerFunction(DesMat=DesMat,
+    out <- compute_wlsPower(DesMat=DesMat,
                             EffSize=EffSize,
                             sigma=sigma,
                             tau=tau,
@@ -132,7 +132,7 @@ wlsMixedPower <- function(Cl=NULL,
 
 optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
-  diff <- (Power - wlsInnerFunction(DesMat=DesMat,
+  diff <- (Power - compute_wlsPower(DesMat=DesMat,
                                     EffSize=EffSize,
                                     sigma=sigma,
                                     tau=tau,
@@ -145,7 +145,7 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 
 
 
-#' wlsInnerFunction
+#' compute_wlsPower
 #'
 #' @param DesMat  list, containing a matrix, the design matrix,
 #' numeric timepoints, numeric total number of Clusters
@@ -160,7 +160,7 @@ optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
 #'
 #' @export
 
-wlsInnerFunction <- function(DesMat,
+compute_wlsPower <- function(DesMat,
                              EffSize,
                              sigma,
                              tau,
