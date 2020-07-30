@@ -16,11 +16,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## compare_designs
 
-* add non-normal outcomes
+* make input options more flexible, i.e. x different, user-defined `DesMat`s to compare.
 
 ## wlsMixedPower
 
-* options to adjust for degrees of freedom (between-within, containment, none, ... )
+* options to adjust for degrees of freedom (between-within, containment, none, ... ) **DONE**
 * rewrite the very heart of the calculation as a function in sigma (using optim or similar)
 * add random trt eff. Possibly just by manipulating vector tau.
 
@@ -47,7 +47,7 @@ knitr::opts_chunk$set(echo = TRUE)
     * SumCl
   * NAMING THINGS IS HARD !! 
   
-  * other options for time_adjust: "linear", "periodic", 
+  * other options for time_adjust: "linear", "periodic", **DONE**
 
 ## simulation
 
@@ -57,13 +57,3 @@ knitr::opts_chunk$set(echo = TRUE)
   * normal case ? 
   * poisson ?
   * cohort studies
-
-
-
-## TALKING POINTS for ISCB
-
-* advise to use rand trt effect in literature (Hughes 2015 Thompson 2017 ... )
-* inflated test size (esp. for smaller number of clusters)
-* try to find balance 
-* maybe hinting at GEE approaches?
-* Visualisations of cluster influences -> in pkg already begun

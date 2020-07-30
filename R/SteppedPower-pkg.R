@@ -7,11 +7,8 @@
 #' @importFrom ggplot2 aes_string geom_point geom_tile ggplot scale_fill_gradient2
 #' theme_minimal
 #' @import reshape2
-#' @importFrom gee gee
-#' @import swCRTdesign
+#' @importFrom swCRTdesign swPwr
 #' @importFrom car logit
-#' @importFrom MASS glmmPQL
-#' @importFrom lme4 glmer lmer
 #' @importFrom graphics plot
 #' @importFrom stats dnorm integrate
 #'

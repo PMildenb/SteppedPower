@@ -1,10 +1,10 @@
 ---
-title: "MixedPower"
+title: "SteppedPower"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Stepped Power}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,25 +16,41 @@ knitr::opts_chunk$set(
 )
 ```
 
-The package `MixedPower` aims at providing tools for power calculation and design diagnostics in mixed model settings.  
+## About `SteppedPower`
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+The package `SteppedPower` aims at providing tools for power calculation 
+and design diagnostics in interventional study designs,
+with special focus on stepped wedge designs.  
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+This code is highly modularised in order to be flexible and easy to use 
+(and hopefully maintain as well). 
+At the same time, the use of sparse matrix classes of the wonderful `matrix` 
+package makes computaion fast (and numerically stable).
 
-## Vignette Info
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+## A quick tour
 
-## Styles
+For most users, the probably most important function is `wlsMixedPower`. 
+It calls `compute_wlsPower`, which is the workhorse function of this package.
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+### Define Study and Analysis Design
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+`construct_DesMat` 
+
+
+### Define assumed Covariance Structure
+
+`construct_CovMat`
+
+
+### Gimmicks
+
+`plot` method
+
+
+
+
+
 
 ## Figures
 
@@ -61,7 +77,3 @@ You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footn
 knitr::kable(head(mtcars, 10))
 ```
 
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
