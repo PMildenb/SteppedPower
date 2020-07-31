@@ -24,9 +24,9 @@ microbenchmark::microbenchmark(
   swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
-        tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
+        tau=0.01, eta=0.01, rho=0, gamma=0, sigma=sigtmp)
   ,
-  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
+  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01,eta=0.01)
   ,times=5)
 
 ## differenz  null
@@ -359,3 +359,16 @@ wlsMixedPower(DesMat=DesMatCov19, EffSize=.0116667,
 wlsMixedPower(DesMat=DesMatCov19, EffSize=.0133333,
               sigma=sqrt(.035*.965),
               tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
+
+
+
+###########################################################################################
+##
+
+SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
+                            sigma=sqrt(.025*.975), tau=0.00254, eta=(0.0001),
+                            trt_delay=.5, N=50)
+
+swCRTdesign::swPwr(design=swCRTdesign::swDsn(c(2,2,2,0,2,2,2),.5), "gaussian",n=50,mu0=0,mu1=.01,
+                   sigma=sqrt(.025*.975), tau=0.00254, eta=0.0001, rho=0, gamma=0)
+View(swCRTdesign::swPwr)

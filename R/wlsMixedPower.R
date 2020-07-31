@@ -38,26 +38,27 @@
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
 #' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-wlsMixedPower <- function(Cl=NULL,
-                          timepoints=NULL,
-                          DesMat=NULL,
-                          trt_delay=NULL,
-                          time_adjust="factor", period=NULL,
-                          design="SWD",
+wlsMixedPower <- function(Cl            =NULL,
+                          timepoints    =NULL,
+                          DesMat        =NULL,
+                          trt_delay     =NULL,
+                          time_adjust   ="factor",
+                          period        =NULL,
+                          design        ="SWD",
                           EffSize,
                           sigma,
                           tau,
-                          eta=NULL,
-                          rho=NULL,
-                          CovBlk=NULL,
-                          N=NULL,
-                          Power=NULL,
-                          family="gaussian",
-                          N_range=c(1,1000),
-                          sig.level=0.05,
-                          df_adjust="none",
-                          verbose=FALSE){
-
+                          eta           =NULL,
+                          rho           =NULL,
+                          CovMat        =NULL,
+                          N             =NULL,
+                          Power         =NULL,
+                          family        ="gaussian",
+                          N_range       =c(1,1000),
+                          sig.level     =0.05,
+                          df_adjust     ="none",
+                          verbose       =FALSE){
+  ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
 
@@ -73,19 +74,21 @@ wlsMixedPower <- function(Cl=NULL,
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
          "It must be either an object of class DsnMat or a matrix")
 
-
+  ## calculate Power #####
   if(is.null(Power)){
-    out <- compute_wlsPower(DesMat=DesMat,
-                            EffSize=EffSize,
-                            sigma=sigma,
-                            tau=tau,
-                            Power=NULL,
-                            N=N,
-                            sig.level=sig.level,
-                            df_adjust=df_adjust,
-                            CovBlk=CovBlk,
-                            verbose=verbose)
+    out <- compute_wlsPower(DesMat    =DesMat,
+                            EffSize   =EffSize,
+                            sigma     =sigma,
+                            tau       =tau,
+                            eta       =eta,
+                            rho       =rho,
+                            N         =N,
+                            df_adjust =df_adjust,
+                            sig.level =sig.level,
+                            CovMat    =CovMat,
+                            verbose   =verbose)
   }
+  ## calculate samplesize #####
   else if(Power<0 | Power>1){
     stop("Power needs to be between 0 and 1.")
   }
@@ -103,15 +106,17 @@ wlsMixedPower <- function(Cl=NULL,
                                      message(paste0("Maximal N yields power below ",Power,
                                                     ". Increase argument N_range."))
                                      return(N_range[2])})
-    out <- compute_wlsPower(DesMat=DesMat,
-                            EffSize=EffSize,
-                            sigma=sigma,
-                            tau=tau,
-                            N=N_opt,
-                            sig.level=sig.level,
-                            df_adjust=df_adjust,
-                            CovBlk=CovBlk,
-                            verbose=verbose)
+    out <- compute_wlsPower(DesMat    =DesMat,
+                            EffSize   =EffSize,
+                            sigma     =sigma,
+                            tau       =tau,
+                            eta       =eta,
+                            rho       =rho,
+                            N         =N_opt,
+                            df_adjust =df_adjust,
+                            sig.level =sig.level,
+                            CovMat    =CovMat,
+                            verbose   =verbose)
     out$N_opt <- N_opt
   }
   return(out)
@@ -130,17 +135,29 @@ wlsMixedPower <- function(Cl=NULL,
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param sig.level numeric, significance level, defaults to 0.05
 
-optFunction <- function(DesMat,EffSize,sigma,tau,N,Power,df_adjust,sig.level){
+optFunction <- function(DesMat,
+                        EffSize,
+                        sigma,
+                        tau,
+                        eta,
+                        rho,
+                        N,
+                        Power,
+                        df_adjust,
+                        sig.level,
+                        CovMat){
 
-  diff <- (Power - compute_wlsPower(DesMat=DesMat,
-                                    EffSize=EffSize,
-                                    sigma=sigma,
-                                    tau=tau,
-                                    N=N,
-                                    df_adjust=df_adjust,
-                                    sig.level=sig.level,
-                                    CovBlk=NULL,
-                                    verbose=FALSE)$Power)
+  diff <- (Power - compute_wlsPower(DesMat    =DesMat,
+                                    EffSize   =EffSize,
+                                    sigma     =sigma,
+                                    tau       =tau,
+                                    eta       =eta,
+                                    rho       =rho,
+                                    N         =N,
+                                    df_adjust =df_adjust,
+                                    sig.level =sig.level,
+                                    CovMat    =CovMat,
+                                    verbose   =FALSE)$Power)
   return(diff)}
 
 
@@ -164,66 +181,54 @@ compute_wlsPower <- function(DesMat,
                              EffSize,
                              sigma,
                              tau,
-                             N,
+                             eta        =NULL,
+                             rho        =NULL,
+                             N          =NULL,
                              Power,
-                             CovBlk=NULL,
-                             df_adjust=df_adjust,
-                             sig.level,
-                             verbose){
+                             CovMat     =NULL,
+                             df_adjust  ="none",
+                             sig.level  =.05,
+                             verbose    =FALSE){
   dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
   SumCl      <- DesMat$SumCl
+  trtMat     <- DesMat$trtMat
 
+  ## get covariance matrix #####
+  CovMat   <- construct_CovMat(SumCl      =SumCl,
+                               timepoints =timepoints,
+                               sigma      =sigma,
+                               tau        =tau,
+                               eta        =eta,
+                               rho        =rho,
+                               trtMat     =trtMat,
+                               N          =N)
 
-  if(is.null(N)) N <- 1
-  NMat <- if(length(N) %in% c(1,timepoints,SumCl*timepoints)) {
-            matrix(N, nrow=SumCl, ncol=timepoints)
-          }else stop(paste('length of cluster size vector N is ', N,
-                     '. This does not fit to given number of clusters, which is ',SumCl))
-
-  lenS <- length(sigma)
-  sigmaMat <- if(lenS==1){                      matrix(sigma, nrow=SumCl, ncol=timepoints)
-              }else if(lenS==timepoints){       matrix(sigma, nrow=SumCl, ncol=timepoints)
-              }else if(lenS==SumCl){            matrix(sigma, nrow=SumCl, ncol=timepoints, byrow=TRUE)
-              }else if(lenS==timepoints*SumCl) {matrix(sigma, nrow=SumCl, ncol=timepoints)
-              }else stop(paste('length of sigma is ', N,
-                               '. This does not fit to given number of timepoints, which is ',timepoints,
-                               ' or to the given number of Clusters, which is ', SumCl))
-  if(timepoints==SumCl & lenS==SumCl) warning("sigma is assumed to change over time. If you wanted sigma
-                                              to change between clusters, please provide as matrix of dimension
-                                              #Cluster x timepoints")
-
-  sigmaMat <- sigmaMat / sqrt(NMat)
-  sigmaLst <- split(sigmaMat,row(sigmaMat))
-
-  # if(!is.null(rho)){
-  #   matrix(dsnmatrix$matrix[,"trtvec"],
-  # }
-
-  CovMat   <- construct_CovMat(timepoints=timepoints, sigma=sigmaLst, tau=tau)
-
+  ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
+  if(verbose) WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
+  ## ddf for power calculation #####
   df <- switch(df_adjust,
                "none"           = Inf,
                "between-within" = SumCl - rankMatrix(dsnmatrix),
                "containment"    = dim(dsnmatrix)[1] - SumCl,
                "residual"       = dim(dsnmatrix)[1] - rankMatrix(dsnmatrix))
   if(df<3){
-    df <- Inf
-    warning(paste0(df_adjust,"-method not applicable. No DDF adjustment used."))
-  }
+    warning(df_adjust,"-method not applicable. No DDF adjustment used.")
+    df <- Inf }
 
-  out <- list(Power     =tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level),
+  Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
+  out <- list(Power     =Pwr,
               denomDF   =df,
               df_adjust =df_adjust,
               sig.level =sig.level)
-  if(verbose) out <- append(out,list(
-                WeightMatrix=WgtMat,
-                DesignMatrix=dsnmatrix,
-                CovarianceMatrix=CovMat))
+  if(verbose)
+    out <- append(out,
+                  list(WeightMatrix     =WgtMat,
+                       DesignMatrix     =dsnmatrix,
+                       CovarianceMatrix =CovMat))
   class(out) <- append(class(out),"wlsPower")
   return(out)
 }

@@ -49,26 +49,35 @@ construct_CovBlk(timepoints=5, sigma=2, tau=2)
 construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
 construct_CovBlk(timepoints=3, sigma=c(1,2,3), tau=2)
 
+eta <- c(0,.2,.2)
+construct_CovBlk(timepoints,sigma,tau,eta)
+
 ## CovMat #####
-construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),tau=0.3)
-construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
-                 tau=list(c(.2,.2,.1),c(.2,.1,.1)))
-construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
-                 tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(4,4))
-construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
-                 tau=0,N=c(1,1))
-construct_CovMat(SumCl=2,timepoints=3, sigma=list(c(1,2,2),c(1,1,2)),
-                 tau=0,N=c(25,16))
-Cov_PB <- construct_CovMat(4,3,list(c(1,1,1),
-                                    c(1,1,1),
-                                    c(1,1,1),
-                                    c(1,1,1)),0.1)
+construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(1,1,2,1,2,2),nrow=2),tau=0.3)
+construct_CovMat(SumCl=2,timepoints=3, sigma=1,tau=0.3,eta=1,trtMat = upper.tri(matrix(1,nrow=2,ncol=3)))
+
+construct_CovMat(sigma=1,tau=0.3,eta=1,trtMat = upper.tri(matrix(1,nrow=2,ncol=3)))
+construct_CovMat(SumCl=2,timepoints=3, sigma=1, tau=matrix(c(.3,.3,1.3,.3,1.3,1.3),nrow=2) )
+
+construct_CovMat(SumCl=2,timepoints=3, sigma=1, tau=.3, N=4)
+construct_CovMat(SumCl=2,timepoints=3, sigma=1, tau=.3, N=c(4,4))
+construct_CovMat(SumCl=2,timepoints=3, sigma=1, tau=.3, N=matrix(4,2,3))
+
+construct_CovMat(SumCl=2,timepoints=3, sigma=1, tau=.3, N=c(4,16))
+construct_CovMat(SumCl=2,timepoints=3, sigma=c(1/2,1/4), tau=.3, N=1)
+construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(.5,.25),2,3), tau=.3, N=1)
+
+
+Cov_PB <- construct_CovMat(4,3,sigma=matrix(1,4,3),0.1)
 Cov_PB
 
-
-construct_CovMat(SumCl=10,timepoints=1,sigma=1,tau=0)
+construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=0)
 construct_CovMat(SumCl=10,timepoints=2,sigma=1,tau=1)
 
+trtMat <- construct_trtMat(c(1,1,1),NULL,"SWD")
+construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=0)
+construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1)
+construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),trtMat=trtMat)
 
 ## compute_wlsPower #####
 
@@ -110,11 +119,10 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
-out <- wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
-SteppedPower:::optFunction(DesMat=DesMat_prl,EffSize=0.5,
-            sigma=1,tau=.3,N=1,
-            Power=.9,df_adjust="none",sig.level=.05)
+SteppedPower:::optFunction(DesMat=DesMat,EffSize=0.5,sigma=1,tau=.3,N=5,
+                           eta=NULL,rho=NULL,Power=.9,df_adjust="none",sig.level=.05)
 
 uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
         sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
@@ -178,22 +186,17 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
 wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
               tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
-a$DesignMatrix
 
 ## wlsGlmmPower #####
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
 swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
 
-
 wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
 swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
-
 
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
-
-
 
 
 ## compare_designs #####
@@ -228,5 +231,6 @@ system.time(
                 timepoints=timepoints, verbose=T))
 
 system.time(
-  HuHuPwrSWD <- swPwr(design=swDsn(rep(10,30)),distn="gaussian",n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
+  HuHuPwrSWD <- swCRTdesign::swPwr(design=swCRTdesign::swDsn(rep(10,30)),distn="gaussian",
+                                   n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
 

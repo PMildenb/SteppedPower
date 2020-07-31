@@ -18,14 +18,17 @@
 
 construct_CovBlk <- function(timepoints,
                              sigma,
-                             tau){
+                             tau,
+                             eta=NULL){
   # if(length(sigma)>1 && length(sigma)!=timepoints)
   #   stop("length of vector sigma does not fit to number of timepoints")
   if (length(tau)==1)            taus <- rep(tau,timepoints)  else
   if (length(tau)==timepoints)   taus <- tau                  else
     stop("length of vector tau does not fit to number of timepoints")
 
-  return(diag(sigma^2,timepoints) + taus %o% taus)
+  out <- diag(sigma^2,timepoints) + taus %o% taus
+  if(!is.null(eta)) out <- out + eta %o% eta
+  return(out)
 }
 
 
@@ -39,7 +42,7 @@ construct_CovBlk <- function(timepoints,
 #' @param sigma numeric, residual error of cluster means.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param N integer (vector), number of individuals per cluster.
-#' Defaults to 'rep(1,sum(Cl))' if not passed. **deprecated**
+#' Defaults to 'rep(1,sum(Cl))' if not passed.
 #'
 #' @return a covariance matrix
 #' @export
@@ -52,24 +55,67 @@ construct_CovBlk <- function(timepoints,
 
 
 
-construct_CovMat <- function(SumCl=NULL,
-                             timepoints=NULL,
+construct_CovMat <- function(SumCl      =NULL,
+                             timepoints =NULL,
                              sigma,
                              tau,
-                             N=NULL,
-                             CovBlk=NULL){
+                             eta        =NULL,
+                             rho        =NULL,
+                             trtMat     =NULL,
+                             N          =NULL,
+                             CovBlk     =NULL){
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
-    return(Matrix::bdiag(CovBlks))
   } else {
+    ## Checks ##
+    if(is.null(SumCl)      & !is.null(trtMat)) SumCl      <- nrow(trtMat)
+    if(is.null(timepoints) & !is.null(trtMat)) timepoints <- ncol(trtMat)
     timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
 
-    CovBlks <- mapply(construct_CovBlk,sigma=sigma,tau=tau,
-                      MoreArgs=list(timepoints=timepoints),
-                      SIMPLIFY = FALSE)
-    CovMat  <- Matrix::bdiag(CovBlks)
+    if(!is.null(eta) & is.null(trtMat)) stop("If `eta` is not NULL, a treatment matrix must be given to construct_CovMat()")
+    if(!is.null(rho) & is.null(eta))    stop("In construct_CovMat: eta is needed if rho is not NULL")
 
-    return(CovMat)
+    ## N ##
+    if(is.null(N)) N <- 1
+    NMat <- if(length(N) %in% c(1,SumCl,SumCl*timepoints)) {
+      matrix(N, nrow=SumCl, ncol=timepoints)
+    }else stop(paste('length of cluster size vector N is ', N,
+                     '. This does not fit to given number of clusters, which is ',SumCl))
+
+    ## sigma ##
+    lenS <- length(sigma)
+    sigmaMat <- if(lenS==1){          matrix(sigma, nrow=SumCl, ncol=timepoints)
+    }else if(lenS==SumCl){            matrix(sigma, nrow=SumCl, ncol=timepoints)
+    }else if(lenS==timepoints){       matrix(sigma, nrow=SumCl, ncol=timepoints, byrow=TRUE)
+    }else if(lenS==timepoints*SumCl) {matrix(sigma, nrow=SumCl, ncol=timepoints)
+    }else stop(paste('length of sigma is ', N,
+                     '. This does not fit to given number of timepoints, which is ',timepoints,
+                     ' or to the given number of Clusters, which is ', SumCl))
+    if(timepoints==SumCl & lenS==SumCl) warning("sigma is assumed to change over time. If you wanted sigma
+                                              to change between clusters, please provide as matrix of dimension
+                                              #Cluster x timepoints")
+
+    ## N into sigma ##
+    sigmaMat <- sigmaMat / sqrt(NMat)
+    sigmaLst <- split(sigmaMat,row(sigmaMat))
+
+    ## tau , eta and rho  ##
+    tauMat <- matrix(tau, nrow=SumCl, ncol=timepoints) ## tau can be scalar, vector or matrix
+    tauLst <- split(tauMat, row(tauMat))
+
+
+    if(!is.null(eta)) {
+      etaMat <- trtMat * eta                           ## eta must be a scalar
+      etaLst <- split(etaMat, row(etaMat))
+    } else etaLst <- vector("list",length=SumCl)
+
+    CovBlks <- mapply(construct_CovBlk,
+                      sigma = sigmaLst,
+                      tau   = tauLst,
+                      eta   = etaLst,
+                      MoreArgs = list(timepoints=timepoints),
+                      SIMPLIFY = FALSE)
   }
+  return(Matrix::bdiag(CovBlks))
 }
 
