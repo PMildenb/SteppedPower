@@ -46,8 +46,8 @@ wlsMixedPower <- function(Cl            =NULL,
                           period        =NULL,
                           design        ="SWD",
                           EffSize,
-                          sigma,
-                          tau,
+                          sigma         =1, ## default needed for CovMat input, still experimental
+                          tau           =0,
                           eta           =NULL,
                           rho           =NULL,
                           CovMat        =NULL,
@@ -62,19 +62,18 @@ wlsMixedPower <- function(Cl            =NULL,
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
 
+  ## check DesMat #####
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
                                   timepoints=timepoints,time_adjust=time_adjust,
                                   period=period)
-  }else
-  if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
+  }else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
     DesMat <- construct_DesMat(trtmatrix=DesMat) ## TODO : dimension checks
-  }else
-  if(!inherits(DesMat,"DesMat"))
+  }else if(!inherits(DesMat,"DesMat"))
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
          "It must be either an object of class DsnMat or a matrix")
 
-  ## calculate samplesize #####
+  ## calculate samplesize (if needed) #####
   if(!is.null(Power)){
     if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(uniroot(optFunction,
@@ -169,7 +168,7 @@ optFunction <- function(DesMat,
 compute_wlsPower <- function(DesMat,
                              EffSize,
                              sigma,
-                             tau,
+                             tau        =0,
                              eta        =NULL,
                              rho        =NULL,
                              N          =NULL,
@@ -184,14 +183,15 @@ compute_wlsPower <- function(DesMat,
   trtMat     <- DesMat$trtMat
 
   ## get covariance matrix #####
-  CovMat   <- construct_CovMat(SumCl      =SumCl,
-                               timepoints =timepoints,
-                               sigma      =sigma,
-                               tau        =tau,
-                               eta        =eta,
-                               rho        =rho,
-                               trtMat     =trtMat,
-                               N          =N)
+  if(is.null(CovMat))
+    CovMat   <- construct_CovMat(SumCl      =SumCl,
+                                 timepoints =timepoints,
+                                 sigma      =sigma,
+                                 tau        =tau,
+                                 eta        =eta,
+                                 rho        =rho,
+                                 trtMat     =trtMat,
+                                 N          =N)
 
   ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)

@@ -195,6 +195,14 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
               tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
 
+## wlsMixedPower - CovMat/DesMat input #####
+CM <- construct_CovMat(1000,21,3,1)
+DM <- construct_DesMat(rep(50,20))
+microbenchmark::microbenchmark(
+  wlsMixedPower(DesMat = DM, CovMat = CM, EffSize=5)
+,
+  wlsMixedPower(DesMat = DM, sigma=3, tau=1, EffSize=5)
+,times=5)
 
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
