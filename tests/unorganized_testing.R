@@ -146,20 +146,28 @@ Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 design="parallel" ; N <- NULL ; sig.level=0.05
 wlsMixedPower(Cl=c(5,5),EffSize=.2,sigma=1,tau=0.1,timepoints=2,design="parallel")
 
-
+microbenchmark::microbenchmark(
 wls_parBl1 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
                            design="parallel_baseline",timepoints=51)
+,
 wls_parBl2 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
                            design="parallel_baseline",timepoints=c(15,36))
+,
 wls_swd    <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=rep(2,50),
                             design="SWD")
+,times=10)
+system.time(sw <- swCRTdesign::swPwr(swCRTdesign::swDsn(rep(2,50)),distn="gaussian",
+                               n=1,mu0=0,mu1=.1,
+                               sigma=1,tau=1,eta=0,rho=0,gamma=0))
 wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
+sw
 
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
-swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,mu0=0,mu1=.1,tau=.3,eta=0,sigma=1)
+swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
+                   mu0=0,mu1=.1,tau=.3,eta=0,rho=0,gamma=0,sigma=1)
 
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
@@ -187,12 +195,6 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
               tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
 
-## wlsGlmmPower #####
-wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
-swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
-
-wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
-swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
@@ -206,6 +208,14 @@ compare_designs(EffSize=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
 compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
 
+
+
+## wlsGlmmPower #####
+wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
+swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
+
+wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
+swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
 
 
 ## binomial <-> gaussian analogy
@@ -222,15 +232,21 @@ microbenchmark::microbenchmark(
 
 ## really large designs
 
-Cl_swd <- rep(10,30) ; EffSize <- .1 ; sigma <- 1 ; tau <- 1 ; design <- "SWD"
+Cl_swd <- rep(5,60) ; EffSize <- .1 ; sigma <- 1 ; tau <- 1 ; design <- "SWD"
 Cl_prl <- c(150,150) ; timepoints <- 61
 system.time(
-  pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau))
+  pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
 system.time(
   pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
                 timepoints=timepoints, verbose=T))
+dim(pwrPRL$DesignMatrix)
+dim(pwrSWD$DesignMatrix)
+
 
 system.time(
   HuHuPwrSWD <- swCRTdesign::swPwr(design=swCRTdesign::swDsn(rep(10,30)),distn="gaussian",
                                    n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
+
+system.time(wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
+
 

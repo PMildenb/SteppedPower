@@ -172,7 +172,7 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
   if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
   timeBlk <- switch (time_adjust,
-    factor   = cbind(1,rbind(0,diag(1,timepoints-1)))[rep(1:timepoints,SumCl),],
+    factor   = cbind(1,rbind(0,Diagonal(timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
     linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
     periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
@@ -181,3 +181,4 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
 
   return(timeBlk)
 }
+
