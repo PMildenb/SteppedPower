@@ -74,30 +74,16 @@ wlsMixedPower <- function(Cl            =NULL,
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
          "It must be either an object of class DsnMat or a matrix")
 
-  ## calculate Power #####
-  if(is.null(Power)){
-    out <- compute_wlsPower(DesMat    =DesMat,
-                            EffSize   =EffSize,
-                            sigma     =sigma,
-                            tau       =tau,
-                            eta       =eta,
-                            rho       =rho,
-                            N         =N,
-                            df_adjust =df_adjust,
-                            sig.level =sig.level,
-                            CovMat    =CovMat,
-                            verbose   =verbose)
-  }
   ## calculate samplesize #####
-  else if(Power<0 | Power>1){
-    stop("Power needs to be between 0 and 1.")
-  }
-  else {
+  if(!is.null(Power)){
+    if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(uniroot(optFunction,
                                       DesMat=DesMat,
                                       EffSize=EffSize,
                                       sigma=1,  ## It works, but why did i set this to 1 ??
                                       tau=tau,
+                                      eta=eta,
+                                      rho=rho,
                                       Power=Power,
                                       df_adjust=df_adjust,
                                       sig.level=.05,
@@ -106,19 +92,22 @@ wlsMixedPower <- function(Cl            =NULL,
                                      message(paste0("Maximal N yields power below ",Power,
                                                     ". Increase argument N_range."))
                                      return(N_range[2])})
-    out <- compute_wlsPower(DesMat    =DesMat,
-                            EffSize   =EffSize,
-                            sigma     =sigma,
-                            tau       =tau,
-                            eta       =eta,
-                            rho       =rho,
-                            N         =N_opt,
-                            df_adjust =df_adjust,
-                            sig.level =sig.level,
-                            CovMat    =CovMat,
-                            verbose   =verbose)
-    out$N_opt <- N_opt
+    N <- N_opt
   }
+  ## calculate Power #####
+  out <- compute_wlsPower(DesMat    =DesMat,
+                          EffSize   =EffSize,
+                          sigma     =sigma,
+                          tau       =tau,
+                          eta       =eta,
+                          rho       =rho,
+                          N         =N,
+                          df_adjust =df_adjust,
+                          sig.level =sig.level,
+                          CovMat    =CovMat,
+                          verbose   =verbose)
+  if(!is.null(Power)) out$N_opt <- N_opt
+
   return(out)
 }
 
