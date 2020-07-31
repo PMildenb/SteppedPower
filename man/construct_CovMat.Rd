@@ -9,6 +9,9 @@ construct_CovMat(
   timepoints = NULL,
   sigma,
   tau,
+  eta = NULL,
+  rho = NULL,
+  trtMat = NULL,
   N = NULL,
   CovBlk = NULL
 )
@@ -18,12 +21,24 @@ construct_CovMat(
 
 \item{timepoints}{numeric, scalar}
 
-\item{sigma}{numeric, residual error of cluster means.}
+\item{sigma}{numeric (scalar, vector or matrix), residual error of cluster means.}
 
-\item{tau}{numeric, standard deviation of random intercepts}
+\item{tau}{numeric (scalar, vector or matrix), standard deviation of random intercepts}
 
-\item{N}{integer (vector), number of individuals per cluster.
-Defaults to 'rep(1,sum(Cl))' if not passed. **deprecated**}
+\item{eta}{numeric (scalar), standard deviation of random slopes. If `eta` is
+given, `trtMat` is needed as well.}
+
+\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`. **not implemented**}
+
+\item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
+the function `construct_trtMat`, indicating the cluster-periods that receive
+interventional treatment. Defaults to NULL. If trtMat is given, the arguments
+`SumCl` and `timepoints` are ignored (!).}
+
+\item{N}{numeric (scalar, vector or matrix), number of individuals per cluster.
+Defaults to 'rep(1,sum(Cl))' if not passed.}
+
+\item{CovBlk}{a matrix of dimension *timepoints* x *timepoints*.}
 }
 \value{
 a covariance matrix

@@ -13,11 +13,11 @@ wlsMixedPower(
   period = NULL,
   design = "SWD",
   EffSize,
-  sigma,
-  tau,
+  sigma = 1,
+  tau = 0,
   eta = NULL,
   rho = NULL,
-  CovBlk = NULL,
+  CovMat = NULL,
   N = NULL,
   Power = NULL,
   family = "gaussian",
@@ -37,22 +37,28 @@ If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for paralle
 
 \item{DesMat}{matrix of dimension ... , if supplied, timepoints and Cl are ignored.}
 
-\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
 \item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
+\item{period}{numeric (scalar)}
+
 \item{design}{character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".}
 
-\item{EffSize}{numeric, raw effect}
+\item{EffSize}{numeric (scalar), raw effect}
 
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
-\item{eta}{numeric, standard deviation of random slopes **not implemented**}
+\item{eta}{numeric, standard deviation of random slopes}
 
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
+
+\item{CovMat}{numeric, a positive-semidefinite matrix  with
+*#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+`tau`, `eta` and `rho` are ignored.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
 of length #Clusters or a matrix of dimension #Clusters x timepoints}
@@ -61,7 +67,7 @@ of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
 \item{family}{character, distribution family. Defaults to "gaussian" **not implemented**}
 
-\item{N_range}{numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.}
+\item{N_range}{numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 

@@ -10,6 +10,8 @@
 #' @param design character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
+#' @param trtmatrix
+#' @param period
 #'
 #' @return a matrix (for a stepped wedge design)
 #' @export

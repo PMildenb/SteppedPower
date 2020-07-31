@@ -4,7 +4,19 @@
 \alias{optFunction}
 \title{optFunction}
 \usage{
-optFunction(DesMat, EffSize, sigma, tau, N, Power, df_adjust, sig.level)
+optFunction(
+  DesMat,
+  EffSize,
+  sigma,
+  tau,
+  eta,
+  rho,
+  N,
+  Power,
+  df_adjust,
+  sig.level,
+  CovMat
+)
 }
 \arguments{
 \item{DesMat}{list, containing a matrix, the design matrix,
@@ -16,11 +28,21 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
+\item{eta}{numeric, standard deviation of random slopes}
+
+\item{rho}{numeric, correlation of tau and eta **not implemented**}
+
 \item{N}{integer, number of individuals per cluster.}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 
+\item{df_adjust}{character, one of the following: **not implemented**}
+
 \item{sig.level}{numeric, significance level, defaults to 0.05}
+
+\item{CovMat}{numeric, a positive-semidefinite matrix  with
+*#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+`tau`, `eta` and `rho` are ignored.}
 }
 \description{
 only to be called by wlsMixedPower.

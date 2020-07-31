@@ -8,13 +8,15 @@ compute_wlsPower(
   DesMat,
   EffSize,
   sigma,
-  tau,
-  N,
+  tau = 0,
+  eta = NULL,
+  rho = NULL,
+  N = NULL,
   Power,
-  CovBlk = NULL,
-  df_adjust = df_adjust,
-  sig.level,
-  verbose
+  CovMat = NULL,
+  df_adjust = "none",
+  sig.level = 0.05,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -27,9 +29,15 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
+\item{rho}{numeric, correlation of tau and eta **not implemented**}
+
 \item{N}{integer, number of individuals per cluster.}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
+
+\item{CovMat}{numeric, a positive-semidefinite matrix  with
+*#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+`tau`, `eta` and `rho` are ignored.}
 
 \item{df_adjust}{character, one of the following: **not implemented**}
 

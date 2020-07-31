@@ -25,6 +25,8 @@ intervention effect in the first (second ... ) intervention phase}
 \item{timepoints}{numeric, scalar}
 
 \item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+
+\item{period}{}
 }
 \value{
 a matrix (for a stepped wedge design)

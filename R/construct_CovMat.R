@@ -1,13 +1,15 @@
 
 #' construct_CovBlk
 #'
-#' constructs the covariance matrix for multiple measurements of one cluster
+#' constructs the covariance matrix for multiple measurements of one cluster.
+#' This function is not designed to be used directly.
 #'
 #' @param timepoints numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix
 #' @param sigma numeric (scalar or vector of length `timepoints`),
 #' residual error (usually of cluster means)
-#' @param tau numeric (scalar or vector of length timepoints), standard deviation of random intercepts,
+#' @param tau numeric (scalar or vector of length *timepoints*), standard deviation of random intercepts,
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
+#' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
 #'
 #' @return a block of a covariance matrix
 #' @export
@@ -39,10 +41,18 @@ construct_CovBlk <- function(timepoints,
 #'
 #' @param SumCl total number of clusters
 #' @param timepoints numeric, scalar
-#' @param sigma numeric, residual error of cluster means.
-#' @param tau numeric, standard deviation of random intercepts
-#' @param N integer (vector), number of individuals per cluster.
+#' @param sigma numeric (scalar, vector or matrix), residual error of cluster means.
+#' @param tau numeric (scalar, vector or matrix), standard deviation of random intercepts
+#' @param N numeric (scalar, vector or matrix), number of individuals per cluster.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
+#' @param eta numeric (scalar), standard deviation of random slopes. If `eta` is
+#' given, `trtMat` is needed as well.
+#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`. **not implemented**
+#' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
+#' the function `construct_trtMat`, indicating the cluster-periods that receive
+#' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
+#' `SumCl` and `timepoints` are ignored (!).
+#' @param CovBlk a matrix of dimension *timepoints* x *timepoints*.
 #'
 #' @return a covariance matrix
 #' @export

@@ -12,23 +12,27 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for parallel designs.
 #' @param DesMat matrix of dimension ... , if supplied, timepoints and Cl are ignored.
-#' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifing the
+#' @param trt_delay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
 #' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
-#' @param EffSize numeric, raw effect
+#' @param EffSize numeric (scalar), raw effect
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
-#' @param eta numeric, standard deviation of random slopes **not implemented**
+#' @param eta numeric, standard deviation of random slopes
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
 #' @param family character, distribution family. Defaults to "gaussian" **not implemented**
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
-#' @param N_range numeric, vector specifiing the lower and upper bound for N, ignored if Power is NULL.
+#' @param N_range numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param df_adjust character, one of the following: **not implemented**
 #' @param verbose logical, should the function return the design and covariance matrix?
+#' @param period numeric (scalar)
+#' @param CovMat numeric, a positive-semidefinite matrix  with
+#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+#' `tau`, `eta` and `rho` are ignored.
 #'
 #' @return a list. First element is the power,
 #' second element the weights of cluster per period for estimating the treatment effect **needs update**
@@ -121,6 +125,12 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param tau numeric, standard deviation of random intercepts
 #' @param N integer, number of individuals per cluster.
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
+#' @param eta numeric, standard deviation of random slopes
+#' @param rho numeric, correlation of tau and eta **not implemented**
+#' @param df_adjust character, one of the following: **not implemented**
+#' @param CovMat numeric, a positive-semidefinite matrix  with
+#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+#' `tau`, `eta` and `rho` are ignored.
 #' @param sig.level numeric, significance level, defaults to 0.05
 
 optFunction <- function(DesMat,
@@ -162,6 +172,10 @@ optFunction <- function(DesMat,
 #' @param df_adjust character, one of the following: **not implemented**
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
+#' @param rho numeric, correlation of tau and eta **not implemented**
+#' @param CovMat numeric, a positive-semidefinite matrix  with
+#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+#' `tau`, `eta` and `rho` are ignored.
 #'
 #' @export
 
