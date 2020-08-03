@@ -23,3 +23,9 @@ compare_designs <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                     "parallel"= pwr_par$Power,
                     "parallel+baseline"= pwr_parBl$Power,row.names="Power"))
 }
+
+
+compare_designs2 <- function(Designs, EffSize, family=gaussian(),
+                             sigma, tau, eta=NULL, rho=NULL, sig.level=0.05){
+
+}
