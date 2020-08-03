@@ -82,10 +82,12 @@ print.DesMat <- function(x, ...){
 #' @method plot DesMat
 #' @export
 #'
+
+# x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
 plot.DesMat <- function(x, ...){
-  # trt_matrix <- matrix(nrow=DesMat$SumCl, ncol=DesMat$timepoints)
-  trt_matrix <- matrix(x$matrix[,1],nrow = x$SumCl, byrow = T)
-  graphics::plot(trt_matrix)
+  trt <- x$trtMat
+  plot_ly(type="heatmap", colors=c("lightblue","red"),x=~1:dim(trt)[1],y=~1:dim(trt)[2],
+          z=~trt, xgap=5, ygap=5) %>% layout(yaxis = list(autorange = "reversed"))
 }
 
 
@@ -183,4 +185,3 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
 
   return(timeBlk)
 }
-
