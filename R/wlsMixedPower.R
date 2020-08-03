@@ -89,6 +89,7 @@ wlsMixedPower <- function(Cl            =NULL,
                                       rho=rho,
                                       Power=Power,
                                       df_adjust=df_adjust,
+                                      CovMat=CovMat,
                                       sig.level=.05,
                                       interval=N_range)$root),
                       error=function(cond){
