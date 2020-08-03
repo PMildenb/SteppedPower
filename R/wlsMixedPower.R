@@ -235,7 +235,7 @@ compute_wlsPower <- function(DesMat,
   if(verbose)
     out <- append(out,
                   list(WeightMatrix     =WgtMat,
-                       DesignMatrix     =dsnmatrix,
+                       DesignMatrix     =DesMat,
                        CovarianceMatrix =CovMat))
   class(out) <- append(class(out),"wlsPower")
   return(out)
