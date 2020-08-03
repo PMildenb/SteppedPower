@@ -226,7 +226,11 @@ compute_wlsPower <- function(DesMat,
   out <- list(Power     =Pwr,
               denomDF   =df,
               df_adjust =df_adjust,
-              sig.level =sig.level)
+              sig.level =sig.level,
+              CovParams =list(sigma=sigma,   ## NOT compatible with CovMat-Input (!)
+                              tau  =tau,
+                              eta  =eta,
+                              rho  =rho))
   if(verbose)
     out <- append(out,
                   list(WeightMatrix     =WgtMat,
