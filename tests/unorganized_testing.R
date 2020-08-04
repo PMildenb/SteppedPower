@@ -121,11 +121,11 @@ DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
-SteppedPower:::optFunction(DesMat=DesMat,EffSize=0.5,sigma=1,tau=.3,N=5,
+SteppedPower:::optFunction(DesMat=DesMat,EffSize=0.5,sigma=1,tau=.3,N=5,CovMat=NULL,
                            eta=NULL,rho=NULL,Power=.9,df_adjust="none",sig.level=.05)
 
-uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,
-        sigma=1,tau=.15,Power=.9,df_adjust="none",sig.level=.05,
+uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,CovMat=NULL,
+        sigma=1,tau=.15,eta=0,rho=0,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))

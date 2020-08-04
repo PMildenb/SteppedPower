@@ -56,25 +56,25 @@ plot_wls2 <- function(x){
   subp
 }
 
-x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trt_delay = .5, EffSize=.01, N=500,
-                   sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=TRUE)
-
-# debugonce(plot_wls2)
-plot_wls2(x)
-
-plot_wls3 <- function(x){
-  p      <- x$CovParams
-  tauRange <- seq(0, 2*p$tau,length.out=5)
-  etaRange <- if(is.null(p$eta)) seq(0,max(tauRange),length.out=5) else seq(0,2*p$eta,length.out=5)
-
-  grid <- expand.grid(tau=tauRange,eta=etaRange)
-  pwr <- list()
-  for(i in 1:dim(grid)[1]){
-    pwr[[i]] <- wlsMixedPower(DesMat=x$DesignMatrix,EffSize=.01,sigma=p$sigma,N=200,
-                              tau=grid$tau[i], eta=grid$eta[i])[["Power"]]
-  }
-  tmp <- data.frame(grid,pwr=unlist(pwr))
-  plot_ly(type="scatter",mode="lines+marker",x=~tau, y=~pwr, split=~eta, data=tmp)
-}
-
-
+# x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trt_delay = .5, EffSize=.01, N=500,
+#                    sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=TRUE)
+#
+# # debugonce(plot_wls2)
+# plot_wls2(x)
+#
+# plot_wls3 <- function(x){
+#   p      <- x$CovParams
+#   tauRange <- seq(0, 2*p$tau,length.out=5)
+#   etaRange <- if(is.null(p$eta)) seq(0,max(tauRange),length.out=5) else seq(0,2*p$eta,length.out=5)
+#
+#   grid <- expand.grid(tau=tauRange,eta=etaRange)
+#   pwr <- list()
+#   for(i in 1:dim(grid)[1]){
+#     pwr[[i]] <- wlsMixedPower(DesMat=x$DesignMatrix,EffSize=.01,sigma=p$sigma,N=200,
+#                               tau=grid$tau[i], eta=grid$eta[i])[["Power"]]
+#   }
+#   tmp <- data.frame(grid,pwr=unlist(pwr))
+#   plot_ly(type="scatter",mode="lines+marker",x=~tau, y=~pwr, split=~eta, data=tmp)
+# }
+#
+#

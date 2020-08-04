@@ -254,11 +254,11 @@ compute_wlsPower <- function(DesMat,
 #'
 print.wlsPower <- function(x, ...){
   cat("Power                                = ", x$Power,    "\n")
-  cat("ddf adjustment                       = ", x$df_adjust,"\n")
-  if(x$df_adjust!="none")
-  cat("Denominator degrees of freedom       = ", x$denomDF,  "\n")
+  cat("ddf adjustment                       = ", x$Params$df_adjust,"\n")
+  if(x$Params$df_adjust!="none")
+  cat("Denominator degrees of freedom       = ", x$Params$denomDF,  "\n")
 
-  cat("Significance level (two sided)       = ", x$sig.level,"\n")
+  cat("Significance level (two sided)       = ", x$Params$sig.level,"\n")
 
   if("N_opt" %in% names(x))
   cat("Needed N per cluster per period      = ", x$N_opt,"\n" )
