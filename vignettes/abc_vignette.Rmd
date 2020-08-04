@@ -49,7 +49,50 @@ It calls `compute_wlsPower`, which is the workhorse function of this package.
 
 
 
+## Use cases
 
+### Comparison of two groups -- Z-Test and t-Test
+Lets first start with a rather simple example where we want to compare the 
+mean in two groups. The Z-test can be expressed as  follows:
+```{r}
+wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, design="parallel")
+```
+If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design; in this case, one period.
+```{r}
+wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, design="parallel", timepoints=1)
+## the same:
+wlsMixedPower(Cl=c(1,1), sigma=.5, EffSize=.3, N=10, design="parallel", timepoints=1)
+
+pwr::pwr.norm.test(.6,n=10)
+
+```
+
+To calculate a t-test, we would have to specify a degrees of freedom adjustment:
+```{r}
+wlsMixedPower(Cl=c(10,20), sigma=.5, EffSize=.3, N=1, df_adjust="residual",
+                   timepoints=1, design="parallel")
+wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, df_adjust="between-within",
+                   timepoints=1, design="parallel")
+
+pwr::pwr.t.test(10,.6,type="two.sample")
+```
+
+Note that two of the three implemented adjustment methods simplify to students t-test.
+Welshs t-test cannot be easily reproduced in `SteppedPower`.
+
+```{r}
+## paired t-test
+wlsMixedPower(Cl=c(0,10), design="parallel_baseline", time_adjust="none", EffSize=.3, sigma=.5, 
+              N=1, df_adjust="between-within")
+
+## one-sample t-test
+wlsMixedPower(Cl=c(0,10), design="parallel", time_adjust="none", EffSize=.3, sigma=.5, 
+              N=1, df_adjust="between-within")
+
+pwr::pwr.t.test(10, d=.6, type="one.sample") ### NOT THE SAME (!!!)
+```
+
+##  
 
 
 ## Figures
