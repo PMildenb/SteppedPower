@@ -162,7 +162,7 @@ system.time(sw <- swCRTdesign::swPwr(swCRTdesign::swDsn(rep(2,50)),distn="gaussi
 wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
-sw
+
 
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
@@ -217,6 +217,17 @@ compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
 
 
+
+################################################################################
+
+library(swCRTdesign)
+View(swPwr)
+dsn <- swDsn(c(2,2,0,2))
+dsn
+construct_DesMat(c(2,2,0,2))
+## convert swDsn to DesMat
+
+################################################################################
 
 ## wlsGlmmPower #####
 wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)

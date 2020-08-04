@@ -30,7 +30,7 @@
 #' @param df_adjust character, one of the following: **not implemented**
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param period numeric (scalar)
-#' @param CovMat numeric, a positive-semidefinite matrix  with
+#' @param CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \cdot timepoints) **experimental**
 #' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 #' `tau`, `eta` and `rho` are ignored.
 #'
@@ -225,13 +225,14 @@ compute_wlsPower <- function(DesMat,
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
   out <- list(Power     =Pwr,
-              denomDF   =df,
-              df_adjust =df_adjust,
-              sig.level =sig.level,
-              CovParams =list(sigma=sigma,   ## NOT compatible with CovMat-Input (!)
-                              tau  =tau,
-                              eta  =eta,
-                              rho  =rho))
+              Params =list(N         =N,
+                           sigma     =sigma, ## NOT compatible with CovMat-Input (!)
+                           tau       =tau,
+                           eta       =eta,
+                           rho       =rho,
+                           denomDF   =df,
+                           df_adjust =df_adjust,
+                           sig.level =sig.level))
   if(verbose)
     out <- append(out,
                   list(WeightMatrix     =WgtMat,
