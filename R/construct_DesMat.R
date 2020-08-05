@@ -25,14 +25,15 @@ construct_DesMat <- function(Cl          =NULL,
                              timepoints  =NULL,
                              time_adjust ="factor",
                              period      =NULL,
-                             trtmatrix   =NULL){
+                             trtmatrix   =NULL,
+                             timeBlk     =NULL){
 
   if(!is.null(trtmatrix)){
     trtMat <- trtmatrix
     if(inherits(trtMat,"matrix")){
       SumCl      <- nrow(trtMat)
       timepoints <- ncol(trtMat)
-      Cl         <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: add checks TODO: find better alternative
+      Cl         <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
@@ -45,7 +46,8 @@ construct_DesMat <- function(Cl          =NULL,
   timeBlk <- construct_timeadjust(Cl          =Cl,
                                   timepoints  =timepoints,
                                   time_adjust =time_adjust,
-                                  period      =period)
+                                  period      =period,
+                                  timeBlk     =timeBlk)
 
   DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
                   timepoints = timepoints,
@@ -169,13 +171,19 @@ construct_trtMat <- function(Cl,trt_delay,design,timepoints=NULL){
 #'
 #' @examples
 #'
-construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
+construct_timeadjust <- function(Cl,timepoints=NULL,time_adjust=NULL,timeBlk=NULL,period=NULL){
 
   SumCl   <- sum(Cl)
+  if(!is.null(timeBlk)) {
+    timepoints <- dim(timeBlk)[1]
+    timeBlks   <- timeBlk[rep(1:timepoints,SumCl),]
+    return(timeBlks)
+  }
+
   if(timepoints==1) time_adjust <- "none"
   if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
-  timeBlk <- switch (time_adjust,
+  timeBlks <- switch (time_adjust,
     factor   = rbind(0,Diagonal(timepoints-1))[rep(1:timepoints,SumCl),],
     none     = NULL,
     linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
@@ -183,5 +191,5 @@ construct_timeadjust <- function(Cl,timepoints,time_adjust,period=NULL){
                      cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]
   )
 
-  return(timeBlk)
+  return(timeBlks)
 }

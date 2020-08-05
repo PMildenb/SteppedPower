@@ -4,7 +4,13 @@
 \alias{construct_timeadjust}
 \title{construct_timeadjust}
 \usage{
-construct_timeadjust(Cl, timepoints, time_adjust, period = NULL)
+construct_timeadjust(
+  Cl,
+  timepoints,
+  time_adjust,
+  timeBlk = NULL,
+  period = NULL
+)
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
