@@ -13,8 +13,6 @@ wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(1:10,10:1))
 wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(10:1,1:10))
-swPwr(swDsn(c(2,2,2,2)), sigma=sigtmp, tau=0.01, n=10, mu0=0.03, mu1=0.025,
-      rho=0, eta=0, gamma=0, distn="gaussian")
 
 ########################################################################################
 ## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
@@ -25,9 +23,9 @@ microbenchmark::microbenchmark(
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0.01, rho=0, gamma=0, sigma=sigtmp)
-  ,
+,
   wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01,eta=0.01)
-  ,times=5)
+,times=5)
 
 ## differenz  null
 swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
@@ -42,15 +40,15 @@ microbenchmark::microbenchmark(
         distn="gaussian",
         n=1, mu0=0.03, mu1=0.025,
         tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
-  ,
+,
   wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
-  ,times=5)
+,times=5)
 
 ########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
 
 wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=F)
-swCRTdesign::swPwr(swCRTdesign::swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,n=20,distn="binomial")
+swCRTdesign::swPwr(swCRTdesign::swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,rho=0,n=20,distn="binomial")
 ## in extremen Situationen gibt es einige % Unterschied. swPwr-Methode ist konservativ.
 
 ########################################################################################

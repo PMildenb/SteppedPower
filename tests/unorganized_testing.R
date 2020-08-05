@@ -126,6 +126,7 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 ## optFunction #####
 
+
 DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
@@ -136,6 +137,11 @@ SteppedPower:::optFunction(DesMat=DesMat,EffSize=0.5,sigma=1,tau=.3,N=5,CovMat=N
 uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,CovMat=NULL,
         sigma=1,tau=.15,eta=0,rho=0,Power=.9,df_adjust="none",sig.level=.05,
         lower=0.5,upper=1000)
+N <- 100
+uniroot(a <- function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
+        interval=c(1,1000))
+
+
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
@@ -182,19 +188,16 @@ wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=.1,rho=0,gamma=0,sigma=1)
 
-a1 <- wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,verbose=T)
-a2 <- swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
-                   mu0=0,mu1=.1,tau=.3,eta=.1,rho=1,gamma=0,sigma=1,retDATA=TRUE)
+cls <- rep(1,100)
+microbenchmark::microbenchmark(
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
+,
+swCRTdesign::swPwr(swCRTdesign::swDsn(cls),distn="gaussian",n=224,
+                   mu0=0,mu1=.1,tau=.3,eta=.1,rho=1,gamma=0,sigma=1)
+,times=100)
+
 a1$CovarianceMatrix[1:6,1:6];a2$Wmat[1:6,1:6]
 a1$Power ; a2$pwrWLS
-
-XM1 <- a1$DesignMatrix$dsnmatrix
-WM1 <- a1$CovarianceMatrix
-solve(t(XM1) %*% solve(WM1) %*% XM1)
-XM2 <- a2$Xmat
-WM2 <- a2$Wmat
-solve(t(XM2) %*% solve(WM2) %*% XM2)
-
 
 wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,time_adjust="none")
 
@@ -316,6 +319,6 @@ system.time(
   HuHuPwrSWD <- swCRTdesign::swPwr(design=swCRTdesign::swDsn(rep(10,30)),distn="gaussian",
                                    n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
 
-system.time(wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
+system.time(wlsMixedPower(Cl=rep(10,30), design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
 
 

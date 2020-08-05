@@ -80,22 +80,23 @@ wlsMixedPower <- function(Cl            =NULL,
   ## calculate samplesize (if needed) #####
   if(!is.null(Power)){
     if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
-    N_opt <- tryCatch(ceiling(uniroot(optFunction,
-                                      DesMat=DesMat,
-                                      EffSize=EffSize,
-                                      sigma=1,  ## It works, but why did I set this to 1 ??
-                                      tau=tau,
-                                      eta=eta,
-                                      rho=rho,
-                                      Power=Power,
-                                      df_adjust=df_adjust,
-                                      CovMat=CovMat,
-                                      sig.level=.05,
-                                      interval=N_range)$root),
-                      error=function(cond){
-                                     message(paste0("Maximal N yields power below ",Power,
-                                                    ". Increase argument N_range."))
-                                     return(N_range[2])})
+    N_opt <- tryCatch(ceiling(
+              uniroot(function(N){Power - compute_wlsPower(DesMat    =DesMat,
+                                                           EffSize   =EffSize,
+                                                           sigma     =sigma,
+                                                           tau       =tau,
+                                                           eta       =eta,
+                                                           rho       =rho,
+                                                           N         =N,
+                                                           df_adjust =df_adjust,
+                                                           sig.level =sig.level,
+                                                           CovMat    =CovMat,
+                                                           verbose   =FALSE)$Power},
+                interval=N_range)$root),
+              error=function(cond){
+                message(paste0("Maximal N yields power below ",Power,". Increase argument N_range."))
+                return(N_range[2])
+              })
     N <- N_opt
   }
   ## calculate Power #####
@@ -114,51 +115,6 @@ wlsMixedPower <- function(Cl            =NULL,
 
   return(out)
 }
-
-#' optFunction
-#'
-#' only to be called by wlsMixedPower.
-#'
-#' @param DesMat  list, containing a matrix, the design matrix,
-#' numeric timepoints, numeric total number of Clusters
-#' @param EffSize  numeric, raw effect
-#' @param sigma numeric, residual error of cluster means if no N given.
-#' @param tau numeric, standard deviation of random intercepts
-#' @param N integer, number of individuals per cluster.
-#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
-#' @param eta numeric, standard deviation of random slopes
-#' @param rho numeric, correlation of tau and eta **not implemented**
-#' @param df_adjust character, one of the following: **not implemented**
-#' @param CovMat numeric, a positive-semidefinite matrix  with
-#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
-#' `tau`, `eta` and `rho` are ignored.
-#' @param sig.level numeric, significance level, defaults to 0.05
-
-optFunction <- function(DesMat,
-                        EffSize,
-                        sigma,
-                        tau,
-                        eta,
-                        rho,
-                        N,
-                        Power,
-                        df_adjust,
-                        sig.level,
-                        CovMat){
-
-  diff <- (Power - compute_wlsPower(DesMat    =DesMat,
-                                    EffSize   =EffSize,
-                                    sigma     =sigma,
-                                    tau       =tau,
-                                    eta       =eta,
-                                    rho       =rho,
-                                    N         =N,
-                                    df_adjust =df_adjust,
-                                    sig.level =sig.level,
-                                    CovMat    =CovMat,
-                                    verbose   =FALSE)$Power)
-  return(diff)}
-
 
 
 #' compute_wlsPower
@@ -187,7 +143,6 @@ compute_wlsPower <- function(DesMat,
                              eta        =NULL,
                              rho        =NULL,
                              N          =NULL,
-                             Power,
                              CovMat     =NULL,
                              df_adjust  ="none",
                              sig.level  =.05,
