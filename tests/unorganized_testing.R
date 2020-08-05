@@ -13,6 +13,8 @@ matplot(tmp)
 tmp <- construct_timeadjust(Cl=c(1,1,1), timepoints=12, "periodic", period=6)
 matplot(tmp)
 
+construct_timeadjust(3,timeBlk=matrix(c(0,0,1,0,1,1),nrow=2))
+
 ## costruct_trtMat #####
 construct_trtMat(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
 construct_trtMat(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
@@ -42,6 +44,8 @@ construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_ad
 construct_DesMat(Cl=c(1,1,1,1),time_adjust="factor")
 construct_DesMat(Cl=c(1,1,1,1),time_adjust="periodic")
 construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
+
+construct_DesMat(Cl=c(1,1,2),trt_delay=.5,timeBlk=diag(4))
 
 ## CovBlk #####
 timepoints=3; sigma=2; tau=rep(2,3)
