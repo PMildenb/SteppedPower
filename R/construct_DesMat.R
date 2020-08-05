@@ -183,9 +183,9 @@ construct_timeadjust <- function(Cl,timepoints=NULL,time_adjust=NULL,timeBlk=NUL
   if(timepoints==1) time_adjust <- "none"
   if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
-  timeBlks <- switch (time_adjust,
-    factor   = rbind(0,Diagonal(timepoints-1))[rep(1:timepoints,SumCl),],
-    none     = NULL,
+  timeBlk <- switch (time_adjust,
+    factor   = cbind(1,rbind(0,Diagonal(timepoints-1)))[rep(1:timepoints,SumCl),],
+    none     = matrix(rep(1,timepoints*SumCl)),
     linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
     periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]
