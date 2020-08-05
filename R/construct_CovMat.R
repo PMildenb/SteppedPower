@@ -10,8 +10,9 @@
 #' @param tau numeric (scalar or vector of length *timepoints*), standard deviation of random intercepts,
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
+#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
 #'
-#' @return a block of a covariance matrix
+#' @return a block of a covariance matrix, corresponding to one cluster
 #' @export
 #'
 #' @examples
@@ -21,7 +22,8 @@
 construct_CovBlk <- function(timepoints,
                              sigma,
                              tau,
-                             eta=NULL){
+                             eta=NULL,
+                             rho=NULL){
   # if(length(sigma)>1 && length(sigma)!=timepoints)
   #   stop("length of vector sigma does not fit to number of timepoints")
   if (length(tau)==1)            taus <- rep(tau,timepoints)  else
@@ -30,6 +32,10 @@ construct_CovBlk <- function(timepoints,
 
   out <- diag(sigma^2,timepoints) + taus %o% taus
   if(!is.null(eta)) out <- out + eta %o% eta
+  if(!is.null(rho)) {
+    rhoVec <- (rho * eta * tau)
+    out    <- out + outer(rhoVec, rhoVec, "+")
+  }
   return(out)
 }
 
@@ -47,7 +53,7 @@ construct_CovBlk <- function(timepoints,
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
 #' @param eta numeric (scalar), standard deviation of random slopes. If `eta` is
 #' given, `trtMat` is needed as well.
-#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`. **not implemented**
+#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
 #' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive
 #' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
@@ -100,7 +106,7 @@ construct_CovMat <- function(SumCl      =NULL,
     }else if(lenS==timepoints*SumCl) {matrix(sigma, nrow=SumCl, ncol=timepoints)
     }else stop(paste('length of sigma is ', N,
                      '. This does not fit to given number of timepoints, which is ',timepoints,
-                     ' or to the given number of Clusters, which is ', SumCl))
+                     ' or to the given number of clusters, which is ', SumCl))
     if(timepoints==SumCl & lenS==SumCl) warning("sigma is assumed to change over time. If you wanted sigma
                                               to change between clusters, please provide as matrix of dimension
                                               #Cluster x timepoints")
@@ -115,14 +121,19 @@ construct_CovMat <- function(SumCl      =NULL,
 
 
     if(!is.null(eta)) {
-      etaMat <- trtMat * eta                           ## eta must be a scalar
-      etaLst <- split(etaMat, row(etaMat))
-    } else etaLst <- vector("list",length=SumCl)
+      etaMat <- trtMat * eta                           ## eta input must be a scalar
+      etaLst <- split(etaMat, row(etaMat))             ## eta is passed as vector of length SumCl
+    } else etaLst <- vector("list", length=SumCl)
+
+    if(!is.null(rho)) {
+      rhoLst <- as.list(rep(rho,SumCl))                ## rho input must be a scalar
+    } else rhoLst <- vector("list", length=SumCl)      ## rho is passed as scalar
 
     CovBlks <- mapply(construct_CovBlk,
                       sigma = sigmaLst,
                       tau   = tauLst,
                       eta   = etaLst,
+                      rho   = rhoLst,
                       MoreArgs = list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
   }

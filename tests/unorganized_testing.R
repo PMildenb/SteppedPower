@@ -56,6 +56,9 @@ construct_CovBlk(timepoints=3, sigma=c(1,2,3), tau=2)
 eta <- c(0,.2,.2)
 construct_CovBlk(timepoints,sigma,tau,eta)
 
+rho <- .3
+construct_CovBlk(timepoints,sigma,tau,eta,rho)
+
 ## CovMat #####
 construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(1,1,2,1,2,2),nrow=2),tau=0.3)
 construct_CovMat(SumCl=2,timepoints=3, sigma=1,tau=0.3,eta=1,trtMat = upper.tri(matrix(1,nrow=2,ncol=3)))
@@ -82,6 +85,8 @@ trtMat <- construct_trtMat(c(1,1,1),NULL,"SWD")
 construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=0)
 construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1)
 construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),trtMat=trtMat)
+construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),rho=.5,trtMat=trtMat)
+
 
 ## compute_wlsPower #####
 
@@ -173,6 +178,25 @@ wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=0,rho=0,gamma=0,sigma=1)
 
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
+swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
+                   mu0=0,mu1=.1,tau=.3,eta=.1,rho=0,gamma=0,sigma=1)
+
+a1 <- wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,verbose=T)
+a2 <- swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
+                   mu0=0,mu1=.1,tau=.3,eta=.1,rho=1,gamma=0,sigma=1,retDATA=TRUE)
+a1$CovarianceMatrix[1:6,1:6];a2$Wmat[1:6,1:6]
+a1$Power ; a2$pwrWLS
+
+XM1 <- a1$DesignMatrix$dsnmatrix
+WM1 <- a1$CovarianceMatrix
+solve(t(XM1) %*% solve(WM1) %*% XM1)
+XM2 <- a2$Xmat
+WM2 <- a2$Wmat
+solve(t(XM2) %*% solve(WM2) %*% XM2)
+
+
+
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
@@ -198,6 +222,7 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
 wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
               tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
+
 
 ## wlsMixedPower - CovMat/DesMat input #####
 CM <- construct_CovMat(1000,21,3,1)

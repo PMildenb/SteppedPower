@@ -83,7 +83,7 @@ wlsMixedPower <- function(Cl            =NULL,
     N_opt <- tryCatch(ceiling(uniroot(optFunction,
                                       DesMat=DesMat,
                                       EffSize=EffSize,
-                                      sigma=1,  ## It works, but why did i set this to 1 ??
+                                      sigma=1,  ## It works, but why did I set this to 1 ??
                                       tau=tau,
                                       eta=eta,
                                       rho=rho,
