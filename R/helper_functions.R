@@ -13,10 +13,25 @@
 #' @return a scalar
 #' @export
 #'
-#' @examples tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; zTestPwr(4,1)
+#' @examples tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; tTestPwr(4,1,Inf)
 
 tTestPwr <- function(d,se,df,sig.level=0.05){
   dsz <- abs(d/se)
-  Pwr <- pt(dsz+qt(sig.level/2,df=df),df=df) + pt(-dsz+qt(sig.level/2,df=df),df=df)
+  q   <- qt(sig.level/2,df=df)
+  Pwr <- pt(dsz + q, df=df) + pt(-dsz + q, df=df)
   return(Pwr)
+}
+
+# tTestPwr uses a central t-distribution. As applied sometimes in the literature,
+# e.g. Li, Turner, Preisser 2018 | Li, Redden 2015
+# This is NOT the same as a t-Test, which uses a non-central t-distribution !!
+# Hence the name of the above function should be changed to 'scaledWaldPwr'
+# tTestPwr2 tries to mimic a t-test when only df are given.
+
+tTestPwr2 <- function(d,se,df,sig.level=.05){
+  d   <- abs(d/se)
+  q   <- qt(sig.level/2, df=df)
+  ncp <- -sqrt((df+2)/4)*d ## TODO: ?? how to calculate n using df ??
+  pwr <- pt(q,  df, ncp=ncp) + pt(-q, df,ncp=ncp,lower=FALSE)
+  return(pwr)
 }

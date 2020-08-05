@@ -220,6 +220,25 @@ compare_designs(EffSize=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
 compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
 
+## tTestPwr scaled Wald-test #####
+
+# tTestPwr <- function(d,se,df,sig.level=0.05){
+  dsz <- abs(d/se)
+  q   <- qt(sig.level/2, df=df, lower=FALSE)
+  Pwr <- pt(dsz + q, df=df) + pt(-dsz + q, df=df)
+#  return(Pwr)
+# }
+
+d <- .6; se <- 1; df <- 18
+debugonce(tTestPwr)
+debugonce(tTestPwr2)
+debugonce(pwr.t.test)
+SteppedPower::tTestPwr(.6,1,Inf)
+pwr::pwr.t.test(n=10,d=.6,sig.level=.05)
+tTestPwr2(.6,1,18)
+tTestPwr2(.6,1,Inf)
+View(pwr::pwr.t.test)
+View(tTestPwr)
 
 
 ################################################################################
