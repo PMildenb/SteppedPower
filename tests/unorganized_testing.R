@@ -196,6 +196,8 @@ WM2 <- a2$Wmat
 solve(t(XM2) %*% solve(WM2) %*% XM2)
 
 
+wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,time_adjust="none")
+
 
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)

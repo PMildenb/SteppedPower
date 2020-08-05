@@ -164,7 +164,7 @@ construct_trtMat <- function(Cl,trt_delay,design,timepoints=NULL){
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param timepoints numeric, scalar
 #' @param time_adjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param period number of timepoints per period. Defaults to `timepoints`
+#' @param period number of timepoints per period. Defaults to `timepoints` **experimental!**
 #'
 #' @return What is returned? TODO
 #' @export
@@ -186,8 +186,9 @@ construct_timeadjust <- function(Cl,timepoints=NULL,time_adjust=NULL,timeBlk=NUL
   timeBlk <- switch (time_adjust,
     factor   = cbind(1,rbind(0,Diagonal(timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
-    linear   = matrix(rep(1:timepoints/timepoints,SumCl)),
-    periodic = cbind(sin(0:(timepoints-1)*(2*pi/period)),
+    linear   = cbind(rep(1,timepoints*SumCl),rep(1:timepoints/timepoints,SumCl)),
+    periodic = cbind(rep(1,timepoints),
+                     sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]
   )
 
