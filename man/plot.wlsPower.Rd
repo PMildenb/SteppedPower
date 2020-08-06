@@ -4,12 +4,10 @@
 \alias{plot.wlsPower}
 \title{plot.wlsPower}
 \usage{
-\method{plot}{wlsPower}(x, ...)
+\method{plot}{wlsPower}(x)
 }
 \arguments{
-\item{x}{w}
-
-\item{...}{Arguments to be passed to methods}
+\item{x}{object of class wlsPower}
 }
 \description{
 plot.wlsPower

@@ -24,5 +24,5 @@ the degrees of freedom of the t-distribution and a significance level.
 Computes the exact power, see second example
 }
 \examples{
-tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; zTestPwr(4,1)
+tTestPwr(4,1,10) ; tTestPwr(4,1,30) ; tTestPwr(4,1,Inf)
 }

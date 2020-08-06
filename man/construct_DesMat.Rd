@@ -6,25 +6,26 @@
 \usage{
 construct_DesMat(
   Cl = NULL,
-  trt_delay = NULL,
+  trtDelay = NULL,
   design = "SWD",
   timepoints = NULL,
-  time_adjust = "factor",
+  timeAdjust = "factor",
   period = NULL,
-  trtmatrix = NULL
+  trtmatrix = NULL,
+  timeBlk = NULL
 )
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
 intervention effect in the first (second ... ) intervention phase}
 
 \item{design}{character, specifies the study design. Defaults to "SWD".}
 
 \item{timepoints}{numeric, scalar}
 
-\item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+\item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
 \item{period}{}
 }

@@ -8,8 +8,8 @@ wlsMixedPower(
   Cl = NULL,
   timepoints = NULL,
   DesMat = NULL,
-  trt_delay = NULL,
-  time_adjust = "factor",
+  trtDelay = NULL,
+  timeAdjust = "factor",
   period = NULL,
   design = "SWD",
   EffSize,
@@ -17,13 +17,14 @@ wlsMixedPower(
   tau = 0,
   eta = NULL,
   rho = NULL,
+  gamma = NULL,
   CovMat = NULL,
   N = NULL,
   Power = NULL,
   family = "gaussian",
   N_range = c(1, 1000),
   sig.level = 0.05,
-  df_adjust = "none",
+  dfAdjust = "none",
   verbose = FALSE
 )
 }
@@ -37,10 +38,10 @@ If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for paralle
 
 \item{DesMat}{matrix of dimension ... , if supplied, timepoints and Cl are ignored.}
 
-\item{trt_delay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
-\item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+\item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
 \item{period}{numeric (scalar)}
 
@@ -71,7 +72,7 @@ of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{df_adjust}{character, one of the following: **not implemented**}
+\item{dfAdjust}{character, one of the following: **not implemented**}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }

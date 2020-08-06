@@ -11,10 +11,10 @@ compute_wlsPower(
   tau = 0,
   eta = NULL,
   rho = NULL,
+  gamma = NULL,
   N = NULL,
-  Power,
   CovMat = NULL,
-  df_adjust = "none",
+  dfAdjust = "none",
   sig.level = 0.05,
   verbose = FALSE
 )
@@ -33,17 +33,17 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{N}{integer, number of individuals per cluster.}
 
-\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
-
 \item{CovMat}{numeric, a positive-semidefinite matrix  with
 *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 `tau`, `eta` and `rho` are ignored.}
 
-\item{df_adjust}{character, one of the following: **not implemented**}
+\item{dfAdjust}{character, one of the following: **not implemented**}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
+
+\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 }
 \description{
 compute_wlsPower

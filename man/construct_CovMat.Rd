@@ -11,6 +11,7 @@ construct_CovMat(
   tau,
   eta = NULL,
   rho = NULL,
+  gamma = NULL,
   trtMat = NULL,
   N = NULL,
   CovBlk = NULL
@@ -28,7 +29,7 @@ construct_CovMat(
 \item{eta}{numeric (scalar), standard deviation of random slopes. If `eta` is
 given, `trtMat` is needed as well.}
 
-\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`. **not implemented**}
+\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
 
 \item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
 the function `construct_trtMat`, indicating the cluster-periods that receive

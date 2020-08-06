@@ -7,7 +7,7 @@
 construct_timeadjust(
   Cl,
   timepoints,
-  time_adjust,
+  timeAdjust = "factor",
   timeBlk = NULL,
   period = NULL
 )
@@ -17,9 +17,9 @@ construct_timeadjust(
 
 \item{timepoints}{numeric, scalar}
 
-\item{time_adjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+\item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
-\item{period}{number of timepoints per period. Defaults to `timepoints`}
+\item{period}{number of timepoints per period. Defaults to `timepoints` **experimental!**}
 }
 \value{
 What is returned? TODO

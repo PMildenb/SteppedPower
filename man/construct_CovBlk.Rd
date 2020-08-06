@@ -4,7 +4,7 @@
 \alias{construct_CovBlk}
 \title{construct_CovBlk}
 \usage{
-construct_CovBlk(timepoints, sigma, tau, eta = NULL)
+construct_CovBlk(timepoints, sigma, tau, eta = NULL, rho = NULL)
 }
 \arguments{
 \item{timepoints}{numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix}
@@ -16,9 +16,11 @@ residual error (usually of cluster means)}
 A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).}
 
 \item{eta}{numeric (vector of length *timepoints*), standard deviation of random slope}
+
+\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
 }
 \value{
-a block of a covariance matrix
+a block of a covariance matrix, corresponding to one cluster
 }
 \description{
 constructs the covariance matrix for multiple measurements of one cluster.
