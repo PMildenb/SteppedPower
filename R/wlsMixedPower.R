@@ -171,7 +171,7 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  if(verbose) WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
+  if(verbose) ProjMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
   ## ddf for power calculation #####
   df <- switch(df_adjust,
@@ -196,7 +196,7 @@ compute_wlsPower <- function(DesMat,
                            sig.level =sig.level))
   if(verbose)
     out <- append(out,
-                  list(WeightMatrix     =WgtMat,
+                  list(ProjMatrix     =ProjMat,
                        DesignMatrix     =DesMat,
                        CovarianceMatrix =CovMat))
   class(out) <- append(class(out),"wlsPower")
@@ -229,35 +229,33 @@ print.wlsPower <- function(x, ...){
 
 #' plot.wlsPower
 #'
-#' @param x w
-#' @param ... Arguments to be passed to methods
+#' @param x object of class wlsPower
 #'
 #' @method plot wlsPower
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, ...){
-
-  WgtMat <- x$WeightMatrix
-  HatData <- reshape2::melt(t(WgtMat[c(nrow(WgtMat):1),]))
-  names(HatData) <- c("Time","Cluster","Weight")
-
-  plotraw <- ggplot2::ggplot(HatData,ggplot2::aes_string("Time","Cluster")) +
-    ggplot2::theme_minimal()  + ggplot2::scale_fill_gradient2(low="steelblue",mid="white",high="red") +
-    ggplot2::geom_tile(ggplot2::aes_string(fill="Weight"),colour="white")
-
-
-  Timeweights    <- colSums(abs(WgtMat))
-  plotCluster <- ggplot2::ggplot(data.frame(Cluster=1:dim(WgtMat)[1],
-                                            Clusterweights=rowSums(abs(WgtMat))),
-                                 ggplot2::aes_string("Cluster","Clusterweights")) +
-
-    ggplot2::geom_point() + ggplot2::theme_minimal()
-  plotPeriods <- ggplot2::ggplot(data.frame(Periods=1:dim(WgtMat)[2],
-                                            Weights=colSums(abs(WgtMat))),
-                                 ggplot2::aes_string("Periods","Weights")) +
-    ggplot2::geom_point() + ggplot2::theme_minimal()
-
-  return(list(plotraw,plotCluster,plotPeriods))
+plot.wlsPower <- function(x){
+  if(!"ProjMatrix" %in% names(x)) stop("Please rerun wlsMixedPower with `verbose=TRUE` ")
+  wgt <- x$ProjMatrix
+  mx <- max(abs(wgt))
+  sumCl <- dim(wgt)[1]
+  timep <- dim(wgt)[2]
+  subp <- subplot(
+    plot_ly(data=data.frame(time=1:dim(wgt)[2], weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
+            type="bar", x=~time, y=~weight, color=I("grey")) %>%
+      layout(xaxis=list(showticklabels=FALSE)),
+    plotly_empty(type="scatter",mode="marker"),
+    plot_ly(x=1:timep,y=1:sumCl,z=wgt,type="heatmap",
+            colors=colorRamp(c("steelblue","white","firebrick")),
+            xgap=.3,ygap=.3) %>%
+      colorbar(len=1,limits=c(-mx,mx)) %>% layout(yaxis = list(autorange = "reversed")),
+    plot_ly(data=data.frame(cluster=1:dim(wgt)[1], weight=rowSums(abs(wgt))),
+            type="bar", orientation="h",
+            y=~cluster, x=~weight, color=I("grey")) %>%
+      layout(yaxis=list(showticklabels=FALSE)),
+    nrows=2, heights=c(.2,.8), widths=c(.8,.2)
+  ) %>% layout(showlegend=FALSE)
+  return(subp)
 }
 
