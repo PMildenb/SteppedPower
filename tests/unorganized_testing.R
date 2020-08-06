@@ -2,6 +2,7 @@
 
 ## unorganized testing
 
+################################################################################
 #### DesMat #####
 
 ## construct_time_adjust #####
@@ -47,6 +48,7 @@ construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
 
 construct_DesMat(Cl=c(1,1,2),trt_delay=.5,timeBlk=diag(4))
 
+################################################################################
 ## CovBlk #####
 timepoints=3; sigma=2; tau=rep(2,3)
 construct_CovBlk(timepoints=5, sigma=2, tau=2)
@@ -88,6 +90,7 @@ construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),trtMat=t
 construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),rho=.5,trtMat=trtMat)
 
 
+################################################################################
 ## compute_wlsPower #####
 
 ## some tests for denomDF adjustment: #####
@@ -124,28 +127,20 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
 
 
 
-## optFunction #####
 
 
 DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
-SteppedPower:::optFunction(DesMat=DesMat,EffSize=0.5,sigma=1,tau=.3,N=5,CovMat=NULL,
-                           eta=NULL,rho=NULL,Power=.9,df_adjust="none",sig.level=.05)
-
-uniroot(SteppedPower:::optFunction,DesMat=DesMat_prl,EffSize=.5,CovMat=NULL,
-        sigma=1,tau=.15,eta=0,rho=0,Power=.9,df_adjust="none",sig.level=.05,
-        lower=0.5,upper=1000)
-N <- 100
 uniroot(a <- function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
         interval=c(1,1000))
-
 
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,N=14,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
 
+################################################################################
 ## wlsMixedPower #####
 wlsMixedPower(EffSize = .1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
@@ -188,14 +183,14 @@ wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=.1,rho=0,gamma=0,sigma=1)
 
-cls <- rep(1,100)
+cls <- rep(5,10)
 microbenchmark::microbenchmark(
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
+a1 <- wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
 ,
-swCRTdesign::swPwr(swCRTdesign::swDsn(cls),distn="gaussian",n=224,
-                   mu0=0,mu1=.1,tau=.3,eta=.1,rho=1,gamma=0,sigma=1)
-,times=100)
-
+a2 <- swCRTdesign::swPwr(swCRTdesign::swDsn(cls),distn="gaussian",n=1,
+                   mu0=0,mu1=.1,tau=0,eta=0,rho=0,gamma=0,sigma=5,retDATA=TRUE)
+,times=10)
+a2$Wmat
 a1$CovarianceMatrix[1:6,1:6];a2$Wmat[1:6,1:6]
 a1$Power ; a2$pwrWLS
 
@@ -228,20 +223,31 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
               tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
 
+a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
+              tau=0.0254, gamma=15, N=58, verbose=TRUE)
+a$CovarianceMatrix
 
-## wlsMixedPower - CovMat/DesMat input #####
-CM <- construct_CovMat(1000,21,3,1)
-DM <- construct_DesMat(rep(50,20))
-microbenchmark::microbenchmark(
-  wlsMixedPower(DesMat = DM, CovMat = CM, EffSize=5)
-,
-  wlsMixedPower(DesMat = DM, sigma=3, tau=1, EffSize=5)
-,times=5)
+## gamma #####
 
+CM  <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1))
+CMg <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1), gamma=100)
+DM  <- construct_DesMat(rep(1,2), time_adjust="none")
+
+Matrix::solve(CM) ; Matrix::solve(CMg)
+t(DM$dsnmatrix) %*% Matrix::solve(CM) ; t(DM$dsnmatrix) %*% Matrix::solve(CMg)
+
+tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CM)
+VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
+VarMat[1,1]
+
+tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CMg)
+VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
+VarMat[1,1]
+
+################################################################################
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
-
 
 ## compare_designs #####
 compare_designs(EffSize=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
@@ -282,43 +288,23 @@ construct_DesMat(c(2,2,0,2))
 
 ################################################################################
 
-## wlsGlmmPower #####
-wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
-swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
-
-wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
-swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
-
-
-## binomial <-> gaussian analogy
-## noch benoetigt fuer den "Wrapper"
-swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)
-sigtmp <- sqrt(.0275*.9725/200)
-microbenchmark::microbenchmark(
-  swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
-  ,
-  wlsMixedPower(EffSize=0.005,Cl=c(25,25,25,25),sigma=sigtmp,tau=0.01)[[1]]
-  ,times=100)
-
-
-
-## really large designs
-
-Cl_swd <- rep(5,60) ; EffSize <- .1 ; sigma <- 1 ; tau <- 1 ; design <- "SWD"
-Cl_prl <- c(150,150) ; timepoints <- 61
-system.time(
-  pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
-system.time(
-  pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
-                timepoints=timepoints, verbose=T))
-dim(pwrPRL$DesignMatrix)
-dim(pwrSWD$DesignMatrix)
-
-
-system.time(
-  HuHuPwrSWD <- swCRTdesign::swPwr(design=swCRTdesign::swDsn(rep(10,30)),distn="gaussian",
-                                   n=1,mu0=0,mu1=.1,sigma=1,tau=1,eta=0,rho=0,gamma=0))
-
-system.time(wlsMixedPower(Cl=rep(10,30), design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
-
+# ## wlsGlmmPower #####
+# wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
+# swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
+#
+# wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
+# swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
+#
+#
+# ## binomial <-> gaussian analogy
+# ## noch benoetigt fuer den "Wrapper"
+# swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)
+# sigtmp <- sqrt(.0275*.9725/200)
+# microbenchmark::microbenchmark(
+#   swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
+#   ,
+#   wlsMixedPower(EffSize=0.005,Cl=c(25,25,25,25),sigma=sigtmp,tau=0.01)[[1]]
+#   ,times=100)
+#
+#
 

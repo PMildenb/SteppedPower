@@ -78,6 +78,8 @@ CM <- construct_CovMat(100,21,3,1)
 DM <- construct_DesMat(rep(5,20))
 
 microbenchmark::microbenchmark(
+  construct_CovMat(100,21,3,1)
+  ,
   wlsMixedPower(DesMat = DM, CovMat = CM, EffSize=5)
   ,
   wlsMixedPower(DesMat = DM, sigma=3, tau=1, EffSize=5)
@@ -92,10 +94,12 @@ microbenchmark::microbenchmark({
 },{
   b <- Matrix::chol2inv(Matrix::chol(CM))
 },{
+#   c <- Rfast::spdinv(as.matrix(CM))
+# },{
   tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CM)
 },{
   VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
-},unit="ms")
+},unit="ms",times=20)
 
 all.equal(a,b)
 
@@ -104,6 +108,8 @@ dim(b)
 View(a)
 View(b)
 max(abs(b-a))
+
+
 
 ################################################################################
 ## really large designs
@@ -115,8 +121,8 @@ system.time(
 system.time(
   pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
                           timepoints=timepoints, verbose=T))
-dim(pwrPRL$DesignMatrix)
-dim(pwrSWD$DesignMatrix)
+dim(pwrPRL$DesignMatrix$dsnmatrix)
+dim(pwrSWD$DesignMatrix$dsnmatrix)
 
 
 system.time(

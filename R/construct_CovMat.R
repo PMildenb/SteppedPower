@@ -77,6 +77,7 @@ construct_CovMat <- function(SumCl      =NULL,
                              tau,
                              eta        =NULL,
                              rho        =NULL,
+                             gamma      =NULL,
                              trtMat     =NULL,
                              N          =NULL,
                              CovBlk     =NULL){
@@ -137,6 +138,12 @@ construct_CovMat <- function(SumCl      =NULL,
                       MoreArgs = list(timepoints=timepoints),
                       SIMPLIFY = FALSE)
   }
-  return(Matrix::bdiag(CovBlks))
-}
+  CovMat <- Matrix::bdiag(CovBlks)
+  if(!is.null(gamma)) {
+    M <- matrix(1, nrow=SumCl, ncol=SumCl)
+    M <- M %x% diag(timepoints)*gamma
+    CovMat <- CovMat + M
+  }
 
+  return(CovMat)
+}
