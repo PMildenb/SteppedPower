@@ -32,30 +32,6 @@ compare_designs2 <- function(Designs, EffSize, family=gaussian(),
 
 
 
-plot_wls2 <- function(x){
-  if(!"WeightMatrix" %in% names(x)) stop("Please rerun wlsMixedPower with `verbose=TRUE` ")
-  wgt <- x$WeightMatrix
-  mx <- max(abs(wgt))
-  sumCl <- dim(wgt)[1]
-  timep <- dim(wgt)[2]
-  subp <- subplot(
-    plot_ly(data=data.frame(time=1:dim(wgt)[2], weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
-            type="bar", x=~time, y=~weight, color=I("grey")) %>%
-      layout(xaxis=list(showticklabels=FALSE)),
-    plotly_empty(type="scatter",mode="marker"),
-    plot_ly(x=1:timep,y=1:sumCl,z=wgt,type="heatmap",
-            colors=colorRamp(c("steelblue","white","firebrick")),
-            xgap=.3,ygap=.3) %>%
-      colorbar(len=1,limits=c(-mx,mx)) %>% layout(yaxis = list(autorange = "reversed")),
-    plot_ly(data=data.frame(cluster=1:dim(wgt)[1], weight=rowSums(abs(wgt))),
-            type="bar", orientation="h",
-            y=~cluster, x=~weight, color=I("grey")) %>%
-      layout(yaxis=list(showticklabels=FALSE)),
-    nrows=2, heights=c(.2,.8), widths=c(.8,.2)
-  ) %>% layout(showlegend=FALSE)
-  subp
-}
-
 # x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trt_delay = .5, EffSize=.01, N=500,
 #                    sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=TRUE)
 #

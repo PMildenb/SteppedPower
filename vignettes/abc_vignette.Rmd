@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(SteppedPower)
 ```
 
 ## About `SteppedPower`
@@ -22,21 +23,36 @@ The package `SteppedPower` aims at providing tools for power calculation
 and design diagnostics in interventional study designs,
 with special focus on stepped wedge designs.  
 
-This code is highly modularised in order to be flexible and easy to use 
-(and hopefully maintain as well). 
+This code is modularised in order to be flexible and easy to use 
+(and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
-package makes computaion fast (and numerically stable).
+package makes computation of large design feasible.
 
 
 ## A quick tour
 
 For most users, the probably most important function is `wlsMixedPower`. 
+It calls several constructor functions that will be shortly discussed in the next 
+section.
+
+To define the design experimental design, 
+
+```{r}
+#wlsMixedPower()
+```
+
+## The 
+
 It calls `compute_wlsPower`, which is the workhorse function of this package.
 
 ### Define Study and Analysis Design
 
 `construct_DesMat` 
 
+`construct_trtMat`
+
+`construct_timeadjust`
+If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design;
 
 ### Define assumed Covariance Structure
 
@@ -51,72 +67,144 @@ It calls `compute_wlsPower`, which is the workhorse function of this package.
 
 ## Use cases
 
-### Comparison of two groups -- Z-Test and t-Test
+### Comparison of two groups -- Z-Test
+
+The variance is assumed to be known, 
 Lets first start with a rather simple example where we want to compare the 
-mean in two groups. The Z-test can be expressed as  follows:
+mean in two groups. Lets say we have two groups of 10 observations
+
+The Z-test can be expressed as follows:
+
 ```{r}
-wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, design="parallel")
-```
-If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design; in this case, one period.
-```{r}
-wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, design="parallel", timepoints=1)
+wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, design="parallel", timepoints=1)
+
 ## the same:
-wlsMixedPower(Cl=c(1,1), sigma=.5, EffSize=.3, N=10, design="parallel", timepoints=1)
-
-pwr::pwr.norm.test(.6,n=10)
-
+wlsMixedPower(Cl=c(1,1), sigma=1, EffSize=.6, N=10, design="parallel", timepoints=1)
 ```
 
-To calculate a t-test, we would have to specify a degrees of freedom adjustment:
-```{r}
-wlsMixedPower(Cl=c(10,20), sigma=.5, EffSize=.3, N=1, df_adjust="residual",
-                   timepoints=1, design="parallel")
-wlsMixedPower(Cl=c(10,10), sigma=.5, EffSize=.3, N=1, df_adjust="between-within",
-                   timepoints=1, design="parallel")
-
-pwr::pwr.t.test(10,.6,type="two.sample")
-```
-
-Note that two of the three implemented adjustment methods simplify to students t-test.
-Welshs t-test cannot be easily reproduced in `SteppedPower`.
 
 ```{r}
-## paired t-test
-wlsMixedPower(Cl=c(0,10), design="parallel_baseline", time_adjust="none", EffSize=.3, sigma=.5, 
-              N=1, df_adjust="between-within")
-
-## one-sample t-test
-wlsMixedPower(Cl=c(0,10), design="parallel", time_adjust="none", EffSize=.3, sigma=.5, 
-              N=1, df_adjust="between-within")
-
-pwr::pwr.t.test(10, d=.6, type="one.sample") ### NOT THE SAME (!!!)
+pwr::pwr.norm.test(.3,n=20)
 ```
 
-##  
+>A quick Note on t-tests: It is much more challenging to us `SteppedPower` to reproduce settings in 
+which the variance is assumed to be unknown, most prominently the well known t-test.
+In this package, you find implemented some heuristics for guessing the denominator 
+degrees of freedom, but they yield rather scaled Wald test than t tests.
+The main difference is that the distribution under the alternative is assumed to be symmetric,
+whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
+### Comparison of two groups -- t-Test
 
-## Figures
+Calculating power 
+```{r}
+a <- wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, df_adjust="between-within",
+                   timepoints=1, design="parallel", verbose = TRUE)
+# a$CovarianceMatrix
+dsnmatrix <- a$DesignMatrix$dsnmatrix
+  tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(a$CovarianceMatrix))
+  VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
+VarMat[1,1]
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+pwr::pwr.t.test(10,.6, type="two.sample")
+pwr::pwr.t.test(20,.3, type="one.sample")
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+### Longitudinal study -- parallel groups
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{r}
+wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,design="parallel")
+wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,tau=.2,design="parallel")
 ```
+
+### Stepped Wedge designs with empty sequences
+
+
+### Incomplete Stepped Wedge Designs
+
+Suppose you do not plan to observe all clusters over the whole study period.
+Rather, clusters that switch early to the intervention are not obeserved until the end.
+Analogous, observation starts later in clusters that switch towards the end of the study.
+This is sometimes called 'incomplete SWD'.  
+
+This can also be calculated in `SteppedPower` but it not without some manual labour.
+The main step is to define a matrix where the number of rows corresponds to the total number of 
+clusters and the number of columns corresponds to the number of timepoints. The value in each cell
+is the residual standard deviation, if a cluster is not observed at a specific timepoint, set the 
+value in the corresponding cell to `Inf`.
+
+If for example the study consists of five clusters in five waves (i.e. six timepoints), 
+such a sigma-matrix might look like this:
+
+```{r}
+TM  <- toeplitz(c(1,1,1,Inf,Inf))
+sig <- cbind(TM[,1:3],rep(1,5),TM[,4:5])
+sig
+```
+
+Now all that's left to do is to plug that into the main function:
+```{r}
+wlsPwr <- wlsMixedPower(Cl=c(1,1,1,1,1), sigma=sig, tau=.5, EffSize=.5, verbose = T)
+wlsPwr
+```
+
+We can also have a quick look at the projection matrix where we see that the 
+clusters have a weight of exactly zero at the timepoints where they are not observed
+```{r}
+plot(wlsPwr)
+```
+
+
+### non-standard time effects
+
+The by far most usual method for the modeling of potential secular trends is
+to take timeperiod as a factor into the analysis model. Proposed by Hussey&Hughes2007, Hemming2015? ...
+
+In some scenarios, different modeling of the time trend can be favoured.
+
+
+> a quick note on random time effects: Crossed random effects are tricky. Tests can become anticonservative
+.... and numerically challenging
+
+> If you consider time as a random effect, do not include time as a fixed (factor) effect in the same model.
+
+
+
+### Closed cohort SWD
+
+This requires quite a bit of configuration that will be incorporated into the package in the future.
+
+Here we have just a simple example as a sketch. Twelve clusters in three waves. 
+50 Individuals within each cluster.
+```{r}
+Ind    <- construct_CovBlk(timepoints=4, sigma=.3, tau=.5)
+CovBlk <- bdiag(replicate(50,Ind,simplify=FALSE)) + matrix(.1^2,nrow=200,ncol=200)
+CovMat <- construct_CovMat(CovBlk=CovBlk,SumCl=12)
+
+wlsMixedPower(Cl=c(4*50,4*50,4*50), CovMat=CovMat, EffSize=0.1, verbose=TRUE)
+wlsMixedPower(Cl=c(200,200,200),sigma=.4,tau=.4,EffSize=.1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
