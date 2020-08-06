@@ -15,36 +15,6 @@ wlsMixedPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
               N=c(10:1,1:10))
 
 ########################################################################################
-## speed-test -> bei vielen Zeitp (mit wenigen Clustern) deutlich schneller.
-Cl <- rep(1,45); sigtmp <- sqrt(.0275*.9725/200)
-
-microbenchmark::microbenchmark(
-  swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
-        distn="gaussian",
-        n=1, mu0=0.03, mu1=0.025,
-        tau=0.01, eta=0.01, rho=0, gamma=0, sigma=sigtmp)
-,
-  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01,eta=0.01)
-,times=5)
-
-## differenz  null
-swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
-      distn="gaussian",
-      n=1, mu0=0.03, mu1=0.025,
-      tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp) -  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)[[1]]
-
-## speed-test 2 viele Cluster, wenige Zeitpunkte
-Cl <- rep(25,6);
-microbenchmark::microbenchmark(
-  swCRTdesign::swPwr(design=swCRTdesign::swDsn(Cl),
-        distn="gaussian",
-        n=1, mu0=0.03, mu1=0.025,
-        tau=0.01, eta=0, rho=0, gamma=0, sigma=sigtmp)
-,
-  wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
-,times=5)
-
-########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
 
 wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=F)
@@ -144,16 +114,6 @@ wlsGlmmPower(Cl=c(2,2,2,0,2,0,2,2),mu0=0.03, mu1=0.02,
 
 
 ########################################################################################
-## Plot von gmds vortrag reloaded
-##  ich kann die simulationen noch nicht reproduzieren (!!)
-
-tau.fct <- function(tau,mu){ tau*mu*(1-mu) }
-sig.fct <- function(nInd,mu0,mu1){
-  mu_bar <- mean(c(mu0,mu1))
-  sigma  <- sqrt(mu_bar*(1-mu_bar)/nInd)
-  return(sigma)}
-
-########################################################################################
 
 ## Wie viele Individuen pro Cluster braucht man bei 4 Clustern in 4 Sequenzen je nach Design fuer 90% pwr?
 EffSize <- .5 ; sigma <- 1 ; tau <- .1
@@ -209,19 +169,6 @@ wlsMixedPower(Cl=ClPrl,timepoints=timepoints,design="parallel",
 
 
 
-###########################################################################################
-## special class for design matrix?
-
-setClass("design.matrix",contains="matrix",
-         slots=c(SumCl="numeric"))
-new("design.matrix",SumCl=4)
-
-setClass("track", slots = c(x="numeric", y="numeric"))
-myTrack <- new("track", x = -4:4, y = exp(-4:4))
-slot(myTrack, "x")
-slot(myTrack, "y") <- log(slot(myTrack, "y"))
-utils::str(myTrack)
-
 
 ###########################################################################################
 ## there are cases where one does not gain anything by adding clusters+timepoints in swd
@@ -255,112 +202,6 @@ SteppedPower::wlsMixedPower(Cl=c(6,15,3),EffSize=.25,sigma=(1/10),tau=1,N=1)
 construct_DesMat(c(6,0))
 
 ###########################################################################################
-## KidSafe
-
-## momentaner Stand
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2),EffSize=.01,
-                            sigma=sqrt(.025*.975), time_adjust="factor",
-                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
-
-## ohne Faktorvariable  fuer Periodeneffekt
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2),EffSize=.01,
-                            sigma=sqrt(.025*.975), time_adjust="none",
-                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
-
-## Mit Saisoneffekt (d.h. Faktorvariable mit 4 Kategorien)
-trtMat <- construct_trtMat(Cl=c(2,2,2,0,2,2,2), trt_delay=.5, design="SWD", timepoints=8)
-DesMat <- list(dsnmatrix=cbind(as.numeric(t(trtMat)),diag(4)[rep(1:4,24),]), timepoints=8, SumCl=12)
-DesMat$dsnmatrix[,2] <- rep(1,96)
-class(DesMat) <- append(class(DesMat),"DesMat")
-SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01,
-                            sigma=sqrt(0.025*.975),
-                            tau=0.00254, trt_delay=.5, N=57, verbose=FALSE)
-
-## mit Nichtteilnehmer unter Kontrollbedingunen
-NMat      <- ifelse(trtMat>0,57,438)
-# sigmaLst8 <- split(sqrt(.025*.975/NMat), row(NMat))
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
-                            tau=0.00254, trt_delay=.5, N=NMat, verbose=FALSE)
-
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, tau=0.00254,
-                            sigma=sqrt(.025*.975), trt_delay=.5, N=NMat)
-
-## mit Nichtteilnehmern und mit Saisoneffekt
-SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01, sigma=sqrt(.025*.975),
-                            tau=0.00254, trt_delay=.5, N=NMat, verbose=TRUE)
-
-## mit Nichtteilnehmern und ohne Faktorvariable fuer Periodeneffekt
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
-                            sigma=sqrt(.02*.975), time_adjust="none",
-                            tau=0.00254, trt_delay=.5, N=1, verbose=TRUE)
-
-
-# Feinere Quartalsannahmen
-NMat2      <- ifelse(trtMat>0,.13/12,1/12)
-quartale  <- c(5000,5400,6200,5850,
-               4900,5600,6100,3000)
-QuatMat   <- t(matrix(quartale))[rep(1,12),]
-NMat2 <- NMat2 * QuatMat
-# sigmaLst8F <- split(sqrt(.025*.975/NMat), row(NMat))
-
-## mit Nichtteilnehmer unter Kontrollbedingunen
-SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
-                            sigma=sqrt(.025*.975), tau=0.00254,
-                            trt_delay=.5, N=NMat2)
-
-## mit Nichtteilnehmern und mit Saisoneffekt
-SteppedPower::wlsMixedPower(DesMat=DesMat, EffSize=.01,
-                            sigma=sqrt(.025*.975),
-                            tau=0.00254, trt_delay=.5, N=NMat2)
-
-## Zusaetzlicher Corona-Effekt in 2020 Q2
-DesMatCov19   <- DesMat
-DesMatCov19$dsnmatrix <- cbind(DesMatCov19$dsnmatrix, rep(c(rep(0,7),1),12))
-
-SteppedPower::wlsMixedPower(DesMat=DesMatCov19, EffSize=.01,
-                            sigma=sqrt(.025*.975),
-                            tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
-
-
-## Zusaetzliche Aufnahmen in zuruechliegenden Quartalen
-
-NMat3      <- ifelse(trtMat>0,.13/12,1/12)
-X <- 750
-quartale  <- c(5000+X,5400+X,6200+X,5850+X,
-               4900+X,5600+X,6100+X,3000)
-QuatMat   <- t(matrix(quartale))[rep(1,12),]
-NMat3 <- NMat3 * QuatMat
-
-wlsMixedPower(DesMat=DesMatCov19, EffSize=.01,
-              sigma=sqrt(.025*.975),
-              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
-
-wlsMixedPower(DesMat=DesMat, EffSize=.01,
-              sigma=sqrt(.025*.975),
-              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
-
-wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
-              sigma=sqrt(.025*.975),
-              tau=0.00254, trt_delay=.5, N=NMat3, verbose=TRUE)
-
-## Mit Covid-Faktor und feineren Quartalszahlen werden ca +1800 * 7 in den
-## Nicht-Covid-Quartalen benoetigt.
-## Ohne Covid-Faktor aber mit feineren Quartalszahlen sind es ca 750 * 7
-
-
-## Inzidenz 3.5
-wlsMixedPower(DesMat=DesMatCov19, EffSize=.0116667,
-              sigma=sqrt(.03*.97),
-              tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
-
-## Inzidenz 4
-wlsMixedPower(DesMat=DesMatCov19, EffSize=.0133333,
-              sigma=sqrt(.035*.965),
-              tau=0.00254, trt_delay=.5, N=NMat2, verbose=TRUE)
-
-
-
-###########################################################################################
 ##
 
 SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
@@ -369,4 +210,4 @@ SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
 
 swCRTdesign::swPwr(design=swCRTdesign::swDsn(c(2,2,2,0,2,2,2),.5), "gaussian",n=50,mu0=0,mu1=.01,
                    sigma=sqrt(.025*.975), tau=0.00254, eta=0.0001, rho=0, gamma=0)
-View(swCRTdesign::swPwr)
+
