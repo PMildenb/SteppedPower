@@ -171,7 +171,7 @@ construct_trtMat <- function(Cl,trt_delay,design,timepoints=NULL){
 #'
 #' @examples
 #'
-construct_timeadjust <- function(Cl,timepoints=NULL,time_adjust=NULL,timeBlk=NULL,period=NULL){
+construct_timeadjust <- function(Cl,timepoints,time_adjust="factor",timeBlk=NULL,period=NULL){
 
   SumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {
@@ -183,8 +183,8 @@ construct_timeadjust <- function(Cl,timepoints=NULL,time_adjust=NULL,timeBlk=NUL
   if(timepoints==1) time_adjust <- "none"
   if(time_adjust=="periodic" & is.null(period)) period <- timepoints
 
-  timeBlk <- switch (time_adjust,
-    factor   = cbind(1,rbind(0,Diagonal(timepoints-1)))[rep(1:timepoints,SumCl),],
+  timeBlks <- switch (time_adjust,
+    factor   = cbind(1,rbind(0,diag(timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
     linear   = cbind(rep(1,timepoints*SumCl),rep(1:timepoints/timepoints,SumCl)),
     periodic = cbind(rep(1,timepoints),
