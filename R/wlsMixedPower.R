@@ -160,11 +160,12 @@ compute_wlsPower <- function(DesMat,
                                  tau        =tau,
                                  eta        =eta,
                                  rho        =rho,
+                                 gamma      =gamma,
                                  trtMat     =trtMat,
                                  N          =N)
 
   ## matrices for power calculation #####
-  tmpmat <- t(dsnmatrix) %*% Matrix::solve(CovMat)
+  tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
   if(verbose) WgtMat <- matrix((VarMat %*% tmpmat)[1,], nrow=SumCl, byrow=TRUE)
 
