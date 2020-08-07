@@ -17,11 +17,13 @@ matplot(tmp)
 construct_timeadjust(3,timeBlk=matrix(c(0,0,1,0,1,1),nrow=2))
 
 ## costruct_trtMat #####
-construct_trtMat(Cl=c(1,1,1), trt_delay=NULL, design="SWD",      timepoints=4)
-construct_trtMat(Cl=c(1,1),   trt_delay=NULL, design="parallel", timepoints=4)
-construct_trtMat(Cl=c(1,1,1), trt_delay=c(.2,.4),  design="SWD",      timepoints=4)
-construct_trtMat(Cl=c(1,1),   trt_delay=c(.2,.4),  design="parallel", timepoints=4)
-construct_trtMat(Cl=c(2,2),   trt_delay=NULL,  design="parallel_baseline", timepoints=3)
+construct_trtMat(Cl=c(1,1,1), trtDelay=NULL, design="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trtDelay=NULL, design="parallel", timepoints=4)
+construct_trtMat(Cl=c(1,1,1), trtDelay=c(.2,.4),  design="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trtDelay=c(.2,.4),  design="parallel", timepoints=4)
+construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="parallel_baseline", timepoints=3)
+construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="crossover", timepoints=c(2,2))
+debugonce(construct_trtMat)
 
 ## costruct_DesMat #####
 construct_DesMat(Cl=c(2,0,1))
@@ -35,18 +37,18 @@ construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
 construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
 Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
 
-construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7))
-construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel")
-construct_DesMat(Cl=c(1,1),  trt_delay=c(.3,.7),design="parallel_baseline")
+construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7))
+construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel")
+construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel_baseline")
 
-construct_DesMat(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="none")
-construct_DesMat(Cl=c(1,1),trt_delay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
+construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7),time_adjust="none")
+construct_DesMat(Cl=c(1,1),trtDelay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
 
 construct_DesMat(Cl=c(1,1,1,1),time_adjust="factor")
 construct_DesMat(Cl=c(1,1,1,1),time_adjust="periodic")
 construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
 
-construct_DesMat(Cl=c(1,1,2),trt_delay=.5,timeBlk=diag(4))
+construct_DesMat(Cl=c(1,1,2),trtDelay=.5,timeBlk=diag(4))
 
 ################################################################################
 ## CovBlk #####
@@ -208,20 +210,20 @@ wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
               N=1000,verbose=F)
 
 
-wlsMixedPower(Cl=c(1,1,1),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.1,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1),trtDelay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.1,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trt_delay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
 
 wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="none",
-              tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
+              tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
 wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
               sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
-              tau=0.00254,trt_delay=.5, N=58, verbose=TRUE)
+              tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
 
 a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
               tau=0.0254, gamma=15, N=58, verbose=TRUE)

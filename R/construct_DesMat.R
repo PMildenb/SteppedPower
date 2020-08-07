@@ -122,8 +122,7 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
         diag(trt[,-(1:i)]) <- trtDelay[i]  ## doesnt work if length(delay)>=length(timepoints)-1
       }
     }
-  }else
-  if(design=="parallel"){
+  }else if(design=="parallel"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(is.null(timepoints)){
       if(is.null(trtDelay)){
@@ -135,12 +134,12 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     }
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(trtDelay,rep(1,(timepoints-length(trtDelay))))
-  }else
-  if(design=="parallel_baseline"){
+  }else if(design=="parallel_baseline"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
-      message(paste("assumes 1 baseline period and",timepoints-1,"parallel period(s)"))
+      message(paste("assumes 1 baseline period and",timepoints-1,"parallel period(s).
+                    If intended otherwise, argument timepoints must have length two."))
     }else if(length(timepoints)==2){
       timepoints01 <- timepoints
       timepoints   <- sum(timepoints)
@@ -152,8 +151,31 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(rep(0,timepoints01[1]),
                 trtDelay,rep(1,(timepoints01[2]-length(trtDelay))))
+  }else if (design=="crossover"){
+    if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
+    if(length(timepoints)==1){
+      timepoints01 <- c(floor(timepoints/2),ceiling(timepoints/2))
+      message(paste("assumes", floor(timepoints/2) ,"AB period(s) and",
+                    ceiling(timepoints/2),"BA period(s). If intended otherwise,
+                    argument timepoints must have length two."))
+    }else if (length(timepoints)==2){
+      lenTp        <- timepoints
+      timepoints   <- sum(timepoints)
+    }else if(is.null(timepoints)){
+      len          <- length(trtDelay)+1
+      lenTp        <- c(len,len)
+      timepoints   <- sum(timepoints01)
+      message("timepoints unspecified. Defaults to", len, "AB period(s), and",
+                len, " parallel period(s).")
+    }
+    trt   <- matrix(0, nrow=2, ncol=timepoints)
+    vecAB <- c(trtDelay,rep(1,lenTp[1]-length(trtDelay)))
+    vecBA <- c(trtDelay,rep(1,lenTp[2]-length(trtDelay)))
+
+    trt[1,1:lenTp[1]]              <- vecAB
+    trt[2,(lenTp[1]+1):timepoints] <- vecBA
   }
-  trtMat <- as.matrix(trt[rep(1:lenCl,Cl),]) ## force matrix type (needed for timepoints==1)
+  trtMat <- as.matrix(trt[rep(1:lenCl,Cl),]) ## force matrix type (needed if timepoints==1)
 
   return(trtMat)
 }
