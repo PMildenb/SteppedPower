@@ -11,8 +11,12 @@
 #' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
 #' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
 #' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #'
-#' @return a block of a covariance matrix, corresponding to one cluster
+#' @return a block of a covariance matrix, corresponding to intra-cluster covariance over time for one cluster
 #' @export
 #'
 #' @examples
@@ -23,15 +27,21 @@ construct_CovBlk <- function(timepoints,
                              sigma,
                              tau,
                              eta=NULL,
-                             rho=NULL){
+                             rho=NULL,
+                             tauAR=NULL,
+                             etaAR=NULL){
   # if(length(sigma)>1 && length(sigma)!=timepoints)
   #   stop("length of vector sigma does not fit to number of timepoints")
   if (length(tau)==1)            taus <- rep(tau,timepoints)  else
   if (length(tau)==timepoints)   taus <- tau                  else
     stop("length of vector tau does not fit to number of timepoints")
 
-  out <- diag(sigma^2,timepoints) + taus %o% taus
-  if(!is.null(eta)) out <- out + eta %o% eta
+  tauMat <- if(is.null(tauAR)) taus %o% taus else toeplitz(taus^2 * tauAR ** c(0:(timepoints-1)))
+  out    <- diag(sigma^2,timepoints) + tauMat
+  if(!is.null(eta)) {
+    etaMat <- if(is.null(etaAR)) eta %o% eta else toeplitz(eta^2 * etaAR ** c(0:(timepoints-1)))
+    out <- out + etaMat
+  }
   if(!is.null(rho)) {
     rhoVec <- (rho * eta * tau)
     out    <- out + outer(rhoVec, rhoVec, "+")

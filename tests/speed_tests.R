@@ -163,3 +163,24 @@ microbenchmark::microbenchmark(
   wlsMixedPower(EffSize=0.005,Cl=Cl,sigma=sigtmp,tau=0.01)
   ,times=5)
 
+
+########################################################################################
+## contstruct toeplitz matrices efficently
+
+library(Matrix)
+
+ar1_cor <- function(n, rho) {
+  exponent <- abs(matrix(1:n - 1, nrow = n, ncol = n, byrow = TRUE) -
+                    (1:n - 1))
+  rho^exponent
+}
+
+n <- 800
+microbenchmark::microbenchmark(
+  ar1_cor(n,.8)
+,
+  stats::toeplitz(.8 ** c(0:(n-1)))
+,
+  Matrix::toeplitz(.8** c(0:(n-1)))
+)
+
