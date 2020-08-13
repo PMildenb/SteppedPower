@@ -57,8 +57,8 @@ intervention effect in the first (second ... ) intervention phase}
 
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
 
-\item{CovMat}{numeric, a positive-semidefinite matrix of dimension (#Clusters \cdot timepoints) **experimental**
-*#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+\item{CovMat}{numeric, a positive-semidefinite matrix of dimension (#Clusters \eqn{\cdot} timepoints) **experimental**
+*#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 `tau`, `eta` and `rho` are ignored.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector

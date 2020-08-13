@@ -30,8 +30,8 @@
 #' @param dfAdjust character, one of the following: **not implemented**
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param period numeric (scalar)
-#' @param CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \cdot timepoints) **experimental**
-#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+#' @param CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \eqn{\cdot} timepoints) **experimental**
+#' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 #' `tau`, `eta` and `rho` are ignored.
 #'
 #' @return a list. First element is the power,
@@ -134,7 +134,7 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param CovMat numeric, a positive-semidefinite matrix  with
-#' *#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+#' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 #' `tau`, `eta` and `rho` are ignored.
 #'
 #' @export

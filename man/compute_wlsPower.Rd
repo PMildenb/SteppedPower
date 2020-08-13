@@ -34,7 +34,7 @@ numeric timepoints, numeric total number of Clusters}
 \item{N}{integer, number of individuals per cluster.}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix  with
-*#Cluster* $\cdot$ *timepoints* rows/columns. If `CovMat` is given, `sigma`,
+*#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 `tau`, `eta` and `rho` are ignored.}
 
 \item{dfAdjust}{character, one of the following: **not implemented**}
