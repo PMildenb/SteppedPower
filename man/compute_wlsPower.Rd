@@ -10,6 +10,8 @@ compute_wlsPower(
   sigma,
   tau = 0,
   eta = NULL,
+  tauAR = NULL,
+  etaAR = NULL,
   rho = NULL,
   gamma = NULL,
   N = NULL,
@@ -29,6 +31,12 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+
+\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
 
 \item{N}{integer, number of individuals per cluster.}
@@ -42,8 +50,6 @@ numeric timepoints, numeric total number of Clusters}
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
-
-\item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 }
 \description{
 compute_wlsPower

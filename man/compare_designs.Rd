@@ -14,7 +14,7 @@ compare_designs(
   sig.level = 0.05,
   DesMat = NULL,
   Cl = NULL,
-  trt_delay = NULL
+  trtDelay = NULL
 )
 }
 \description{

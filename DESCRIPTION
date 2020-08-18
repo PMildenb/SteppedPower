@@ -1,16 +1,21 @@
 Package: SteppedPower
 Type: Package
-Title: What the Package Does (Title Case)
+Title: sample size calculation in longitudinal settings with focus on stepped wedge designs
 Version: 0.1.0
 Author: Philipp Mildenberger
 Maintainer: Philipp Mildenberger <pmildenb@uni-mainz.de>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: SteppedPower offers options for power calculation as well 
+    as sample size calculation (by the use of uniroot() ) for 
+    longitudinal mixed model settings. 
+    All calculations are oracle estimates i.e. assume random effect variances 
+    to be known (or guessed) in advance. 
 Imports:
     Matrix,
-    ggplot2,
-    reshape2,
-    car
+    plotly,
+    car,
+    knitr,
+    rmarkdown,
+    pwr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

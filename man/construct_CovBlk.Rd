@@ -4,7 +4,15 @@
 \alias{construct_CovBlk}
 \title{construct_CovBlk}
 \usage{
-construct_CovBlk(timepoints, sigma, tau, eta = NULL, rho = NULL)
+construct_CovBlk(
+  timepoints,
+  sigma,
+  tau,
+  eta = NULL,
+  rho = NULL,
+  tauAR = NULL,
+  etaAR = NULL
+)
 }
 \arguments{
 \item{timepoints}{numeric (scalar), number of timeperiods, Cl.e. dimension of blocks in covariance matrix}
@@ -18,9 +26,15 @@ A vector of length *timepoints* is interpreted as a variing sd over time (also u
 \item{eta}{numeric (vector of length *timepoints*), standard deviation of random slope}
 
 \item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
+
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+
+\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 }
 \value{
-a block of a covariance matrix, corresponding to one cluster
+a block of a covariance matrix, corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
 constructs the covariance matrix for multiple measurements of one cluster.

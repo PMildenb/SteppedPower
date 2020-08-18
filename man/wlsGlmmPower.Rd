@@ -18,8 +18,8 @@ wlsGlmmPower(
   family = "binomial",
   N = NULL,
   sig.level = 0.05,
-  trt_delay = NULL,
-  time_adjust = "factor",
+  trtDelay = NULL,
+  timeAdjust = "factor",
   df_adjust = "none",
   verbose = TRUE
 )
@@ -61,7 +61,4 @@ as `wlsMixedPower`
 }
 \description{
 wlsGlmmPower
-}
-\examples{
-wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 }

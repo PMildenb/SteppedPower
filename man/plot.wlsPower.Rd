@@ -4,7 +4,7 @@
 \alias{plot.wlsPower}
 \title{plot.wlsPower}
 \usage{
-\method{plot}{wlsPower}(x)
+\method{plot}{wlsPower}(x, ...)
 }
 \arguments{
 \item{x}{object of class wlsPower}

@@ -9,6 +9,7 @@ wlsMixedPower(
   timepoints = NULL,
   DesMat = NULL,
   trtDelay = NULL,
+  incomplete = NULL,
   timeAdjust = "factor",
   period = NULL,
   design = "SWD",
@@ -16,6 +17,7 @@ wlsMixedPower(
   sigma = 1,
   tau = 0,
   eta = NULL,
+  tauAR = NULL,
   rho = NULL,
   gamma = NULL,
   CovMat = NULL,
@@ -41,6 +43,10 @@ If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for paralle
 \item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
+\item{incomplete}{integer, either a vector (only for SWD) or a matrix. A vector defines the number of periods
+before and after the switch from control to intervention that are observed. A matrix consists of 1's for
+observed clusterperiods and 0's for unobserved clusterperiods.}
+
 \item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
 \item{period}{numeric (scalar)}
@@ -55,7 +61,10 @@ intervention effect in the first (second ... ) intervention phase}
 
 \item{eta}{numeric, standard deviation of random slopes}
 
-\item{rho}{numeric, correlation of tau and eta **not implemented**}
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+
+\item{rho}{numeric, correlation of tau and eta}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix of dimension (#Clusters \eqn{\cdot} timepoints) **experimental**
 *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
