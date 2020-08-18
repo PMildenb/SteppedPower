@@ -51,7 +51,7 @@ construct_DesMat <- function(Cl          =NULL,
 
   DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
                   timepoints = timepoints,
-                  SumCl      = sum(Cl),
+                  Cl         = Cl,
                   trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
@@ -70,7 +70,7 @@ construct_DesMat <- function(Cl          =NULL,
 #'
 print.DesMat <- function(x, ...){
   cat("Timepoints         = ", x$timepoints,"\n")
-  cat("Number of Clusters = ", x$SumCl,"\n")
+  cat("Number of Clusters = ", sum(x$Cl),"\n")
   cat("Design matrix      = \n")
   print(x$dsnmatrix)
 }
