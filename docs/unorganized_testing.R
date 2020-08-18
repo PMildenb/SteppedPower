@@ -1,4 +1,5 @@
 
+library(SteppedPower)
 
 ## unorganized testing
 
@@ -23,7 +24,7 @@ construct_trtMat(Cl=c(1,1,1), trtDelay=c(.2,.4),  design="SWD",      timepoints=
 construct_trtMat(Cl=c(1,1),   trtDelay=c(.2,.4),  design="parallel", timepoints=4)
 construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="parallel_baseline", timepoints=3)
 construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="crossover", timepoints=c(2,2))
-debugonce(construct_trtMat)
+# debugonce(construct_trtMat)
 
 ## costruct_DesMat #####
 construct_DesMat(Cl=c(2,0,1))
@@ -92,23 +93,25 @@ construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),trtMat=t
 construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),rho=.5,trtMat=trtMat)
 
 
+construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=2, tauAR=.8)
+
 ################################################################################
 ## compute_wlsPower #####
 
 ## some tests for denomDF adjustment: #####
 compute_wlsPower(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="none",sig.level=.05,verbose=T)
+    EffSize=.5,sigma=1,tau=.1,N=1,dfAdjust="none",sig.level=.05,verbose=T)
 compute_wlsPower(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+    EffSize=.5,sigma=1,tau=.1,N=1,dfAdjust="between-within",sig.level=.05,verbose=T)
 compute_wlsPower(DesMat=construct_DesMat(Cl=c(4,2,2,4)),
-    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="containment",sig.level=.05,verbose=T)
+    EffSize=.5,sigma=1,tau=.1,N=1,dfAdjust="containment",sig.level=.05,verbose=T)
 compute_wlsPower(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
-    EffSize=.5,sigma=1,tau=.1,N=1,df_adjust="between-within",sig.level=.05,verbose=T)
+    EffSize=.5,sigma=1,tau=.1,N=1,dfAdjust="between-within",sig.level=.05,verbose=T)
 
 
 
 compute_wlsPower(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
-    EffSize=.25,sigma=1,tau=1,N=1,df_adjust="none",sig.level=.05,verbose=F)
+    EffSize=.25,sigma=1,tau=1,N=1,dfAdjust="none",sig.level=.05,verbose=F)
 
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
@@ -116,13 +119,13 @@ DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
-                 Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
+                 Power=NULL,dfAdjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
 
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
-                 Power=NULL,df_adjust="none",sig.level=.05,verbose=F)
+                 Power=NULL,dfAdjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
               EffSize=.5,sigma=1,tau=.3,verbose=F)
@@ -229,7 +232,8 @@ a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
               tau=0.0254, gamma=15, N=58, verbose=TRUE)
 a$CovarianceMatrix
 
-## gamma #####
+
+#### gamma #####
 
 CM  <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1))
 CMg <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1), gamma=100)
@@ -245,6 +249,58 @@ VarMat[1,1]
 tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CMg)
 VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
 VarMat[1,1]
+
+
+#### tauAR swd ####
+cl <- rep(6,3) ; si <- 2 ; tau <- .1 ; ES <- 1
+mod1 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=NULL, EffSize=ES, verbose=TRUE)
+mod2 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=1,    EffSize=ES, verbose=TRUE)
+mod3 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.7,   EffSize=ES, verbose=TRUE)
+mod4 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   EffSize=ES, verbose=TRUE)
+mod5 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   EffSize=ES, verbose=TRUE)
+mod6 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    EffSize=ES, verbose=TRUE)
+mod7 <- wlsMixedPower(Cl=cl, sigma=sqrt(si^2+tau^2),        EffSize=ES, verbose=TRUE)
+
+mod1$CovarianceMatrix[1:4,1:4]
+mod2$CovarianceMatrix[1:4,1:4]
+mod3$CovarianceMatrix[1:4,1:4]
+mod4$CovarianceMatrix[1:4,1:4]
+mod5$CovarianceMatrix[1:4,1:4]
+mod6$CovarianceMatrix[1:4,1:4]
+mod7$CovarianceMatrix[1:4,1:4]
+
+mod1$Power
+mod2$Power
+mod3$Power
+mod4$Power
+mod5$Power
+mod6$Power
+mod7$Power
+
+#### tauAR parallel ####
+cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
+
+mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, EffSize=ES, design="parallel", verbose=TRUE)
+mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    EffSize=ES, design="parallel", verbose=TRUE)
+mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   EffSize=ES, design="parallel", verbose=TRUE)
+mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   EffSize=ES, design="parallel", verbose=TRUE)
+mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    EffSize=ES, design="parallel", verbose=TRUE)
+mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        EffSize=ES, design="parallel", verbose=TRUE)
+
+mod1$CovarianceMatrix[1:tp,1:tp]
+mod2$CovarianceMatrix[1:tp,1:tp]
+mod3$CovarianceMatrix[1:tp,1:tp]
+mod4$CovarianceMatrix[1:tp,1:tp]
+mod5$CovarianceMatrix[1:tp,1:tp]
+mod6$CovarianceMatrix[1:tp,1:tp]
+
+mod1$Power
+mod2$Power
+mod3$Power
+mod4$Power
+mod5$Power
+mod6$Power
+
 
 ################################################################################
 ## plot.wlsPower #####
@@ -268,9 +324,9 @@ compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 # }
 
 d <- .6; se <- 1; df <- 18
-debugonce(tTestPwr)
-debugonce(tTestPwr2)
-debugonce(pwr.t.test)
+# debugonce(tTestPwr)
+# debugonce(tTestPwr2)
+# debugonce(pwr.t.test)
 SteppedPower::tTestPwr(.6,1,Inf)
 pwr::pwr.t.test(n=10,d=.6,sig.level=.05)
 tTestPwr2(.6,1,18)
@@ -287,6 +343,17 @@ dsn <- swDsn(c(2,2,0,2))
 dsn
 construct_DesMat(c(2,2,0,2))
 ## convert swDsn to DesMat
+
+
+################################################################################
+## closed cohort
+
+function(sigma, tau, eta, rho, alpha, K){
+
+  tauNew <- sqrt(tau^2 + alph^2/K)
+
+}
+
 
 ################################################################################
 
