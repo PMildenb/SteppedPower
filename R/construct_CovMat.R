@@ -64,7 +64,11 @@ construct_CovBlk <- function(timepoints,
 #' @param eta numeric (scalar), standard deviation of random slopes. If `eta` is
 #' given, `trtMat` is needed as well.
 #' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
-#' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+##' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive
 #' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 #' `SumCl` and `timepoints` are ignored (!).
@@ -75,8 +79,8 @@ construct_CovBlk <- function(timepoints,
 #'
 #' @examples
 #' construct_CovMat(SumCl=2,timepoints=3,
-#'                  sigma=list(c(1,2,2),c(1,1,2)),
-#'                  tau=list(c(.2,.1,.1),c(.2,.2,.1)),N=c(20,16))
+#'                  sigma=matrix(c(1,2,2,1,1,2),nrow=2, byrow=TRUE),
+#'                  tau=matrix(c(.2,.1,.1,.2,.2,.1),nrow=2, byrow=TRUE),N=c(20,16))
 
 
 
@@ -86,6 +90,8 @@ construct_CovMat <- function(SumCl      =NULL,
                              sigma,
                              tau,
                              eta        =NULL,
+                             tauAR      =NULL,
+                             etaAR      =NULL,
                              rho        =NULL,
                              gamma      =NULL,
                              trtMat     =NULL,
@@ -140,10 +146,15 @@ construct_CovMat <- function(SumCl      =NULL,
       rhoLst <- as.list(rep(rho,SumCl))                ## rho input must be a scalar
     } else rhoLst <- vector("list", length=SumCl)      ## rho is passed as scalar
 
+    if(is.null(tauAR)) tauAR <- vector("list", length=SumCl)
+    if(is.null(etaAR)) etaAR <- vector("list", length=SumCl)
+
     CovBlks <- mapply(construct_CovBlk,
                       sigma = sigmaLst,
                       tau   = tauLst,
                       eta   = etaLst,
+                      tauAR = tauAR,
+                      etaAR = etaAR,
                       rho   = rhoLst,
                       MoreArgs = list(timepoints=timepoints),
                       SIMPLIFY = FALSE)

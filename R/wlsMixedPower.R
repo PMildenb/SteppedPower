@@ -14,13 +14,18 @@
 #' @param DesMat matrix of dimension ... , if supplied, timepoints and Cl are ignored.
 #' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
+#' @param incomplete integer, either a vector (only for SWD) or a matrix. A vector defines the number of periods
+#' before and after the switch from control to intervention that are observed. A matrix consists of 1's for
+#' observed clusterperiods and 0's for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
 #' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
 #' @param EffSize numeric (scalar), raw effect
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes
-#' @param rho numeric, correlation of tau and eta **not implemented**
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param rho numeric, correlation of tau and eta
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
 #' @param family character, distribution family. Defaults to "gaussian" **not implemented**
@@ -45,14 +50,16 @@
 wlsMixedPower <- function(Cl            =NULL,
                           timepoints    =NULL,
                           DesMat        =NULL,
-                          trtDelay     =NULL,
-                          timeAdjust   ="factor",
+                          trtDelay      =NULL,
+                          incomplete    =NULL,
+                          timeAdjust    ="factor",
                           period        =NULL,
                           design        ="SWD",
                           EffSize,
                           sigma         =1, ## default needed for CovMat input, still experimental
                           tau           =0,
                           eta           =NULL,
+                          tauAR         =NULL,
                           rho           =NULL,
                           gamma         =NULL,
                           CovMat        =NULL,
@@ -66,17 +73,60 @@ wlsMixedPower <- function(Cl            =NULL,
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
+  if(!is.null(rho)){
+    if(is.null(eta))
+      stop("If the correlation rho between random intercept and slope is 0, a random slope must be provided.")
+    if( -1>rho | rho<1 )
+      stop("Correlation rho must be between -1 and 1")
+  }
+  if(!is.null(DesMat)){
+    if(min(sapply(list(Cl, timepoints, trtDelay, incomplete, period),is.null))==0)
+      warning("If argument DesMat is provided, Cl, timepoints, trtDelay, incomplete, timeAdjust, period and design are ignored.")
+    else{
+      if(!is.null(timepoints))
+        if(length(trtDelay)>timepoints)
+          stop("The length of vector trtDelay must be less or equal to timepoints.")
+    }
+  }
 
   ## check DesMat #####
   if(is.null(DesMat)){
-    DesMat    <- construct_DesMat(Cl=Cl,trtDelay=trtDelay,design=design,
-                                  timepoints=timepoints,timeAdjust=timeAdjust,
-                                  period=period)
+    DesMat    <- construct_DesMat(Cl         =Cl,
+                                  trtDelay   =trtDelay,
+                                  design     =design,
+                                  timepoints =timepoints,
+                                  timeAdjust =timeAdjust,
+                                  period     =period)
   }else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
     DesMat <- construct_DesMat(trtmatrix=DesMat) ## TODO : dimension checks
   }else if(!inherits(DesMat,"DesMat"))
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
-         "It must be either an object of class DsnMat or a matrix")
+         "It must be either an object of class DesMat or a matrix")
+
+  ## incomplete designs
+  if(!is.null(incomplete) & is.null(CovMat)){
+    timepoints <- DesMat$timepoints
+    lenCl      <- length(DesMat$Cl)
+
+    if(is.vector(incomplete) & design=="SWD"){
+      Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
+      lastCols <- (timepoints-lenCl+1):timepoints
+
+      IM <- matrix(1,lenCl,timepoints)
+      IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
+      IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
+
+      IM <- IM[rep(1:lenCl,DesMat$Cl),]
+    } else if(is.matrix(incomplete)){
+        if(nrow(incomplete)!=sum(DesMat$Cl) | ncol(incomplete)!=timepoints)
+          stop("matrix dimensions of argument incoplete are ",dim(incomplete), " but must be ",
+               dim(DesMat$trtMat))
+      IM <- incomplete
+      IM[which(IM==0)] <- Inf
+    }
+    sigma <- matrix(sigma, nrow=lenCl, ncol=timepoints,
+                    byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
+  }
 
   ## calculate samplesize (if needed) #####
   if(!is.null(Power)){
@@ -87,10 +137,11 @@ wlsMixedPower <- function(Cl            =NULL,
                                                            sigma     =sigma,
                                                            tau       =tau,
                                                            eta       =eta,
+                                                           tauAR     =tauAR,
                                                            rho       =rho,
                                                            gamma     =gamma,
                                                            N         =N,
-                                                           dfAdjust =dfAdjust,
+                                                           dfAdjust  =dfAdjust,
                                                            sig.level =sig.level,
                                                            CovMat    =CovMat,
                                                            verbose   =FALSE)$Power},
@@ -107,6 +158,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           sigma     =sigma,
                           tau       =tau,
                           eta       =eta,
+                          tauAR     =tauAR,
                           rho       =rho,
                           gamma     =gamma,
                           N         =N,
@@ -127,12 +179,15 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param EffSize  numeric, raw effect
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param N integer, number of individuals per cluster.
-#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param dfAdjust character, one of the following: **not implemented**
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param verbose logical, should the function return the design and covariance matrix?
-#' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param CovMat numeric, a positive-semidefinite matrix  with
 #' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 #' `tau`, `eta` and `rho` are ignored.
@@ -144,6 +199,8 @@ compute_wlsPower <- function(DesMat,
                              sigma,
                              tau        =0,
                              eta        =NULL,
+                             tauAR      =NULL,
+                             etaAR      =NULL,
                              rho        =NULL,
                              gamma      =NULL,
                              N          =NULL,
@@ -153,8 +210,12 @@ compute_wlsPower <- function(DesMat,
                              verbose    =FALSE){
   dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
-  SumCl      <- DesMat$SumCl
+  SumCl      <- sum(DesMat$Cl)
   trtMat     <- DesMat$trtMat
+
+  ## Checks
+  if(!is.null(CovMat) & sum(sapply(c(sigma, tau, eta, rho, gamma, N),is.null))>0)
+    warning("If argument CovMat is provided, sigma, tau, eta, rho, gamma and N are ignored.")
 
   ## get covariance matrix #####
   if(is.null(CovMat))
@@ -163,6 +224,8 @@ compute_wlsPower <- function(DesMat,
                                  sigma      =sigma,
                                  tau        =tau,
                                  eta        =eta,
+                                 tauAR      =tauAR,
+                                 etaAR      =etaAR,
                                  rho        =rho,
                                  gamma      =gamma,
                                  trtMat     =trtMat,
@@ -189,10 +252,12 @@ compute_wlsPower <- function(DesMat,
                            sigma     =sigma, ## NOT compatible with CovMat-Input (!)
                            tau       =tau,
                            eta       =eta,
+                           tauAR     =tauAR,
+                           etaAR     =etaAR,
                            rho       =rho,
                            gamma     =gamma,
                            denomDF   =df,
-                           dfAdjust =dfAdjust,
+                           dfAdjust  =dfAdjust,
                            sig.level =sig.level))
   if(verbose)
     out <- append(out,
@@ -215,10 +280,10 @@ compute_wlsPower <- function(DesMat,
 #'
 print.wlsPower <- function(x, ...){
   cat("Power                                = ", x$Power,    "\n")
+  if(x$Params$dfAdjust!="none"){
   cat("ddf adjustment                       = ", x$Params$dfAdjust,"\n")
-  if(x$Params$dfAdjust!="none")
   cat("Denominator degrees of freedom       = ", x$Params$denomDF,  "\n")
-
+  }
   cat("Significance level (two sided)       = ", x$Params$sig.level,"\n")
 
   if("N_opt" %in% names(x))
@@ -235,7 +300,7 @@ print.wlsPower <- function(x, ...){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x){
+plot.wlsPower <- function(x, ...){
   if(!"ProjMatrix" %in% names(x)) stop("Please rerun wlsMixedPower with `verbose=TRUE` ")
   wgt <- x$ProjMatrix
   mx <- max(abs(wgt))
