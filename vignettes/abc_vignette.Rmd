@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(knitr)
 library(SteppedPower)
+library(Matrix)
 ```
 
 ## About `SteppedPower`
@@ -98,7 +100,7 @@ whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
 Calculating power 
 ```{r}
-a <- wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, df_adjust="between-within",
+a <- wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, dfAdjust="between-within",
                    timepoints=1, design="parallel", verbose = TRUE)
 # a$CovarianceMatrix
 dsnmatrix <- a$DesignMatrix$dsnmatrix
@@ -128,24 +130,31 @@ Rather, clusters that switch early to the intervention are not obeserved until t
 Analogous, observation starts later in clusters that switch towards the end of the study.
 This is sometimes called 'incomplete SWD'.  
 
-This can also be calculated in `SteppedPower` but it not without some manual labour.
-The main step is to define a matrix where the number of rows corresponds to the total number of 
-clusters and the number of columns corresponds to the number of timepoints. The value in each cell
-is the residual standard deviation, if a cluster is not observed at a specific timepoint, set the 
-value in the corresponding cell to `Inf`.
+There are two ways to achieve this in `SteppedPower`, both by using the `incomplete` argument.
+One can either scalar, which then defines the number of observed periods before and 
+after the switch from control to intervention in each cluster.
 
-If for example the study consists of five clusters in five waves (i.e. six timepoints), 
-such a sigma-matrix might look like this:
+If for example the study consists of eight clusters in eight waves (i.e. nine timepoints), 
+and we observe four timepoints before and after the switch, then we receive
 
 ```{r}
-TM  <- toeplitz(c(1,1,1,Inf,Inf))
-sig <- cbind(TM[,1:3],rep(1,5),TM[,4:5])
-sig
+wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, EffSize=1, incomplete=4, verbose=TRUE)
+wlsPwr
+```
+
+A slightly more tedious, but more flexible way is to define  a matrix where the number of rows corresponds 
+to the total number of clusters and the number of columns corresponds to the number of timepoints. 
+The value in each cell is the residual standard deviation, if a cluster is not observed at a specific timepoint, 
+set the value in the corresponding cell to `0`. For the example above, such a matrix would look like this:
+```{r}
+TM  <- toeplitz(c(1,1,1,1,0,0,0,0))
+incompleteMat <- cbind(TM[,1:4],rep(1,8),TM[,5:8])
+incompleteMat
 ```
 
 Now all that's left to do is to plug that into the main function:
 ```{r}
-wlsPwr <- wlsMixedPower(Cl=c(1,1,1,1,1), sigma=sig, tau=.5, EffSize=.5, verbose = T)
+wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, EffSize=1, incomplete=incompleteMat, verbose=TRUE)
 wlsPwr
 ```
 
@@ -163,11 +172,18 @@ to take timeperiod as a factor into the analysis model. Proposed by Hussey&Hughe
 
 In some scenarios, different modeling of the time trend can be favoured.
 
+```{r}
+timeMat <- matrix(c(1,1,1,1,1,1,1,1,
+                    0,1,0,0,0,1,0,0,
+                    0,0,1,0,0,0,1,0,
+                    0,0,0,1,0,0,0,1),8,4)
+DesMat  <- construct_DesMat(rep(1,7), timeBlk = timeMat)
 
-> a quick note on random time effects: Crossed random effects are tricky. Tests can become anticonservative
-.... and numerically challenging
-
-> If you consider time as a random effect, do not include time as a fixed (factor) effect in the same model.
+wlsPower <- wlsMixedPower(DesMat=DesMat, EffSize=.8, sigma=1, tau=.2, verbose=TRUE)
+plot(wlsPower)
+wlsPower <- wlsMixedPower(Cl=rep(1,7), EffSize=.8, sigma=1, tau=.2, verbose=TRUE)
+plot(wlsPower)
+```
 
 
 
@@ -175,15 +191,35 @@ In some scenarios, different modeling of the time trend can be favoured.
 
 This requires quite a bit of configuration that will be incorporated into the package in the future.
 
-Here we have just a simple example as a sketch. Twelve clusters in three waves. 
+Here we have just a simple example as a sketch. 20 clusters in 4 waves. 
 50 Individuals within each cluster.
 ```{r}
-Ind    <- construct_CovBlk(timepoints=4, sigma=.3, tau=.5)
-CovBlk <- bdiag(replicate(50,Ind,simplify=FALSE)) + matrix(.1^2,nrow=200,ncol=200)
-CovMat <- construct_CovMat(CovBlk=CovBlk,SumCl=12)
+Cl <- c(5,5,5,5)
+nInd <- 50
+tp <- length(Cl)+1
+psi <- .1 ; sigma <- .3 ; tau=.5
 
-wlsMixedPower(Cl=c(4*50,4*50,4*50), CovMat=CovMat, EffSize=0.1, verbose=TRUE)
-wlsMixedPower(Cl=c(200,200,200),sigma=.4,tau=.4,EffSize=.1)
+Ind    <- construct_CovBlk(timepoints=tp, sigma=.3, tau=.5)
+CovBlk <- bdiag(replicate(nInd,Ind,simplify=FALSE)) + matrix(psi^2,nrow=5*nInd,ncol=5*nInd)
+CovMat <- construct_CovMat(CovBlk=CovBlk,SumCl=sum(Cl))
+
+wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, EffSize=0.05, verbose=TRUE)
+wlsMixedPower(Cl=c(250,250,250,250),sigma=.3,tau=.5,EffSize=.05)
+
+sigma<-.3 ; tau <- .5 ;n <- 50
+sqrt(sigma^2+1/n*tau^2)
+
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= .5/sqrt(50), EffSize=.05)
+wlsMixedPower(Cl=Cl, sigma=.3, tau= .5/sqrt(50), N=50, EffSize=.05)
+
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2), EffSize=.05, verbose = TRUE)
+tmp <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2+(psi)^2), EffSize=.05, verbose = TRUE)
+tmp$CovarianceMatrix[1:5,1:5]
+
+CM50 <- CovMat[1:50,1:50]
+sum(CM50^2)/2500
+
+(diag(CM50))/(50)
 ```
 
 
