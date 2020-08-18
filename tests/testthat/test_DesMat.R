@@ -9,14 +9,14 @@ expect_equal(
 
 ## construct_timeadjust #####
 expect_equal(
-  construct_trtMat(Cl=c(1,1,1), trt_delay=NULL, design="SWD", timepoints=4),
+  construct_trtMat(Cl=c(1,1,1), trtDelay=NULL, design="SWD", timepoints=4),
   { a <- matrix(0,nrow=3,ncol=4)
     a[upper.tri(a)] <- 1
     a
   }
 )
 expect_equal(
-  construct_trtMat(Cl=c(1,1,1), trt_delay=NULL, design="SWD", timepoints=5),
+  construct_trtMat(Cl=c(1,1,1), trtDelay=NULL, design="SWD", timepoints=5),
   { a <- matrix(0,nrow=3,ncol=5)
   a[upper.tri(a)] <- 1
   a

@@ -4,20 +4,20 @@
 #' @export
 
 compare_designs <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
-                            N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,trt_delay=NULL){
+                            N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,trtDelay=NULL){
 
   pwr_swd   <-  wlsMixedPower(EffSize=EffSize, sigma=sigma, tau=tau, timepoints=timepoints,
-                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl, trt_delay=trt_delay,
+                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl, trtDelay=trtDelay,
                             design="SWD")
 
   Cl_par <- c(ceiling(sum(Cl)/2),floor(sum(Cl)/2))
   if(is.null(timepoints)) timepoints <- length(Cl)+1
 
   pwr_par   <-  wlsMixedPower(EffSize=EffSize, sigma=sigma, tau=tau, timepoints=timepoints,
-                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl_par, trt_delay=trt_delay,
+                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl_par, trtDelay=trtDelay,
                             design="parallel")
   pwr_parBl <-  wlsMixedPower(EffSize=EffSize, sigma=sigma, tau=tau, timepoints=timepoints,
-                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl_par, trt_delay=trt_delay,
+                            N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl_par, trtDelay=trtDelay,
                             design="parallel_baseline")
   return(data.frame("Stepped Wedge"= pwr_swd$Power,
                     "parallel"= pwr_par$Power,
@@ -32,7 +32,7 @@ compare_designs2 <- function(Designs, EffSize, family=gaussian(),
 
 
 
-# x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trt_delay = .5, EffSize=.01, N=500,
+# x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trtDelay = .5, EffSize=.01, N=500,
 #                    sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=TRUE)
 #
 # # debugonce(plot_wls2)

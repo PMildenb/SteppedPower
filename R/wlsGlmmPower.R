@@ -21,8 +21,8 @@
 #' @return as `wlsMixedPower`
 #' @export
 #'
-#' @examples
-#' wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
+# @examples
+# wlsGlmmPower(Cl=c(2,2,2),mu0=0.25,mu1=0.5,tau=0.05,N=20)
 
 
 ## Convenience wrapper for non-normal outcomes, **still experimental**
@@ -35,7 +35,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
                          eta=NULL,rho=NULL,
                          design="SWD",timepoints=NULL,family="binomial",
                          N=NULL,sig.level=0.05,
-                         trt_delay=NULL,time_adjust="factor",
+                         trtDelay=NULL,timeAdjust="factor",
                          df_adjust="none",verbose=TRUE){
 
   if(is.null(timepoints)){
@@ -43,8 +43,8 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
     if(design=="parallel"){ timepoints  <- 1            } else
     if(design=="parallel_baseline") {timepoints <- 2    }
   }
-  DesMat <- construct_DesMat(Cl=Cl,trt_delay=trt_delay,design=design,
-                             timepoints=timepoints,time_adjust=time_adjust)$matrix
+  DesMat <- construct_DesMat(Cl=Cl,trtDelay=trtDelay,design=design,
+                             timepoints=timepoints,timeAdjust=timeAdjust)$matrix
   trtmat <- matrix(DesMat[,1],nrow = sum(Cl),byrow=T)
 
   if(family =="binomial"){
@@ -81,7 +81,7 @@ wlsGlmmPower <- function(Cl,mu0,mu1,
     tautmp <- mapply(split_sd, t(trtmat), MoreArgs=list(sd=tau01),SIMPLIFY=T)
     Taus   <- split(tautmp,rep(1:sum(Cl),each=timepoints))
 
-    wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, trt_delay=trt_delay,
+    wlsMixedPower(Cl=Cl, timepoints=timepoints, DesMat=DesMat, trtDelay=trtDelay,
                   design=design, EffSize=EffSize, sigma=Sigmas,tau=Taus,
                   N=N,Power=NULL,df_adjust=df_adjust,sig.level=sig.level,verbose=verbose)
   }
