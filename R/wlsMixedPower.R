@@ -300,8 +300,8 @@ print.wlsPower <- function(x, ...){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, ...){
-  if(!"ProjMatrix" %in% names(x)) stop("Please rerun wlsMixedPower with `verbose=TRUE` ")
+plot.wlsPower <- function(x){
+  if(!"ProjMatrix" %in% names(x)) stop("Please rerun wlsMixedPower() with `verbose=TRUE` ")
   wgt <- x$ProjMatrix
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]

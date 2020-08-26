@@ -179,9 +179,9 @@ plot(wlsPwr)
 ### non-standard time effects
 
 The by far most usual method for the modeling of potential secular trends is
-to take timeperiod as a factor into the analysis model. Proposed by Hussey&Hughes2007, Hemming2015? ...
+to take time period as a factor into the analysis model. This is also proposed by Hussey&Hughes2007, Hemming2015? ...
 
-In some scenarios, different modeling of the time trend can be favoured.
+In some scenarios, different modeling of the time trend can be favoured. 
 
 ```{r}
 timeMat <- matrix(c(1,1,1,1,1,1,1,1,
@@ -233,6 +233,7 @@ sum(CM50^2)/2500
 (diag(CM50))/(50)
 ```
 
+> runtime is O(timepoints^2 nInd^2) , but O(sum(Cl)) 
 
 
 ```{r}

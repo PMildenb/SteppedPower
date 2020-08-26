@@ -24,10 +24,19 @@ compare_designs <- function(EffSize,sigma,tau,family=gaussian(),timepoints=NULL,
                     "parallel+baseline"= pwr_parBl$Power,row.names="Power"))
 }
 
-
+Designs <- list(construct_DesMat(c(2,2,2)), construct_DesMat(c(3,0,3)))
+sigma <- 1 ; tau <- .5 ; eta <- .2 ; rho <- .1 ; EffSize <- .2
 compare_designs2 <- function(Designs, EffSize, family=gaussian(),
                              sigma, tau, eta=NULL, rho=NULL, sig.level=0.05){
+  out <- list()
+  for(DesMat in Designs){
+    out <- append(out, wlsMixedPower(DesMat=DesMat, EffSize=EffSize,
+                         sigma=sigma, tau=tau, eta=eta, rho=rho, gamma))
+  }
 
+  mapply(wlsMixedPower, DesMat=Designs,
+                        EffSize=EffSize,
+                        sigma=sigma, tau=tau, eta=eta, rho=rho, gamma))
 }
 
 
