@@ -23,12 +23,12 @@ library(Matrix)
 
 The package `SteppedPower` aims at providing tools for power calculation 
 and design diagnostics in interventional study designs,
-with special focus on stepped wedge designs.  
+with a special focus on stepped wedge designs.  
 
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
-package makes computation of large design feasible.
+package makes computation of large designs feasible.
 
 
 ## A quick tour
@@ -120,7 +120,18 @@ wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,design="parallel")
 wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,tau=.2,design="parallel")
 ```
 
-### Stepped Wedge designs with empty sequences
+### Stepped Wedge designs with empty sequences (i.e. waves)
+
+Periods in which no cluster switches to the intervention are specified by inserting zeros into 
+the `Cl` argument, i.e. `Cl=c(4,4,4,0)`.
+
+```{r}
+mod3 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, EffSize=1)
+mod4 <- wlsMixedPower(Cl=c(4,4,4),   sigma=2, eta=1, EffSize=1, timepoints=5)
+
+mod1 <- wlsMixedPower(Cl=c(0,4,4,4), sigma=2, eta=1, EffSize=1)
+mod2 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, EffSize=1, trtDelay=0, verbose=TRUE)
+```
 
 
 ### Incomplete Stepped Wedge Designs
@@ -224,7 +235,43 @@ sum(CM50^2)/2500
 
 
 
+```{r}
 
+## tau is random effect in subcluster, psi is random effect in Cluster
+## 
+
+Cl <- c(5,5,5,5)
+nInd <- 50
+tp <- length(Cl)+1
+psi <- .2 ; sigma <- .3 ; tau=.3 ; eta <- .4 ; rho <- 0
+DesMat <- construct_DesMat(Cl=Cl)
+etaMat <- eta * DesMat$trtMat
+etaLst <- split(etaMat, row(etaMat)) 
+
+# debugonce(construct_CovBlk)
+Ind_to_CovBlk <- function(etas,Cl_i){
+  Ind    <- construct_CovBlk(timepoints=tp, sigma=sigma, tau=tau, eta=etas)
+  CovBlk <- bdiag(replicate(nInd,Ind,simplify=FALSE)) + matrix(psi^2,Cl_i*nInd,Cl_i*nInd)
+}
+
+CovMat <- bdiag(mapply(Ind_to_CovBlk, etas=etaLst, Cl_i=Cl))
+wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, EffSize=0.05)
+
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), EffSize=.05)
+
+## with rho
+b3 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), 
+                    rho=rho, EffSize=.05, verbose=TRUE)
+
+
+# without random cluster effect (only random subcluster effect)
+b1 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= (.5/sqrt(50)), eta=.4/sqrt(50), 
+                    EffSize=.05, verbose = TRUE)
+
+plot(b3)
+b3$CovarianceMatrix[1:5,1:5]
+
+```
 
 
 
