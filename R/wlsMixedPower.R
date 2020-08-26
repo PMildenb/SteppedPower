@@ -32,7 +32,7 @@
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
-#' @param dfAdjust character, one of the following: **not implemented**
+#' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \eqn{\cdot} timepoints) **experimental**
@@ -76,7 +76,7 @@ wlsMixedPower <- function(Cl            =NULL,
   if(!is.null(rho)){
     if(is.null(eta))
       stop("If the correlation rho between random intercept and slope is 0, a random slope must be provided.")
-    if( -1>rho | rho<1 )
+    if( (-1)>rho | rho>1 )
       stop("Correlation rho must be between -1 and 1")
   }
   if(!is.null(DesMat)){
