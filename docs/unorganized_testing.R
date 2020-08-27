@@ -357,7 +357,70 @@ function(sigma, tau, eta, rho, alpha, K){
 
 ################################################################################
 
+debugonce(muCond_to_muMarg)
+muMarg_to_muCond(.4,1)
+muMarg_to_muCond(.02,.42)
+muMarg_to_muCond(.0001,.42)
+
+muCond_to_muMarg(.001,.003)
+muCond_to_muMarg(.01,0.002)
+
+## PLOTS for muMarg_to_muCond ####
+
+
+mus  <- seq(1e-5,1-1e-5, 5e-4)
+taus <- seq(1e-5,2 , 5e-4)
+y1 <- sapply(mus, muMarg_to_muCond, tauLin=.4)  ## changing mu, fixed    tau
+y2 <- sapply(taus,muMarg_to_muCond, muMarg=.001)## fixed    mu, changing tau
+y3 <- mapply(muMarg_to_muCond, muMarg=mus, tauLin=3*sqrt(mus*(1-mus)))
+y4 <- mapply(muMarg_to_muCond, muMarg=mus, tauLin=4*sqrt(mus*(1-mus)))
+y5 <- mapply(muMarg_to_muCond, muMarg=mus, tauLin=5*sqrt(mus*(1-mus)))
+
+plot(mus,y1, "l")
+lines(mus,mus,col=2)
+
+plot(taus,y2, "l")
+
+plot(mus, (y3-mus),"l")
+plot(mus,y3, "l")
+lines(mus,mus,col=2)
+lines(mus,y4,col=3)
+lines(mus,y5,col=4)
+maxDiff <- which.max(y3-mus)
+mus[maxDiff]  ; y3[maxDiff]
+
+
+## PLOTS for muCond_to_muMarg ####
+
+y1 <- sapply(mus, muCond_to_muMarg, tauLin=.4)
+y2 <- sapply(taus,muCond_to_muMarg, muCond=.25)
+
+plot(mus,y1, type="l")
+lines(mus,mus,col=2)
+plot(mus,(y1-mus),"l")
+
+plot(taus,y2/.25, "l")
+
+
 # ## wlsGlmmPower #####
+sig <- .025
+sig <- .03
+tau <- 0.00262
+wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)), tau=tau, N=250)
+wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)/250), tau=tau, N=1)
+
+### compairing marginal-adjusted mu versus unadjusted (as in swCRTdesigns)
+mu <- .235  ## mu conditional on tau=0
+mu <- .285  ## marginal mu if muCond=.235
+N  <- 60
+sigSd <- sqrt(mu*(1-mu)/N)
+tau   <- 3*sigSd
+wlsMixedPower(Cl=rep(2,6), EffSize=.05, sigma=sigSd, tau=tau, N=1)
+
+N <- 1e6
+binCond <- rbinom(N,1,p=inv_logit(logit(.2)+rnorm(N,0,.4)))
+mean(binCond)
+
 # wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
 # swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
 #
