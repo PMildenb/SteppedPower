@@ -41,7 +41,6 @@ wlsGlmmPower <- function(Cl            =NULL,
                          mu1,
                          marginal_mu   =TRUE,
                          tau           =0,
-                         tau_lin       =NULL,
                          eta           =NULL,
                          tauAR         =NULL,
                          rho           =NULL,
@@ -115,31 +114,37 @@ wlsGlmmPower <- function(Cl            =NULL,
 
 
   if(family =="binomial"){
+    SumCl      <- sum(DesMat$Cl)
+    timepoints <- dim(DesMat$trtMat)[2]
 
+    MISSING_CONTROL_VARIABLE <- FALSE
     if(MISSING_CONTROL_VARIABLE){
-      tau0 <- tau_to_tauLin(tau_lin,mu0)
-      tau1 <- tau_to_tauLin(tau_lin,mu1)
-      tau  <- matrix(tau0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (tau1-tau0)
+      ## TODO: Decide wheter needed or not
+      ## TODO: Adjust eta, rho
+      ## TODO: tau output is matrix, next if-clause "marginal_mu" demands scalar
 
-      ## TODO: Adjust eta
+      tau0 <- tau_to_tauLin(tau,mu0)
+      tau1 <- tau_to_tauLin(tau,mu1)
+      tau  <- matrix(tau0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (tau1-tau0)
     }
 
     if(marginal_mu){
-      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau0)
-      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau1)
+
+      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
+      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
       print(paste("mu0_marg=",mu0,", mu1_marg=",mu1,"."))
-
-      sig0  <- sqrt(mu0*(1-mu0))
-      sig1  <- sqrt(mu1*(1-mu1))
-      sigma <- matrix(sig0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
-
-      EffSize <- mu1-mu0
-      print(paste("The effect size is",EffSize))
 
     }
 
     EffSize <- mu1-mu0
-    OR <- (mu1_marg*(1-mu0_marg))/(mu0_marg*(1-mu1_marg))
+    print(paste("The effect size is",EffSize))
+
+    sig0  <- sqrt(mu0*(1-mu0))
+    sig1  <- sqrt(mu1*(1-mu1))
+    ## for delayed trt effect only approximate
+    sigma <- matrix(sig0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
+
+    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
   }
 
@@ -159,29 +164,6 @@ wlsGlmmPower <- function(Cl            =NULL,
                           verbose   =verbose)
   return(out)
 }
-
-## aux functions for binomial
-tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
-logit.deriv   <- function(x) 1/(x-x^2)
-logit         <- function(x) log(x/(1-x))
-inv_logit     <- function(x) exp(x)/(1+exp(x))
-
-muMarg_to_muCond <- function(muMarg,tauLin) {
-  muMargLin <- logit(muMarg)
-  i <- function(x,muMargLin,tauLin){
-    dnorm(x,0,tauLin)/(1+exp(-x-muMargLin))}
-
-  ifelse(tauLin<1e-5,muMarg,
-         integrate(i,-Inf,Inf,
-                   muMargLin=muMargLin,tauLin=tauLin,
-                   rel.tol=100*.Machine$double.eps)$value)
-}
-muCond_to_muMarg <- function(muCond,tauLin){
-  uniroot(function(x) {muMarg_to_muCond(x,tauLin=tauLin)-muCond},
-          c(1e-6,1-1e-6),
-          tol=100*.Machine$double.eps)$root
-}
-
 
 #'  split_sd
 #'

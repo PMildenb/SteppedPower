@@ -409,6 +409,32 @@ tau <- 0.00262
 wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)), tau=tau, N=250)
 wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)/250), tau=tau, N=1)
 
+
+debugonce(wlsGlmmPower)
+
+mubar <- .025
+sigSd <- sqrt(mubar*(1-mubar))
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = TRUE)
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = FALSE)
+wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.00262,N=250)
+
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = TRUE)
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = FALSE)
+wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.0262,N=250)
+
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = TRUE)
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = FALSE)
+wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.062,N=250)
+
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = TRUE)
+wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = FALSE)
+wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.262,N=250)
+
+wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = TRUE)
+wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = FALSE)
+wlsMixedPower(Cl=rep(2,6),EffSize = .1, sigma=sqrt(.25*.75),  tau=.62,N=20)
+
+
 ### compairing marginal-adjusted mu versus unadjusted (as in swCRTdesigns)
 mu <- .235  ## mu conditional on tau=0
 mu <- .285  ## marginal mu if muCond=.235
