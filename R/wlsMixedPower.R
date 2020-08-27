@@ -107,6 +107,7 @@ wlsMixedPower <- function(Cl            =NULL,
   if(!is.null(incomplete) & is.null(CovMat)){
     timepoints <- DesMat$timepoints
     lenCl      <- length(DesMat$Cl)
+    SumCl      <- Sum(DesMat$Cl)
 
     if(is.vector(incomplete) & design=="SWD"){
       Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
@@ -117,14 +118,15 @@ wlsMixedPower <- function(Cl            =NULL,
       IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
 
       IM <- IM[rep(1:lenCl,DesMat$Cl),]
+
     } else if(is.matrix(incomplete)){
-        if(nrow(incomplete)!=sum(DesMat$Cl) | ncol(incomplete)!=timepoints)
+        if(nrow(incomplete)!%in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
           stop("matrix dimensions of argument incoplete are ",dim(incomplete), " but must be ",
-               dim(DesMat$trtMat))
+               dim(DesMat$trtMat), "or ", dim(unique(DesMat$trtMat)))
       IM <- incomplete
       IM[which(IM==0)] <- Inf
     }
-    sigma <- matrix(sigma, nrow=lenCl, ncol=timepoints,
+    sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
 
