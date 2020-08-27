@@ -6,7 +6,7 @@ library(SteppedPower)
 ################################################################################
 #### DesMat #####
 
-## construct_time_adjust #####
+## construct_timeAdjust #####
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "factor")
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "none"  )
 construct_timeadjust(Cl=c(1,1,1), timepoints=4, "linear")
@@ -42,12 +42,12 @@ construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7))
 construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel")
 construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel_baseline")
 
-construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7),time_adjust="none")
-construct_DesMat(Cl=c(1,1),trtDelay=c(.3,.7),design="parallel_baseline",time_adjust="linear")
+construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="none")
+construct_DesMat(Cl=c(1,1),trtDelay=c(.3,.7),design="parallel_baseline",timeAdjust="linear")
 
-construct_DesMat(Cl=c(1,1,1,1),time_adjust="factor")
-construct_DesMat(Cl=c(1,1,1,1),time_adjust="periodic")
-construct_DesMat(Cl=rep(1,6),time_adjust="periodic",period=4)
+construct_DesMat(Cl=c(1,1,1,1),timeAdjust="factor")
+construct_DesMat(Cl=c(1,1,1,1),timeAdjust="periodic")
+construct_DesMat(Cl=rep(1,6),timeAdjust="periodic",period=4)
 
 construct_DesMat(Cl=c(1,1,2),trtDelay=.5,timeBlk=diag(4))
 
@@ -119,56 +119,56 @@ DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
-                 Power=NULL,dfAdjust="none",sig.level=.05,verbose=F)
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,verbose=F)
+                 dfAdjust="none",sig.level=.05,verbose=F)
+wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,verbose=F)
 
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
-                 Power=NULL,dfAdjust="none",sig.level=.05,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.5,sigma=1,tau=.3,verbose=F)
+                 dfAdjust="none",sig.level=.05,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
 wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
-              EffSize=.5,sigma=1,tau=.3,verbose=F)
+              mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
 
 
 
 
 
 DesMat <- construct_DesMat(rep(1,8))
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,N=720,verbose=F)
-wlsMixedPower(DesMat=DesMat,EffSize=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,N=720,verbose=F)
+wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
 uniroot(a <- function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
         interval=c(1,1000))
 
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,N=14,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,EffSize=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
+wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=14,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
 
 
 ################################################################################
 ## wlsMixedPower #####
-wlsMixedPower(EffSize = .1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
+wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
-Cl <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; EffSize <- 1.5
-wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,EffSize=EffSize,verbose=F)
+Cl <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; mu0=0 ; mu1=1.5
+wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,mu0=mu0,mu1=mu1,verbose=F)
 swCRTdesign::swPwr(swCRTdesign::swDsn(Cl),distn="gaussian",1,0,EffSize,
       tau=tau,eta=0,rho=0,sigma=sigma)
 
-wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
-Cl=c(3,3) ; EffSize=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
+Cl=c(3,3) ; mu0=0 ; mu1=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 design="parallel" ; N <- NULL ; sig.level=0.05
-wlsMixedPower(Cl=c(5,5),EffSize=.2,sigma=1,tau=0.1,timepoints=2,design="parallel")
+wlsMixedPower(Cl=c(5,5),mu0=0,mu1=.2,sigma=1,tau=0.1,timepoints=2,design="parallel")
 
 microbenchmark::microbenchmark(
-wls_parBl1 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
+wls_parBl1 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
                            design="parallel_baseline",timepoints=51)
 ,
-wls_parBl2 <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=c(50,50),
+wls_parBl2 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
                            design="parallel_baseline",timepoints=c(15,36))
 ,
-wls_swd    <- wlsMixedPower(EffSize=0.1,sigma=1,tau=1,Cl=rep(2,50),
+wls_swd    <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(2,50),
                             design="SWD")
 ,times=10)
 system.time(sw <- swCRTdesign::swPwr(swCRTdesign::swDsn(rep(2,50)),distn="gaussian",
@@ -179,18 +179,18 @@ wls_parBl2$Power
 wls_swd$Power
 
 
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
+wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
+wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=0,rho=0,gamma=0,sigma=1)
 
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
+wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=.1,rho=0,gamma=0,sigma=1)
 
 cls <- rep(5,10)
 microbenchmark::microbenchmark(
-a1 <- wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
+a1 <- wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
 ,
 a2 <- swCRTdesign::swPwr(swCRTdesign::swDsn(cls),distn="gaussian",n=1,
                    mu0=0,mu1=.1,tau=0,eta=0,rho=0,gamma=0,sigma=5,retDATA=TRUE)
@@ -199,36 +199,36 @@ a2$Wmat
 a1$CovarianceMatrix[1:6,1:6];a2$Wmat[1:6,1:6]
 a1$Power ; a2$pwrWLS
 
-wlsMixedPower(EffSize = .1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,time_adjust="none")
+wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,timeAdjust="none")
 
 
-wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
-wlsMixedPower(EffSize = .05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
+wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
+wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
-wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
+wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
               Cl=c(50,50),timepoints=5,design="parallel",
               Power=.9,verbose=F)
-wlsMixedPower(EffSize = .02,sigma=1,tau=.0,
+wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
               Cl=c(10,10),timepoints=5,design="parallel",
               N=1000,verbose=F)
 
 
-wlsMixedPower(Cl=c(1,1,1),trtDelay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.1,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),time_adjust="None",  EffSize=.1,sigma=1,tau=.1,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),time_adjust="None",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),time_adjust="factor",EffSize=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
 
-wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
-              sigma=sqrt(.025*.975), time_adjust="none",
+wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
+              sigma=sqrt(.025*.975), timeAdjust="none",
               tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
-wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),EffSize=.01,
-              sigma=sqrt(.025*.975), time_adjust="periodic", period=4,
+wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
+              sigma=sqrt(.025*.975), timeAdjust="periodic", period=4,
               tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
 
-a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01, sigma=sqrt(.025*.975),
+a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2),mu0=0,mu1=.01, sigma=sqrt(.025*.975),
               tau=0.0254, gamma=15, N=58, verbose=TRUE)
 a$CovarianceMatrix
 
@@ -237,7 +237,7 @@ a$CovarianceMatrix
 
 CM  <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1))
 CMg <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1), gamma=100)
-DM  <- construct_DesMat(rep(1,2), time_adjust="none")
+DM  <- construct_DesMat(rep(1,2), timeAdjust="none")
 
 Matrix::solve(CM) ; Matrix::solve(CMg)
 t(DM$dsnmatrix) %*% Matrix::solve(CM) ; t(DM$dsnmatrix) %*% Matrix::solve(CMg)
@@ -253,13 +253,13 @@ VarMat[1,1]
 
 #### tauAR swd ####
 cl <- rep(6,3) ; si <- 2 ; tau <- .1 ; ES <- 1
-mod1 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=NULL, EffSize=ES, verbose=TRUE)
-mod2 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=1,    EffSize=ES, verbose=TRUE)
-mod3 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.7,   EffSize=ES, verbose=TRUE)
-mod4 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   EffSize=ES, verbose=TRUE)
-mod5 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   EffSize=ES, verbose=TRUE)
-mod6 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    EffSize=ES, verbose=TRUE)
-mod7 <- wlsMixedPower(Cl=cl, sigma=sqrt(si^2+tau^2),        EffSize=ES, verbose=TRUE)
+mod1 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, verbose=TRUE)
+mod2 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, verbose=TRUE)
+mod3 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.7,   mu0=0,mu1=ES, verbose=TRUE)
+mod4 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   mu0=0,mu1=ES, verbose=TRUE)
+mod5 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   mu0=0,mu1=ES, verbose=TRUE)
+mod6 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, verbose=TRUE)
+mod7 <- wlsMixedPower(Cl=cl, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, verbose=TRUE)
 
 mod1$CovarianceMatrix[1:4,1:4]
 mod2$CovarianceMatrix[1:4,1:4]
@@ -280,12 +280,12 @@ mod7$Power
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
 
-mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, EffSize=ES, design="parallel", verbose=TRUE)
-mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    EffSize=ES, design="parallel", verbose=TRUE)
-mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   EffSize=ES, design="parallel", verbose=TRUE)
-mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   EffSize=ES, design="parallel", verbose=TRUE)
-mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    EffSize=ES, design="parallel", verbose=TRUE)
-mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        EffSize=ES, design="parallel", verbose=TRUE)
+mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, design="parallel", verbose=TRUE)
 
 mod1$CovarianceMatrix[1:tp,1:tp]
 mod2$CovarianceMatrix[1:tp,1:tp]
@@ -308,10 +308,10 @@ plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
 
 ## compare_designs #####
-compare_designs(EffSize=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
-compare_designs(EffSize=1, sigma=1 ,tau=.5, Cl=c(2,2,2,2))
-compare_designs(EffSize=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
-compare_designs(EffSize=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
+compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
+compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.5, Cl=c(2,2,2,2))
+compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
+compare_designs(mu0=0,mu1=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
 
 ## tTestPwr scaled Wald-test #####
@@ -406,8 +406,8 @@ plot(taus,y2/.25, "l")
 sig <- .025
 sig <- .03
 tau <- 0.00262
-wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)), tau=tau, N=250)
-wlsMixedPower(Cl=rep(2,6),EffSize=.01,sigma=sqrt(sig*(1-sig)/250), tau=tau, N=1)
+wlsMixedPower(Cl=rep(2,6),mu0=0,mu1=.01,sigma=sqrt(sig*(1-sig)), tau=tau, N=250)
+wlsMixedPower(Cl=rep(2,6),mu0=0,mu1=.01,sigma=sqrt(sig*(1-sig)/250), tau=tau, N=1)
 
 
 debugonce(wlsGlmmPower)
@@ -416,23 +416,24 @@ mubar <- .025
 sigSd <- sqrt(mubar*(1-mubar))
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = TRUE)
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = FALSE)
-wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.00262,N=250)
+# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.00262,N=250)
+wlsMixedPower(Cl=rep(2,6),mu0=.03,mu1=.02,family="binomial", tau=.00262,N=250)
 
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = TRUE)
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = FALSE)
-wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.0262,N=250)
+# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.0262,N=250)
 
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = TRUE)
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = FALSE)
-wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.062,N=250)
+# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.062,N=250)
 
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = TRUE)
 wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = FALSE)
-wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.262,N=250)
+# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.262,N=250)
 
 wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = TRUE)
 wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = FALSE)
-wlsMixedPower(Cl=rep(2,6),EffSize = .1, sigma=sqrt(.25*.75),  tau=.62,N=20)
+# wlsMixedPower(Cl=rep(2,6),EffSize = .1, sigma=sqrt(.25*.75),  tau=.62,N=20)
 
 
 ### compairing marginal-adjusted mu versus unadjusted (as in swCRTdesigns)
@@ -441,7 +442,7 @@ mu <- .285  ## marginal mu if muCond=.235
 N  <- 60
 sigSd <- sqrt(mu*(1-mu)/N)
 tau   <- 3*sigSd
-wlsMixedPower(Cl=rep(2,6), EffSize=.05, sigma=sigSd, tau=tau, N=1)
+# wlsMixedPower(Cl=rep(2,6), EffSize=.05, sigma=sigSd, tau=tau, N=1)
 
 N <- 1e6
 binCond <- rbinom(N,1,p=inv_logit(logit(.2)+rnorm(N,0,.4)))

@@ -19,7 +19,8 @@
 #' observed clusterperiods and 0's for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
 #' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
-#' @param EffSize numeric (scalar), raw effect
+#' @param mu0 numeric (scalar), mean under control
+#' @param mu1 numeric (scalar), mean under treatment
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes
@@ -28,7 +29,7 @@
 #' @param rho numeric, correlation of tau and eta
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
-#' @param family character, distribution family. Defaults to "gaussian" **not implemented**
+#' @param family character, distribution family. One of "gaussian", "binomial". Defaults to "gaussian"
 #' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
 #' @param N_range numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
@@ -55,7 +56,9 @@ wlsMixedPower <- function(Cl            =NULL,
                           timeAdjust    ="factor",
                           period        =NULL,
                           design        ="SWD",
-                          EffSize,
+                          mu0,
+                          mu1,
+                          marginal_mu   =FALSE,
                           sigma         =1, ## default needed for CovMat input, still experimental
                           tau           =0,
                           eta           =NULL,
@@ -103,7 +106,7 @@ wlsMixedPower <- function(Cl            =NULL,
     stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
          "It must be either an object of class DesMat or a matrix")
 
-  ## incomplete designs
+  ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
     timepoints <- DesMat$timepoints
     lenCl      <- length(DesMat$Cl)
@@ -120,7 +123,7 @@ wlsMixedPower <- function(Cl            =NULL,
       IM <- IM[rep(1:lenCl,DesMat$Cl),]
 
     } else if(is.matrix(incomplete)){
-        if(nrow(incomplete)!%in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
+        if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
           stop("matrix dimensions of argument incoplete are ",dim(incomplete), " but must be ",
                dim(DesMat$trtMat), "or ", dim(unique(DesMat$trtMat)))
       IM <- incomplete
@@ -129,6 +132,41 @@ wlsMixedPower <- function(Cl            =NULL,
     sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
+
+  if(family =="binomial"){
+    SumCl      <- sum(DesMat$Cl)
+    timepoints <- dim(DesMat$trtMat)[2]
+
+    MISSING_CONTROL_VARIABLE <- FALSE
+    if(MISSING_CONTROL_VARIABLE){
+      ## TODO: Decide wheter needed or not
+      ## TODO: Adjust eta, rho
+      ## TODO: tau output is matrix, next if-clause "marginal_mu" demands scalar
+
+      tau0 <- tau_to_tauLin(tau,mu0)
+      tau1 <- tau_to_tauLin(tau,mu1)
+      tau  <- matrix(tau0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (tau1-tau0)
+    }
+
+    if(marginal_mu){
+
+      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
+      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
+      print(paste("mu0_marg=",mu0,", mu1_marg=",mu1,"."))
+
+    }
+
+    sig0  <- sqrt(mu0*(1-mu0))
+    sig1  <- sqrt(mu1*(1-mu1))
+    ## for delayed trt effect only approximate
+    sigma <- matrix(sig0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
+
+    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
+  }
+
+  EffSize <- mu1-mu0
+  print(paste("The (raw) effect is",EffSize))
 
   ## calculate samplesize (if needed) #####
   if(!is.null(Power)){

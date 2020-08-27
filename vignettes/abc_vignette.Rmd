@@ -78,10 +78,10 @@ mean in two groups. Lets say we have two groups of 10 observations
 The Z-test can be expressed as follows:
 
 ```{r}
-wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, design="parallel", timepoints=1)
+wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, design="parallel", timepoints=1)
 
 ## the same:
-wlsMixedPower(Cl=c(1,1), sigma=1, EffSize=.6, N=10, design="parallel", timepoints=1)
+wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, design="parallel", timepoints=1)
 ```
 
 
@@ -100,7 +100,7 @@ whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
 Calculating power 
 ```{r}
-a <- wlsMixedPower(Cl=c(10,10), sigma=1, EffSize=.6, N=1, dfAdjust="between-within",
+a <- wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, dfAdjust="between-within",
                    timepoints=1, design="parallel", verbose = TRUE)
 # a$CovarianceMatrix
 dsnmatrix <- a$DesignMatrix$dsnmatrix
@@ -116,8 +116,8 @@ pwr::pwr.t.test(20,.3, type="one.sample")
 
 
 ```{r}
-wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,design="parallel")
-wlsMixedPower(Cl=c(10,10),timepoints=5,EffSize=.25,sigma=.5,tau=.2,design="parallel")
+wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,design="parallel")
+wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,design="parallel")
 ```
 
 ### Stepped Wedge designs with empty sequences (i.e. waves)
@@ -126,11 +126,11 @@ Periods in which no cluster switches to the intervention are specified by insert
 the `Cl` argument, i.e. `Cl=c(4,4,4,0)`.
 
 ```{r}
-mod3 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, EffSize=1)
-mod4 <- wlsMixedPower(Cl=c(4,4,4),   sigma=2, eta=1, EffSize=1, timepoints=5)
+mod3 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1)
+mod4 <- wlsMixedPower(Cl=c(4,4,4),   sigma=2, eta=1, mu0=0,mu1=1, timepoints=5)
 
-mod1 <- wlsMixedPower(Cl=c(0,4,4,4), sigma=2, eta=1, EffSize=1)
-mod2 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, EffSize=1, trtDelay=0, verbose=TRUE)
+mod1 <- wlsMixedPower(Cl=c(0,4,4,4), sigma=2, eta=1, mu0=0,mu1=1)
+mod2 <- wlsMixedPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1, trtDelay=0, verbose=TRUE)
 ```
 
 
@@ -149,7 +149,7 @@ If for example the study consists of eight clusters in eight waves (i.e. nine ti
 and we observe four timepoints before and after the switch, then we receive
 
 ```{r}
-wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, EffSize=1, incomplete=4, verbose=TRUE)
+wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, mu0=0,mu1=1, incomplete=4, verbose=TRUE)
 wlsPwr
 ```
 
@@ -190,9 +190,9 @@ timeMat <- matrix(c(1,1,1,1,1,1,1,1,
                     0,0,0,1,0,0,0,1),8,4)
 DesMat  <- construct_DesMat(rep(1,7), timeBlk = timeMat)
 
-wlsPower <- wlsMixedPower(DesMat=DesMat, EffSize=.8, sigma=1, tau=.2, verbose=TRUE)
+wlsPower <- wlsMixedPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
 plot(wlsPower)
-wlsPower <- wlsMixedPower(Cl=rep(1,7), EffSize=.8, sigma=1, tau=.2, verbose=TRUE)
+wlsPower <- wlsMixedPower(Cl=rep(1,7), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
 plot(wlsPower)
 ```
 
@@ -214,17 +214,17 @@ Ind    <- construct_CovBlk(timepoints=tp, sigma=.3, tau=.5)
 CovBlk <- bdiag(replicate(nInd,Ind,simplify=FALSE)) + matrix(psi^2,nrow=5*nInd,ncol=5*nInd)
 CovMat <- construct_CovMat(CovBlk=CovBlk,SumCl=sum(Cl))
 
-wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, EffSize=0.05, verbose=TRUE)
-wlsMixedPower(Cl=c(250,250,250,250),sigma=.3,tau=.5,EffSize=.05)
+wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, mu0=0,mu1=0.05, verbose=TRUE)
+wlsMixedPower(Cl=c(250,250,250,250),sigma=.3,tau=.5,mu0=0,mu1=.05)
 
 sigma<-.3 ; tau <- .5 ;n <- 50
 sqrt(sigma^2+1/n*tau^2)
 
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= .5/sqrt(50), EffSize=.05)
-wlsMixedPower(Cl=Cl, sigma=.3, tau= .5/sqrt(50), N=50, EffSize=.05)
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= .5/sqrt(50), mu0=0,mu1=.05)
+wlsMixedPower(Cl=Cl, sigma=.3, tau= .5/sqrt(50), N=50, mu0=0,mu1=.05)
 
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2), EffSize=.05, verbose = TRUE)
-tmp <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2+(psi)^2), EffSize=.05, verbose = TRUE)
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2), mu0=0,mu1=.05, verbose = TRUE)
+tmp <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2+(psi)^2), mu0=0,mu1=.05, verbose = TRUE)
 tmp$CovarianceMatrix[1:5,1:5]
 
 CM50 <- CovMat[1:50,1:50]
@@ -256,18 +256,18 @@ Ind_to_CovBlk <- function(etas,Cl_i){
 }
 
 CovMat <- bdiag(mapply(Ind_to_CovBlk, etas=etaLst, Cl_i=Cl))
-wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, EffSize=0.05)
+wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, mu0=0,mu1=0.05)
 
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), EffSize=.05)
+wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), mu0=0,mu1=.05)
 
 ## with rho
 b3 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), 
-                    rho=rho, EffSize=.05, verbose=TRUE)
+                    rho=rho, mu0=0,mu1=.05, verbose=TRUE)
 
 
 # without random cluster effect (only random subcluster effect)
 b1 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= (.5/sqrt(50)), eta=.4/sqrt(50), 
-                    EffSize=.05, verbose = TRUE)
+                    mu0=0,mu1=.05, verbose = TRUE)
 
 plot(b3)
 b3$CovarianceMatrix[1:5,1:5]

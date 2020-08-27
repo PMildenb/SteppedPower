@@ -39,7 +39,7 @@ wlsGlmmPower <- function(Cl            =NULL,
                          design        ="SWD",
                          mu0,
                          mu1,
-                         marginal_mu   =TRUE,
+                         marginal_mu   =FALSE,
                          tau           =0,
                          eta           =NULL,
                          tauAR         =NULL,
@@ -163,19 +163,4 @@ wlsGlmmPower <- function(Cl            =NULL,
                           CovMat    =CovMat,
                           verbose   =verbose)
   return(out)
-}
-
-#'  split_sd
-#'
-#'  small auxiliary function for wlsGlmmPower. returns sd_0 for periods in control and sd_1
-#'  for interventional periods for each cluster. Not to be called directly.
-#'
-#' @param trtvec a vector
-#' @param sd  vector of length 2 (or 3).
-#'
-#' @return numeric, scalar.
-#'
-
-split_sd <- function(trtvec,sd){
-  (sd[1] + trtvec*(sd[2]-sd[1]))
 }
