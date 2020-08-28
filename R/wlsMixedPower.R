@@ -81,13 +81,15 @@ wlsMixedPower <- function(Cl            =NULL,
     stop("Both target power and individuals per cluster not NULL.")
   if(!is.null(rho)){
     if(is.null(eta))
-      stop("If the correlation rho between random intercept and slope is 0, a random slope must be provided.")
+      stop("If the correlation rho between random intercept and slope is 0,",
+           "a random slope must be provided.")
     if( (-1)>rho | rho>1 )
       stop("Correlation rho must be between -1 and 1")
   }
   if(!is.null(DesMat)){
     if(min(sapply(list(Cl, timepoints, trtDelay, incomplete, period),is.null))==0)
-      warning("If argument DesMat is provided, Cl, timepoints, trtDelay, incomplete, timeAdjust, period and design are ignored.")
+      warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
+              "incomplete, timeAdjust, period and design are ignored.")
     else{
       if(!is.null(timepoints))
         if(length(trtDelay)>timepoints)
@@ -125,12 +127,14 @@ wlsMixedPower <- function(Cl            =NULL,
 
       IM <- IM[rep(1:lenCl,DesMat$Cl),]
 
-    } else if(is.matrix(incomplete)){
-        if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
-          stop("matrix dimensions of argument incoplete are ",dim(incomplete), " but must be ",
-               dim(DesMat$trtMat), "or ", dim(unique(DesMat$trtMat)))
+    }else if(is.matrix(incomplete)){
+      if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
+        stop("matrix dimensions of argument incoplete are ",dim(incomplete),
+             " but must be ", dim(DesMat$trtMat), "or ",
+             dim(unique(DesMat$trtMat)))
       IM <- incomplete
       IM[which(IM==0)] <- Inf
+      if(nrow(incomplete)==lenCl) IM <- IM[rep(1:lenCl,DesMat$Cl),]
     }
     sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
@@ -169,7 +173,7 @@ wlsMixedPower <- function(Cl            =NULL,
   }
 
   EffSize <- mu1-mu0
-  print(paste("The (raw) effect is",EffSize))
+  if(marginal_mu) print(paste("The (raw) effect is",EffSize))
 
   ## calculate samplesize (if needed) #####
   if(!is.null(Power)){
@@ -248,7 +252,7 @@ compute_wlsPower <- function(DesMat,
                              gamma      =NULL,
                              N          =NULL,
                              CovMat     =NULL,
-                             dfAdjust  ="none",
+                             dfAdjust   ="none",
                              sig.level  =.05,
                              verbose    =FALSE){
   dsnmatrix  <- DesMat$dsnmatrix
@@ -290,7 +294,7 @@ compute_wlsPower <- function(DesMat,
     df <- Inf }
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
-  out <- list(Power     =Pwr,
+  out <- list(Power  =Pwr,
               Params =list(N         =N,
                            sigma     =sigma, ## NOT compatible with CovMat-Input (!)
                            tau       =tau,
@@ -304,7 +308,7 @@ compute_wlsPower <- function(DesMat,
                            sig.level =sig.level))
   if(verbose)
     out <- append(out,
-                  list(ProjMatrix     =ProjMat,
+                  list(ProjMatrix       =ProjMat,
                        DesignMatrix     =DesMat,
                        CovarianceMatrix =CovMat))
   class(out) <- append(class(out),"wlsPower")
@@ -344,7 +348,8 @@ print.wlsPower <- function(x, ...){
 #' @export
 #'
 plot.wlsPower <- function(x){
-  if(!"ProjMatrix" %in% names(x)) stop("Please rerun wlsMixedPower() with `verbose=TRUE` ")
+  if(!"ProjMatrix" %in% names(x))
+    stop("Please rerun wlsMixedPower() with `verbose=TRUE` ")
   wgt <- x$ProjMatrix
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]
@@ -352,18 +357,26 @@ plot.wlsPower <- function(x){
   subp <- subplot(
     plot_ly(data=data.frame(time=1:dim(wgt)[2], weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
-      layout(xaxis=list(showticklabels=FALSE)),
-    plotly_empty(type="scatter",mode="marker"),
+      layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
+             xaxis=list(title="", showticklabels=FALSE))
+    ,
+    plotly_empty(type="scatter",mode="marker")
+    ,
     plot_ly(x=1:timep,y=1:sumCl,z=wgt,type="heatmap",
             colors=colorRamp(c("steelblue","white","firebrick")),
             xgap=.3,ygap=.3) %>%
-      colorbar(len=1,limits=c(-mx,mx)) %>% layout(yaxis = list(autorange = "reversed")),
+      colorbar(len=1,limits=c(-mx,mx)) %>%
+      layout(xaxis=list(title="time"),
+             yaxis=list(title="cluster", autorange="reversed"))
+    ,
     plot_ly(data=data.frame(cluster=1:dim(wgt)[1], weight=rowSums(abs(wgt))),
             type="bar", orientation="h",
             y=~cluster, x=~weight, color=I("grey")) %>%
-      layout(yaxis=list(showticklabels=FALSE)),
-    nrows=2, heights=c(.2,.8), widths=c(.8,.2)
-  ) %>% layout(showlegend=FALSE)
-  return(subp)
+      layout(xaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
+             yaxis=list(title="", showticklabels=FALSE))
+    ,
+    nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+  ) %>% layout(showlegend=FALSE) %>% config(mathjax = 'cdn')
+  return(suppressWarnings(subp))
 }
 
