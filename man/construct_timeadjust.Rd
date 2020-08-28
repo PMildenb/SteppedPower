@@ -8,8 +8,8 @@ construct_timeadjust(
   Cl,
   timepoints,
   timeAdjust = "factor",
-  timeBlk = NULL,
-  period = NULL
+  period = NULL,
+  timeBlk = NULL
 )
 }
 \arguments{
@@ -20,13 +20,13 @@ construct_timeadjust(
 \item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
 \item{period}{number of timepoints per period. Defaults to `timepoints` **experimental!**}
+
+\item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
+Is repeated for every cluster.}
 }
 \value{
 What is returned? TODO
 }
 \description{
 construct_timeadjust
-}
-\examples{
-
 }

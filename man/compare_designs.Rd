@@ -5,7 +5,9 @@
 \title{compare_designs}
 \usage{
 compare_designs(
-  EffSize,
+  Cl = NULL,
+  mu0,
+  mu1,
   sigma,
   tau,
   family = gaussian(),
@@ -13,9 +15,31 @@ compare_designs(
   N = NULL,
   sig.level = 0.05,
   DesMat = NULL,
-  Cl = NULL,
   trtDelay = NULL
 )
+}
+\arguments{
+\item{Cl}{as in wlsMixedPower}
+
+\item{mu0}{as in wlsMixedPower}
+
+\item{mu1}{as in wlsMixedPower}
+
+\item{sigma}{as in wlsMixedPower}
+
+\item{tau}{as in wlsMixedPower}
+
+\item{family}{as in wlsMixedPower}
+
+\item{timepoints}{as in wlsMixedPower}
+
+\item{N}{as in wlsMixedPower}
+
+\item{sig.level}{as in wlsMixedPower}
+
+\item{DesMat}{as in wlsMixedPower}
+
+\item{trtDelay}{as in wlsMixedPower}
 }
 \description{
 a short wrapper that compares parallel, sw, and parallel+ baseline design

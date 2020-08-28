@@ -68,7 +68,8 @@ construct_CovBlk <- function(timepoints,
 #' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
 #' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-##' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
+#' @param gamma numeric (scalar), standard deviation of a random time effect.
+#' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive
 #' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 #' `SumCl` and `timepoints` are ignored (!).

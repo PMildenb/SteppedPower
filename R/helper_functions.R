@@ -32,7 +32,7 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
   d   <- abs(d/se)
   q   <- qt(sig.level/2, df=df)
   ncp <- -sqrt((df+2)/4)*d ## TODO: ?? how to calculate n using df ??
-  pwr <- pt(q,  df, ncp=ncp) + pt(-q, df,ncp=ncp,lower=FALSE)
+  pwr <- pt(q,  df, ncp=ncp) + pt(-q, df,ncp=ncp,lower.tail=FALSE)
   return(pwr)
 }
 
@@ -41,16 +41,14 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
 ## aux functions for binomial
 tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
 logit.deriv   <- function(x) 1/(x-x^2)
-logit         <- function(x) log(x/(1-x))
-inv_logit     <- function(x) exp(x)/(1+exp(x))
 
 muMarg_to_muCond <- function(muMarg,tauLin) {
-  muMargLin <- logit(muMarg)
+  muMargLin <- binomial()$linkfun(muMarg)
   i <- function(x,muMargLin,tauLin){
-    dnorm(x,0,tauLin)/(1+exp(-x-muMargLin))}
+    stats::dnorm(x,0,tauLin)/(1+exp(-x-muMargLin))}
 
   ifelse(tauLin<1e-5,muMarg,
-         integrate(i,-Inf,Inf,
+         stats::integrate(i,-Inf,Inf,
                    muMargLin=muMargLin,tauLin=tauLin,
                    rel.tol=100*.Machine$double.eps)$value)
 }

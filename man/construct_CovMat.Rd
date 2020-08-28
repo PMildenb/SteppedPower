@@ -39,6 +39,8 @@ given, `trtMat` is needed as well.}
 
 \item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
 
+\item{gamma}{numeric (scalar), standard deviation of a random time effect.}
+
 \item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
 the function `construct_trtMat`, indicating the cluster-periods that receive
 interventional treatment. Defaults to NULL. If trtMat is given, the arguments

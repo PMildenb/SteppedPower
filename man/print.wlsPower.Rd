@@ -7,7 +7,7 @@
 \method{print}{wlsPower}(x, ...)
 }
 \arguments{
-\item{x}{w}
+\item{x}{object of class wlsPower}
 
 \item{...}{Arguments to be passed to methods}
 }

@@ -13,13 +13,14 @@ wlsMixedPower(
   timeAdjust = "factor",
   period = NULL,
   design = "SWD",
-  EffSize,
+  mu0,
+  mu1,
+  marginal_mu = FALSE,
   sigma = 1,
   tau = 0,
   eta = NULL,
   tauAR = NULL,
   rho = NULL,
-  gamma = NULL,
   CovMat = NULL,
   N = NULL,
   Power = NULL,
@@ -51,9 +52,15 @@ observed clusterperiods and 0's for unobserved clusterperiods.}
 
 \item{period}{numeric (scalar)}
 
-\item{design}{character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".}
+\item{design}{character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".}
 
-\item{EffSize}{numeric (scalar), raw effect}
+\item{mu0}{numeric (scalar), mean under control}
+
+\item{mu1}{numeric (scalar), mean under treatment}
+
+\item{marginal_mu}{logical. Only relevant for non-gaussian outcome. Indicates whether mu0 and mu1 are to be
+interpreted as marginal prevalence under control  and under treatment, respectively, or whether they denote
+the prevalence conditional on random effects being 0 (It defaults to the latter).}
 
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
@@ -75,13 +82,13 @@ of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal N is returned.}
 
-\item{family}{character, distribution family. Defaults to "gaussian" **not implemented**}
+\item{family}{character, distribution family. One of "gaussian", "binomial". Defaults to "gaussian"}
 
 \item{N_range}{numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{dfAdjust}{character, one of the following: **not implemented**}
+\item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }
@@ -96,6 +103,6 @@ and then calculates the variance of the intervention effect via
 $$Var(trteff)=(X'V^{-1}X)^{-1}[1,1]$$
 }
 \examples{
-wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 }

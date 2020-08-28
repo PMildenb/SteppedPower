@@ -67,7 +67,6 @@ wlsMixedPower <- function(Cl            =NULL,
                           eta           =NULL,
                           tauAR         =NULL,
                           rho           =NULL,
-                          gamma         =NULL,
                           CovMat        =NULL,
                           N             =NULL,
                           Power         =NULL,
@@ -186,7 +185,7 @@ wlsMixedPower <- function(Cl            =NULL,
                                                            eta       =eta,
                                                            tauAR     =tauAR,
                                                            rho       =rho,
-                                                           gamma     =gamma,
+                                                           # gamma     =gamma,
                                                            N         =N,
                                                            dfAdjust  =dfAdjust,
                                                            sig.level =sig.level,
@@ -207,7 +206,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           eta       =eta,
                           tauAR     =tauAR,
                           rho       =rho,
-                          gamma     =gamma,
+                          # gamma     =gamma,
                           N         =N,
                           dfAdjust =dfAdjust,
                           sig.level =sig.level,
@@ -226,6 +225,7 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param EffSize  numeric, raw effect
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
+#' @param eta numeric, standard deviation of random slopes
 #' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
 #' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
@@ -249,7 +249,6 @@ compute_wlsPower <- function(DesMat,
                              tauAR      =NULL,
                              etaAR      =NULL,
                              rho        =NULL,
-                             gamma      =NULL,
                              N          =NULL,
                              CovMat     =NULL,
                              dfAdjust   ="none",
@@ -274,7 +273,6 @@ compute_wlsPower <- function(DesMat,
                                  tauAR      =tauAR,
                                  etaAR      =etaAR,
                                  rho        =rho,
-                                 gamma      =gamma,
                                  trtMat     =trtMat,
                                  N          =N)
 
@@ -302,7 +300,6 @@ compute_wlsPower <- function(DesMat,
                            tauAR     =tauAR,
                            etaAR     =etaAR,
                            rho       =rho,
-                           gamma     =gamma,
                            denomDF   =df,
                            dfAdjust  =dfAdjust,
                            sig.level =sig.level))
@@ -317,7 +314,7 @@ compute_wlsPower <- function(DesMat,
 
 #' print.wlsPower
 #'
-#' @param x w
+#' @param x object of class wlsPower
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print wlsPower
@@ -342,12 +339,13 @@ print.wlsPower <- function(x, ...){
 #' plot.wlsPower
 #'
 #' @param x object of class wlsPower
+#' @param ... Arguments to be passed to methods
 #'
 #' @method plot wlsPower
 #'
 #' @export
 #'
-plot.wlsPower <- function(x){
+plot.wlsPower <- function(x,...){
   if(!"ProjMatrix" %in% names(x))
     stop("Please rerun wlsMixedPower() with `verbose=TRUE` ")
   wgt <- x$ProjMatrix
@@ -363,7 +361,7 @@ plot.wlsPower <- function(x){
     plotly_empty(type="scatter",mode="marker")
     ,
     plot_ly(x=1:timep,y=1:sumCl,z=wgt,type="heatmap",
-            colors=colorRamp(c("steelblue","white","firebrick")),
+            colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
             xgap=.3,ygap=.3) %>%
       colorbar(len=1,limits=c(-mx,mx)) %>%
       layout(xaxis=list(title="time"),
