@@ -30,22 +30,24 @@ This code is modularised in order to be flexible and easy to use
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
 package makes computation of large designs feasible.
 
+A longitudinal design a mixed model: 
+
+$$y_{ij}= \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ij}$$ 
+where
+
+  * $y_{ij}$ is the mean response in cluster $j$ at time $i$
+  * $\mu$ is a grand total mean
+  * $\alpha_i$ is the time trend at time $i$
+  * $X$ is a design matrix 
 
 ## A quick tour
 
 For most users, the probably most important function is `wlsMixedPower`. 
-It calls several constructor functions that will be shortly discussed in the next 
-section.
+It calls several constructor functions that will be shortly discussed in the 
+next section.
 
-To define the design experimental design, 
-
-```{r}
-#wlsMixedPower()
-```
-
-## The 
-
-It calls `compute_wlsPower`, which is the workhorse function of this package.
+It calls `compute_wlsPower`, which is does the actual computation, but is not
+intended to be called directly by the user.
 
 ### Define Study and Analysis Design
 
@@ -54,16 +56,48 @@ It calls `compute_wlsPower`, which is the workhorse function of this package.
 `construct_trtMat`
 
 `construct_timeadjust`
-If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design;
+If not specified, the number of timepoints is guessed as the fewest number 
+of periods (timepoints) possible with the given design;
 
 ### Define assumed Covariance Structure
 
 `construct_CovMat`
 
 
-### Gimmicks
+### Features 
 
-`plot` method
+
+#### Plot Method
+<!-- TODO: NAMING THINGS!! how to call the influence matrix??? -->
+In weighted least squares 
+$$\hat\beta = \underbrace{(X'\Omega^{-1}X)^{-1}(X'\Omega^{-1})}_{=:\text{M}}\cdot y$$
+with $\Omega$ the covariance matrix.
+The matrix $M$ gives an impression of the importance of clusters and 
+time periods with regard to the estimated coefficients $\hat\beta$. 
+The first row of $M$ corresponds to the coefficient of the treatment status, 
+i.e. the treatment effect.  
+The `plot.wlsPower` method visualises this first row of $M$ as a matrix 
+where rows and columns correspond to clusters and time periods, respectively.
+
+Furthermore, to give a rough comparison of importance between clusters 
+(or between time periods), the sum of absolute weights per row (or per column) 
+is also shown. 
+
+>CAVE: These are out-of-bag estimates for the influence of observations on 
+$\hat\theta$, but not for $\text{Var}(\hat\theta)$ !
+
+```{r}
+wlsPwr <- wlsMixedPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=TRUE)
+plot(wlsPwr)
+```
+
+#### Find Sample Size to achieve a given Power
+
+When the argument `Power` is 
+```{r}
+
+
+```
 
 
 
@@ -78,10 +112,12 @@ mean in two groups. Lets say we have two groups of 10 observations
 The Z-test can be expressed as follows:
 
 ```{r}
-wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, design="parallel", timepoints=1)
+wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, 
+              design="parallel", timepoints=1)
 
 ## the same:
-wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, design="parallel", timepoints=1)
+wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, 
+              design="parallel", timepoints=1)
 ```
 
 
@@ -89,28 +125,28 @@ wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, design="parallel", timepoi
 pwr::pwr.norm.test(.3,n=20)
 ```
 
->A quick Note on t-tests: It is much more challenging to us `SteppedPower` to reproduce settings in 
+>A quick Note on t-tests: It is much more challenging to use `SteppedPower` to reproduce settings in 
 which the variance is assumed to be unknown, most prominently the well known t-test.
 In this package, you find implemented some heuristics for guessing the denominator 
 degrees of freedom, but they yield rather scaled Wald test than t tests.
 The main difference is that the distribution under the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
-### Comparison of two groups -- t-Test
+<!-- ### Comparison of two groups -- t-Test -->
 
-Calculating power 
-```{r}
-a <- wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, dfAdjust="between-within",
-                   timepoints=1, design="parallel", verbose = TRUE)
-# a$CovarianceMatrix
-dsnmatrix <- a$DesignMatrix$dsnmatrix
-  tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(a$CovarianceMatrix))
-  VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-VarMat[1,1]
+<!-- Calculating power  -->
+<!-- ```{r} -->
+<!-- a <- wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, dfAdjust="between-within", -->
+<!--                    timepoints=1, design="parallel", verbose = TRUE) -->
+<!-- # a$CovarianceMatrix -->
+<!-- dsnmatrix <- a$DesignMatrix$dsnmatrix -->
+<!--   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(a$CovarianceMatrix)) -->
+<!--   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix) -->
+<!-- VarMat[1,1] -->
 
-pwr::pwr.t.test(10,.6, type="two.sample")
-pwr::pwr.t.test(20,.3, type="one.sample")
-```
+<!-- pwr::pwr.t.test(10,.6, type="two.sample") -->
+<!-- pwr::pwr.t.test(20,.3, type="one.sample") -->
+<!-- ``` -->
 
 ### Longitudinal study -- parallel groups
 
@@ -145,36 +181,49 @@ There are two ways to achieve this in `SteppedPower`, both by using the `incompl
 One can either scalar, which then defines the number of observed periods before and 
 after the switch from control to intervention in each cluster.
 
-If for example the study consists of eight clusters in eight waves (i.e. nine timepoints), 
+If for example the study consists of eight clusters in four waves (i.e. five timepoints), 
 and we observe four timepoints before and after the switch, then we receive
 
 ```{r}
-wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, mu0=0,mu1=1, incomplete=4, verbose=TRUE)
-wlsPwr
+incompletePwr <- wlsMixedPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0,mu1=.5, N=80, 
+                             incomplete=2, verbose=TRUE)
+incompletePwr
 ```
 
-A slightly more tedious, but more flexible way is to define  a matrix where the number of rows corresponds 
-to the total number of clusters and the number of columns corresponds to the number of timepoints. 
-The value in each cell is the residual standard deviation, if a cluster is not observed at a specific timepoint, 
-set the value in the corresponding cell to `0`. For the example above, such a matrix would look like this:
+A slightly more tedious, but more flexible way is to define a matrix 
+where each row corresponds to either a cluster or a wave of clusters 
+and each column corresponds to a timepoint. 
+If a cluster is not observed at a specific timepoint, 
+set the value in the corresponding cell to `0`. 
+For the example above, such a matrix would look like this:
 ```{r}
-TM  <- toeplitz(c(1,1,1,1,0,0,0,0))
-incompleteMat <- cbind(TM[,1:4],rep(1,8),TM[,5:8])
-incompleteMat
+TM  <- toeplitz(c(1,1,0,0))
+incompleteMat1 <- cbind(TM[,1:2],rep(1,4),TM[,3:4])
+incompleteMat2 <- incompleteMat1[rep(1:4,each=2),]
+
+incompleteMat1 ## each row represents a wave of two clusters
+incompleteMat2 ## each row represents a cluster
 ```
 
 Now all that's left to do is to plug that into the main function:
 ```{r}
-wlsPwr <- wlsMixedPower(Cl=rep(1,8), sigma=1, tau=.6, EffSize=1, incomplete=incompleteMat, verbose=TRUE)
-wlsPwr
+incompletePwr1 <- wlsMixedPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0, mu1=.5, N=80, 
+                        incomplete=incompleteMat1, verbose=TRUE)
+incompletePwr2 <- wlsMixedPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0, mu1=.5, N=80, 
+                        incomplete=incompleteMat2, verbose=TRUE)
+
+all.equal(incompletePwr,incompletePwr1)
+all.equal(incompletePwr,incompletePwr2)
 ```
 
 We can also have a quick look at the projection matrix where we see that the 
 clusters have a weight of exactly zero at the timepoints where they are not observed
 ```{r}
-plot(wlsPwr)
+plot(incompletePwr)
 ```
 
+> The argument `incomplete` works also for other design types, 
+but makes (supposedly) most sense in the context of stepped wedge designs
 
 ### non-standard time effects
 
@@ -184,16 +233,18 @@ to take time period as a factor into the analysis model. This is also proposed b
 In some scenarios, different modeling of the time trend can be favoured. 
 
 ```{r}
-timeMat <- matrix(c(1,1,1,1,1,1,1,1,
-                    0,1,0,0,0,1,0,0,
-                    0,0,1,0,0,0,1,0,
-                    0,0,0,1,0,0,0,1),8,4)
-DesMat  <- construct_DesMat(rep(1,7), timeBlk = timeMat)
+timeMat <- matrix(c(1,1,1,1,1,1,1,1,1,1,1,1,
+                    0,1,0,0,0,1,0,0,0,1,0,0,
+                    0,0,1,0,0,0,1,0,0,0,1,0,
+                    0,0,0,1,0,0,0,1,0,0,0,1,
+                    # 0,0,0,0,1,1,1,1,0,0,0,0,
+                    0,0,0,0,0,0,0,0,1,1,1,1),12)
+DesMat  <- construct_DesMat(rep(1,11), timeBlk = timeMat)
 
-wlsPower <- wlsMixedPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
-plot(wlsPower)
-wlsPower <- wlsMixedPower(Cl=rep(1,7), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
-plot(wlsPower)
+wlsPower1 <- wlsMixedPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
+plot(wlsPower1)
+wlsPower2 <- wlsMixedPower(Cl=rep(1,11), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
+plot(wlsPower2)
 ```
 
 
