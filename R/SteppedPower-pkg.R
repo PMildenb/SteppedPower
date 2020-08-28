@@ -4,7 +4,7 @@
 #'
 #' @import knitr
 #' @importFrom stats coef family gaussian optim pnorm qnorm dnorm rbinom rnorm
-#' uniroot integrate pt qt
+#' uniroot integrate pt qt binomial
 #' @import Matrix
 #' @importFrom grDevices colorRamp
 #' @importFrom car logit
