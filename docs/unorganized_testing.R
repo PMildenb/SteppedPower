@@ -302,6 +302,26 @@ mod5$Power
 mod6$Power
 
 
+#### incomplete Stepped Wedge design  ####
+Des_SWD22 <- construct_DesMat(Cl=c(2,2))
+
+debugonce(wlsMixedPower)
+a <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2, incomplete=2,verbose = T)
+plot(a)
+
+IncMat1 <- matrix(c(1,1,0,1,1,1,1,1,1,0,1,1),3,4)
+b <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
+                   incomplete=IncMat1,verbose = T)
+plot(b)
+all.equal(a,b)
+
+IncMat2 <- IncMat1[rep(1:3,each=2),]
+
+c <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
+                   incomplete=IncMat2,verbose = T)
+plot(c)
+all.equal(a,c)
+
 ################################################################################
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
