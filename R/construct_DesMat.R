@@ -69,11 +69,14 @@ construct_DesMat <- function(Cl          =NULL,
 #' @export
 #'
 print.DesMat <- function(x, ...){
+
+
   cat("Timepoints         = ", x$timepoints,"\n")
   cat("Number of Clusters = ", sum(x$Cl),"\n")
   cat("Design matrix      = \n")
   print(x$dsnmatrix)
 }
+
 
 
 #' plot.DesMat
@@ -88,8 +91,11 @@ print.DesMat <- function(x, ...){
 # x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
 plot.DesMat <- function(x, ...){
   trt <- x$trtMat
-  plot_ly(type="heatmap", colors=c("lightblue","red"),x=~1:dim(trt)[1],y=~1:dim(trt)[2],
-          z=~trt, xgap=5, ygap=5) %>% layout(yaxis = list(autorange = "reversed"))
+  plot_ly(type="heatmap", colors=c("lightblue","red"),
+          x=~1:dim(trt)[1],y=~1:dim(trt)[2],
+          z=~trt, xgap=5, ygap=5) %>% layout(xaxis = list(title="Timepoints"),
+                                             yaxis = list(title="Cluster",
+                                                          autorange = "reversed"))
 }
 
 
@@ -97,12 +103,12 @@ plot.DesMat <- function(x, ...){
 #' construct_trtMat
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifing the
+#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
 #' @param design character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #'
-#' @return a vector trtvec
+#' @return a matrix trtMat
 #' @export
 #'
 #' @examples
