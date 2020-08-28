@@ -18,9 +18,12 @@
 #' before and after the switch from control to intervention that are observed. A matrix consists of 1's for
 #' observed clusterperiods and 0's for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param design character, defines the type of design. Options are "SWD" and "parallel", defaults to "SWD".
+#' @param design character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".
 #' @param mu0 numeric (scalar), mean under control
 #' @param mu1 numeric (scalar), mean under treatment
+#' @param marginal_mu logical. Only relevant for non-gaussian outcome. Indicates whether mu0 and mu1 are to be
+#' interpreted as marginal prevalence under control  and under treatment, respectively, or whether they denote
+#' the prevalence conditional on random effects being 0 (It defaults to the latter).
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes
@@ -45,8 +48,8 @@
 #' @export
 #'
 #' @examples
-#' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-#' wlsMixedPower(EffSize=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+#' wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+#' wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 wlsMixedPower <- function(Cl            =NULL,
                           timepoints    =NULL,
@@ -110,7 +113,7 @@ wlsMixedPower <- function(Cl            =NULL,
   if(!is.null(incomplete) & is.null(CovMat)){
     timepoints <- DesMat$timepoints
     lenCl      <- length(DesMat$Cl)
-    SumCl      <- Sum(DesMat$Cl)
+    SumCl      <- sum(DesMat$Cl)
 
     if(is.vector(incomplete) & design=="SWD"){
       Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
