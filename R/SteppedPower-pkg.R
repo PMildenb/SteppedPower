@@ -3,8 +3,10 @@
 #' Assesses Power of mixed models for the evaluation of a intervention.
 #'
 #' @import knitr
-#' @importFrom stats coef family gaussian optim pnorm qnorm rbinom rnorm uniroot pt qt
+#' @importFrom stats coef family gaussian optim pnorm qnorm dnorm rbinom rnorm
+#' uniroot integrate pt qt
 #' @import Matrix
+#' @importFrom grDevices colorRamp
 #' @importFrom car logit
 #' @import plotly
 #'

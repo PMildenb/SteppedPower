@@ -1,10 +1,30 @@
 #' compare_designs
 #'
 #' a short wrapper that compares parallel, sw, and parallel+ baseline design
-#' @export
+#'
+#' @param mu0 as in wlsMixedPower
+#' @param mu1 as in wlsMixedPower
+#' @param sigma as in wlsMixedPower
+#' @param tau as in wlsMixedPower
+#' @param family as in wlsMixedPower
+#' @param timepoints as in wlsMixedPower
+#' @param N as in wlsMixedPower
+#' @param sig.level as in wlsMixedPower
+#' @param DesMat as in wlsMixedPower
+#' @param Cl as in wlsMixedPower
+#' @param trtDelay as in wlsMixedPower
 
-compare_designs <- function(mu0,mu1,sigma,tau,family=gaussian(),timepoints=NULL,
-                            N=NULL,sig.level=0.05,DesMat=NULL,Cl=NULL,trtDelay=NULL){
+compare_designs <- function(Cl=NULL,
+                            mu0,
+                            mu1,
+                            sigma,
+                            tau,
+                            family=gaussian(),
+                            timepoints=NULL,
+                            N=NULL,
+                            sig.level=0.05,
+                            DesMat=NULL,
+                            trtDelay=NULL){
 
   pwr_swd   <-  wlsMixedPower(mu0=mu0, mu1=mu1, sigma=sigma, tau=tau, timepoints=timepoints,
                             N=N, sig.level=sig.level,DesMat=DesMat, Cl=Cl, trtDelay=trtDelay,
@@ -26,6 +46,21 @@ compare_designs <- function(mu0,mu1,sigma,tau,family=gaussian(),timepoints=NULL,
 
 # Designs <- list(construct_DesMat(c(2,2,2)), construct_DesMat(c(3,0,3)))
 # sigma <- 1 ; tau <- .5 ; eta <- .2 ; rho <- .1 ; EffSize <- .2
+#' Title
+#'
+#' @param Designs different designs to compare
+#' @param mu0 as in wlsMixedPower
+#' @param mu1 as in wlsMixedPower
+#' @param family as in wlsMixedPower
+#' @param sigma as in wlsMixedPower
+#' @param tau as in wlsMixedPower
+#' @param eta as in wlsMixedPower
+#' @param rho as in wlsMixedPower
+#' @param sig.level as in wlsMixedPower
+#'
+#' @return
+#' @export
+
 compare_designs2 <- function(Designs, mu0,mu1, family=gaussian(),
                              sigma, tau, eta=NULL, rho=NULL, sig.level=0.05){
   out <- list()

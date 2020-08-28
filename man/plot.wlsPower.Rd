@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{object of class wlsPower}
+
+\item{...}{Arguments to be passed to methods}
 }
 \description{
 plot.wlsPower

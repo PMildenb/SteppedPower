@@ -30,15 +30,22 @@ This code is modularised in order to be flexible and easy to use
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
 package makes computation of large designs feasible.
 
-A longitudinal design a mixed model: 
+A longitudinal study design can be formulated as a mixed model: 
 
-$$y_{ij}= \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ij}$$ 
-where
+$$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
+with
 
-  * $y_{ij}$ is the mean response in cluster $j$ at time $i$
-  * $\mu$ is a grand total mean
+  * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
+  * $g(\cdot)$ a link function
+  * $\mu$ a overall mean (under control)
   * $\alpha_i$ is the time trend at time $i$
-  * $X$ is a design matrix 
+  * $X$ a design matrix 
+  * $b_j$ a (random) cluster effect 
+  * $c_j$ a (random) treatment effect
+  * $b_j$ and $c_j$ jointly distributed with 
+  $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
+  * $e_{ijk}$ is a normal random error term with standard deviation $\sigma$
+   
 
 ## A quick tour
 

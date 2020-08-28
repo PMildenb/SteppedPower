@@ -9,7 +9,7 @@ construct_trtMat(Cl, trtDelay, design, timepoints = NULL)
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
 \item{design}{character, specifies the study design. Defaults to "SWD".}
@@ -17,12 +17,13 @@ intervention effect in the first (second ... ) intervention phase}
 \item{timepoints}{numeric, scalar}
 }
 \value{
-a vector trtvec
+a matrix trtMat
 }
 \description{
 construct_trtMat
 }
 \examples{
+construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), design="SWD")
 
 
 }

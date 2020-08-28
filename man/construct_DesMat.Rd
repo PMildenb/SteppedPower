@@ -18,7 +18,7 @@ construct_DesMat(
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifing the
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
 \item{design}{character, specifies the study design. Defaults to "SWD".}
@@ -27,7 +27,12 @@ intervention effect in the first (second ... ) intervention phase}
 
 \item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
 
-\item{period}{}
+\item{period}{integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.}
+
+\item{trtmatrix}{an optional user defined matrix to define treatment allocation}
+
+\item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
+Is repeated for every cluster.}
 }
 \value{
 a matrix (for a stepped wedge design)
@@ -36,7 +41,7 @@ a matrix (for a stepped wedge design)
 constructs the design matrix.
 }
 \details{
-Note: Unlike the usual notiation, the treatment is in the first column (for easier access by higher level functions).
+Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
 }
 \examples{
 construct_DesMat(Cl=c(2,0,1))

@@ -13,7 +13,6 @@ compute_wlsPower(
   tauAR = NULL,
   etaAR = NULL,
   rho = NULL,
-  gamma = NULL,
   N = NULL,
   CovMat = NULL,
   dfAdjust = "none",
@@ -30,6 +29,8 @@ numeric timepoints, numeric total number of Clusters}
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
+
+\item{eta}{numeric, standard deviation of random slopes}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
 `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}

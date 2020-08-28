@@ -2,16 +2,18 @@
 #'
 #' constructs the design matrix.
 #'
-#' Note: Unlike the usual notiation, the treatment is in the first column (for easier access by higher level functions).
+#' Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifing the
+#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
 #' @param design character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param trtmatrix
-#' @param period
+#' @param period integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.
+#' @param trtmatrix an optional user defined matrix to define treatment allocation
+#' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
+#' Is repeated for every cluster.
 #'
 #' @return a matrix (for a stepped wedge design)
 #' @export
@@ -111,7 +113,7 @@ plot.DesMat <- function(x, ...){
 #' @return a matrix trtMat
 #' @export
 #'
-#' @examples
+#' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), design="SWD")
 #'
 #'
 construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
@@ -193,13 +195,17 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
 #' @param timepoints numeric, scalar
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
 #' @param period number of timepoints per period. Defaults to `timepoints` **experimental!**
+#' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
+#' Is repeated for every cluster.
 #'
 #' @return What is returned? TODO
 #' @export
-#'
-#' @examples
-#'
-construct_timeadjust <- function(Cl,timepoints,timeAdjust="factor",timeBlk=NULL,period=NULL){
+
+construct_timeadjust <- function(Cl,
+                                 timepoints,
+                                 timeAdjust="factor",
+                                 period=NULL,
+                                 timeBlk=NULL){
 
   SumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {
