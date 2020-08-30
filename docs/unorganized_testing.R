@@ -327,6 +327,59 @@ all.equal(a,c)
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
                             timepoints=5,design="parallel",verbose=T))
 
+
+DesMat11 <- construct_DesMat(Cl=c(2,1))
+CovMat11 <- construct_CovMat(3,3,1,2)
+IncMat11 <- matrix(c(0,1,1,1,1,1,1,1,1),3,3)
+IncMat22 <- matrix(c(1,1,1,1,0,1,1,1,1),3,3)
+IncMat31 <- matrix(c(1,1,0,1,1,1,1,1,1),3,3)
+IncMat2122 <- matrix(c(1,0,1,1,0,1,1,1,1),3,3)
+
+wmp <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = NULL, verbose=TRUE)
+wmpinc11 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat11, verbose=TRUE)
+wmpinc22 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat22, verbose=TRUE)
+wmpinc31 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat31, verbose=TRUE)
+wmpinc2122 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat2122, verbose=TRUE)
+plot(wmp)
+plot(wmpinc11)
+plot(wmpinc22)
+plot(wmpinc31)
+
+wmp_to_Var <- function(wmp){
+  dsnmatrix <- wmp$DesignMatrix$dsnmatrix
+  CovMat    <- wmp$CovarianceMatrix
+
+  tmpmat  <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
+  VarMat  <- Matrix::solve(tmpmat %*% dsnmatrix)
+  return(VarMat)
+}
+
+sqrt(wmp_to_Var(wmp)[1,1])
+sqrt(wmp_to_Var(wmpinc11)[1,1])
+sqrt(wmp_to_Var(wmpinc22)[1,1])
+sqrt(wmp_to_Var(wmpinc31)[1,1])
+sqrt(wmp_to_Var(wmpinc2122)[1,1])
+
+
+
+dsnmatrix <- wmp$DesignMatrix$dsnmatrix
+CovMat    <- wmp$CovarianceMatrix
+
+tmpmat  <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
+VarMat  <- Matrix::solve(tmpmat %*% dsnmatrix)
+ProjMat <- matrix((VarMat %*% tmpmat)[1,], nrow=3, byrow=TRUE)
+
+
+HatMat <- dsnmatrix %*% VarMat %*% tmpmat
+hi <- matrix(diag(HatMat),nrow=3,byrow=TRUE)
+ProjMat/(1-hi)
+
+
 ## compare_designs #####
 compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
 compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.5, Cl=c(2,2,2,2))
@@ -353,6 +406,8 @@ tTestPwr2(.6,1,18)
 tTestPwr2(.6,1,Inf)
 View(pwr::pwr.t.test)
 View(tTestPwr)
+
+
 
 
 ################################################################################
