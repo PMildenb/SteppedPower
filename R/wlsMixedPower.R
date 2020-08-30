@@ -86,9 +86,9 @@ wlsMixedPower <- function(Cl            =NULL,
       stop("Correlation rho must be between -1 and 1")
   }
   if(!is.null(DesMat)){
-    if(min(sapply(list(Cl, timepoints, trtDelay, incomplete, period),is.null))==0)
+    if(min(sapply(list(Cl, timepoints, trtDelay, period),is.null))==0)
       warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
-              "incomplete, timeAdjust, period and design are ignored.")
+              "timeAdjust, period and design are ignored.")
     else{
       if(!is.null(timepoints))
         if(length(trtDelay)>timepoints)
@@ -117,6 +117,11 @@ wlsMixedPower <- function(Cl            =NULL,
     SumCl      <- sum(DesMat$Cl)
 
     if(is.vector(incomplete) & design=="SWD"){
+      if(incomplete>timepoints) {
+        incomplete <- timepoints
+        warning("Argument `incomplete` must be less or equal to the number of",
+                "timepoints. `incomplete` is set to ", timepoints )
+      }
       Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
       lastCols <- (timepoints-lenCl+1):timepoints
 
@@ -128,7 +133,7 @@ wlsMixedPower <- function(Cl            =NULL,
 
     }else if(is.matrix(incomplete)){
       if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
-        stop("matrix dimensions of argument incoplete are ",dim(incomplete),
+        stop("matrix dimensions of argument `incoplete` are ",dim(incomplete),
              " but must be ", dim(DesMat$trtMat), "or ",
              dim(unique(DesMat$trtMat)))
       IM <- incomplete
@@ -145,7 +150,7 @@ wlsMixedPower <- function(Cl            =NULL,
 
     MISSING_CONTROL_VARIABLE <- FALSE
     if(MISSING_CONTROL_VARIABLE){
-      ## TODO: Decide wheter needed or not
+      ## TODO: Decide whether needed or not
       ## TODO: Adjust eta, rho
       ## TODO: tau output is matrix, next if-clause "marginal_mu" demands scalar
 

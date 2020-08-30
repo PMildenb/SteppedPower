@@ -7,7 +7,6 @@
 #' uniroot integrate pt qt binomial
 #' @import Matrix
 #' @importFrom grDevices colorRamp
-#' @importFrom car logit
 #' @import plotly
 #'
 #'
