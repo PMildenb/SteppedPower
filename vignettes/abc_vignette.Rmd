@@ -335,6 +335,15 @@ b3$CovarianceMatrix[1:5,1:5]
 
 
 
+### Binomial Outcomes
+
+Example as in Hussey, Hughes 2007 3.7:
+
+```{r}
+wlsMixedPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, family="binomial", N=100)
+wlsMixedPower(Cl=rep(6,4), mu0=0.05, mu1=0.037, sigma=sqrt(.0425*(1-.0425)), N=100)
+
+```
 
 
 

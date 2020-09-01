@@ -138,7 +138,7 @@ DesMat <- construct_DesMat(rep(1,8))
 wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,N=720,verbose=F)
 wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
-uniroot(a <- function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
+uniroot(function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
         interval=c(1,1000))
 
 wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=14,verbose=F)

@@ -222,7 +222,7 @@ compare_designs(EffSize=0.01,sigma=1,tau=.15,Cl=rep(2,50),N=250)
 
 
 library(xkcd)
-
+library(ggplot2)
 
 iswd <- c("add incomplete SWD",2,1)
 mswd <- c("add mixture designs",1,2.5)

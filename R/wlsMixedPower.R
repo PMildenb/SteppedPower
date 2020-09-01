@@ -163,13 +163,13 @@ wlsMixedPower <- function(Cl            =NULL,
 
       mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
       mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
-      print(paste("mu0_marg=",mu0,", mu1_marg=",mu1,"."))
+      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
 
     }
 
     sig0  <- sqrt(mu0*(1-mu0))
     sig1  <- sqrt(mu1*(1-mu1))
-    ## for delayed trt effect only approximate
+    ## for delayed trt effect only approximate sigma
     sigma <- matrix(sig0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
 
     OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
