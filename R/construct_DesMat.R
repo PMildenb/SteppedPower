@@ -162,6 +162,7 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
   }else if (design=="crossover"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
+      if(timepoints==1) stop("crossover designs must consist of at least 2 timepoints.")
       timepoints01 <- c(floor(timepoints/2),ceiling(timepoints/2))
       message(paste("assumes", floor(timepoints/2) ,"AB period(s) and",
                     ceiling(timepoints/2),"BA period(s). If intended otherwise,
@@ -172,9 +173,9 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     }else if(is.null(timepoints)){
       len          <- length(trtDelay)+1
       lenTp        <- c(len,len)
-      timepoints   <- sum(timepoints01)
-      message("timepoints unspecified. Defaults to", len, "AB period(s), and",
-                len, " parallel period(s).")
+      timepoints   <- sum(lenTp)
+      message("timepoints unspecified. Defaults to ", len, " AB period(s), and ",
+                len, " BA period(s).")
     }
     trt   <- matrix(0, nrow=2, ncol=timepoints)
     vecAB <- c(trtDelay,rep(1,lenTp[1]-length(trtDelay)))
@@ -188,6 +189,8 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
   return(trtMat)
 }
 
+debugonce(construct_trtMat)
+construct_trtMat(Cl=c(2,2),trtDelay = NULL, design="crossover")
 
 #' construct_timeadjust
 #'
