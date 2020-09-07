@@ -1,5 +1,5 @@
 ---
-title: "SteppedPower"
+title: "GettingStarted"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
