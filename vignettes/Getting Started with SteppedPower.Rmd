@@ -23,7 +23,10 @@ library(Matrix)
 
 The package `SteppedPower` aims at providing tools for power calculation 
 and design diagnostics in interventional study designs,
-with a special focus on stepped wedge designs.  
+with a special focus on stepped wedge designs. Other implemented study design types are 
+parallel, parallel with baseline periods and crossover designs. Further designs can be 
+easily defined by the user. 
+Currently, normal outcomes and binomial outcomes with logit link are implemented.
 
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
@@ -33,7 +36,7 @@ package makes computation of large designs feasible.
 ## Methods and Notation
 
 A common approach to model the correlation in longitudinal studies are random effects.
-Assuming only random cluster effect, such a model has the form
+such a model has the form
 
 
 $$y_{ijk}= \mu + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
@@ -49,7 +52,7 @@ with
 
 
 For power calculation, the standard deviation of random effects is assumed to be known.
-Lets more define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
+Lets define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
 This leads to a compact and more general notation of the above equation:
 
 $$\begin{align}
@@ -57,17 +60,24 @@ y_{ijk}&= X_{ij}\beta + \omega_{ijk} \\
 \text{or, in matrix notation:} \qquad y&=X\beta + \omega
 \end{align}$$ 
 
-Where $X$ is the corresponding design matrix and $\omega\sim N(0,\Omega)$, where $\Omega$ depends on $\tau$ and $\sigma$.
+Where $X$ is the corresponding design matrix and $\omega\sim N(0,\Omega)$, where $\Omega$ is a compound-symmetry (or exchangeable) variance matrix defined by $\tau$ and $\sigma$.
 We are thus in a weighted least squares setting, so the variance of $\beta$ is
 
 $$ \text{Var}(\hat\beta) =  {(X'\Omega^{-1}X)^{-1}}$$ 
 
 
-  
+We can then calculate the power of a z-test 
+
+$$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
+
+
+where $\text{Var}(\hat \theta)$ is the diagonal element of $\Omega$ that corresponds to $\hat\theta$.
+ 
 
   
   
-Extensions implemented in this package are
+Extensions to the above formula implemented in this package are 
+  * 
 
 $$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
 with
@@ -103,7 +113,6 @@ of periods (timepoints) possible with the given design;
 
 ## Features 
 
-
 ### Plot Method
 <!-- TODO: NAMING THINGS!! how to call the influence matrix??? -->
 In weighted least squares 
@@ -138,7 +147,7 @@ wlsMixedPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, Power=.8)
 
 
 
-## Use cases
+## Use cases and examples
 
 ### Comparison of two groups -- Z-Test
 
@@ -150,11 +159,11 @@ The Z-test can be expressed as follows:
 
 ```{r}
 wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, 
-              design="parallel", timepoints=1)
+              dsntype="parallel", timepoints=1)
 
 ## the same:
 wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, 
-              design="parallel", timepoints=1)
+              dsntype="parallel", timepoints=1)
 ```
 
 
@@ -174,7 +183,7 @@ whereas the t-test assumes a non-central (hence skewed) t-distribution.
 <!-- Calculating power  -->
 <!-- ```{r} -->
 <!-- a <- wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, dfAdjust="between-within", -->
-<!--                    timepoints=1, design="parallel", verbose = TRUE) -->
+<!--                    timepoints=1, dsntype="parallel", verbose = TRUE) -->
 <!-- # a$CovarianceMatrix -->
 <!-- dsnmatrix <- a$DesignMatrix$dsnmatrix -->
 <!--   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(a$CovarianceMatrix)) -->
@@ -189,8 +198,8 @@ whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
 
 ```{r}
-wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,design="parallel")
-wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,design="parallel")
+wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,dsntype="parallel")
+wlsMixedPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,dsntype="parallel")
 ```
 
 ### Stepped Wedge designs with empty sequences (i.e. waves)
@@ -370,8 +379,9 @@ b3$CovarianceMatrix[1:5,1:5]
 Example as in Hussey, Hughes 2007 3.7:
 
 ```{r}
+
 wlsMixedPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, family="binomial", N=100)
-wlsMixedPower(Cl=rep(6,4), mu0=0.05, mu1=0.037, sigma=sqrt(.0425*(1-.0425)), N=100)
+wlsMixedPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, sigma=sqrt(.0425*(1-.0425)), N=100)
 
 ```
 

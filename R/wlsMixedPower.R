@@ -18,7 +18,7 @@
 #' before and after the switch from control to intervention that are observed. A matrix consists of 1's for
 #' observed clusterperiods and 0's for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param design character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".
+#' @param dsntype character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".
 #' @param mu0 numeric (scalar), mean under control
 #' @param mu1 numeric (scalar), mean under treatment
 #' @param marginal_mu logical. Only relevant for non-gaussian outcome. Indicates whether mu0 and mu1 are to be
@@ -58,7 +58,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           incomplete    =NULL,
                           timeAdjust    ="factor",
                           period        =NULL,
-                          design        ="SWD",
+                          dsntype        ="SWD",
                           mu0,
                           mu1,
                           marginal_mu   =FALSE,
@@ -88,7 +88,7 @@ wlsMixedPower <- function(Cl            =NULL,
   if(!is.null(DesMat)){
     if(min(sapply(list(Cl, timepoints, trtDelay, period),is.null))==0)
       warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
-              "timeAdjust, period and design are ignored.")
+              "timeAdjust, period and dsntype are ignored.")
     else{
       if(!is.null(timepoints))
         if(length(trtDelay)>timepoints)
@@ -100,7 +100,7 @@ wlsMixedPower <- function(Cl            =NULL,
   if(is.null(DesMat)){
     DesMat    <- construct_DesMat(Cl         =Cl,
                                   trtDelay   =trtDelay,
-                                  design     =design,
+                                  dsntype     =dsntype,
                                   timepoints =timepoints,
                                   timeAdjust =timeAdjust,
                                   period     =period)
@@ -116,7 +116,7 @@ wlsMixedPower <- function(Cl            =NULL,
     lenCl      <- length(DesMat$Cl)
     SumCl      <- sum(DesMat$Cl)
 
-    if(is.vector(incomplete) & design=="SWD"){
+    if(is.vector(incomplete) & dsntype=="SWD"){
       if(incomplete>timepoints) {
         incomplete <- timepoints
         warning("Argument `incomplete` must be less or equal to the number of",

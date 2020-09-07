@@ -7,7 +7,7 @@
 construct_DesMat(
   Cl = NULL,
   trtDelay = NULL,
-  design = "SWD",
+  dsntype = "SWD",
   timepoints = NULL,
   timeAdjust = "factor",
   period = NULL,
@@ -21,7 +21,7 @@ construct_DesMat(
 \item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
 intervention effect in the first (second ... ) intervention phase}
 
-\item{design}{character, specifies the study design. Defaults to "SWD".}
+\item{dsntype}{character, specifies the study design. Defaults to "SWD".}
 
 \item{timepoints}{numeric, scalar}
 

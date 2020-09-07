@@ -7,7 +7,7 @@
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
-#' @param design character, specifies the study design. Defaults to "SWD".
+#' @param dsntype character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
 #' @param period integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.
@@ -23,7 +23,7 @@
 
 construct_DesMat <- function(Cl          =NULL,
                              trtDelay   =NULL,
-                             design      ="SWD",
+                             dsntype      ="SWD",
                              timepoints  =NULL,
                              timeAdjust ="factor",
                              period      =NULL,
@@ -40,7 +40,7 @@ construct_DesMat <- function(Cl          =NULL,
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
                                 trtDelay     =trtDelay,
-                                design        =design,
+                                dsntype        =dsntype,
                                 timepoints    =timepoints)
     timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
   }
@@ -107,21 +107,21 @@ plot.DesMat <- function(x, ...){
 #' @param Cl integer (vector), number of clusters per wave (in SWD)
 #' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
 #' intervention effect in the first (second ... ) intervention phase
-#' @param design character, specifies the study design. Defaults to "SWD".
+#' @param dsntype character, specifies the study design. Defaults to "SWD".
 #' @param timepoints numeric, scalar
 #'
 #' @return a matrix trtMat
 #' @export
 #'
-#' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), design="SWD")
+#' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 #'
 #'
-construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
+construct_trtMat <- function(Cl,trtDelay,dsntype,timepoints=NULL){
 
   SumCl         <- sum(Cl)
   lenCl         <- length(Cl)
 
-  if(design=="SWD"){
+  if(dsntype=="SWD"){
     if(is.null(timepoints)) timepoints <- length(Cl) + 1
     trt    <- matrix(0,lenCl,timepoints)
     trt[upper.tri(trt)] <- 1
@@ -130,7 +130,7 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
         diag(trt[,-(1:i)]) <- trtDelay[i]  ## doesnt work if length(delay)>=length(timepoints)-1
       }
     }
-  }else if(design=="parallel"){
+  }else if(dsntype=="parallel"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(is.null(timepoints)){
       if(is.null(trtDelay)){
@@ -142,7 +142,7 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     }
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(trtDelay,rep(1,(timepoints-length(trtDelay))))
-  }else if(design=="parallel_baseline"){
+  }else if(dsntype=="parallel_baseline"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
@@ -159,7 +159,7 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(rep(0,timepoints01[1]),
                 trtDelay,rep(1,(timepoints01[2]-length(trtDelay))))
-  }else if (design=="crossover"){
+  }else if (dsntype=="crossover"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
       if(timepoints==1) stop("crossover designs must consist of at least 2 timepoints.")
@@ -189,8 +189,6 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
   return(trtMat)
 }
 
-debugonce(construct_trtMat)
-construct_trtMat(Cl=c(2,2),trtDelay = NULL, design="crossover")
 
 #' construct_timeadjust
 #'

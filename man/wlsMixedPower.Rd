@@ -12,7 +12,7 @@ wlsMixedPower(
   incomplete = NULL,
   timeAdjust = "factor",
   period = NULL,
-  design = "SWD",
+  dsntype = "SWD",
   mu0,
   mu1,
   marginal_mu = FALSE,
@@ -52,7 +52,7 @@ observed clusterperiods and 0's for unobserved clusterperiods.}
 
 \item{period}{numeric (scalar)}
 
-\item{design}{character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".}
+\item{dsntype}{character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".}
 
 \item{mu0}{numeric (scalar), mean under control}
 
