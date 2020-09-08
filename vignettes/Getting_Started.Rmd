@@ -3,6 +3,7 @@ title: "GettingStarted"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{GettingStarted}
   %\VignetteEngine{knitr::rmarkdown}
@@ -35,7 +36,7 @@ Random cluster effect, autocorrelated cluster effect, random treatment effect,
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
-package makes computation of large designs feasible.
+package makes computation of large designs feasible. [@hussey2007design]
 
 ## Methods and Notation
 
