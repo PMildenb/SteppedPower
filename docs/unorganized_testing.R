@@ -324,7 +324,7 @@ all.equal(a,c)
 
 ################################################################################
 ## plot.wlsPower #####
-plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
+plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1, mu0=0, mu1=1,
                             timepoints=5,design="parallel",verbose=T))
 
 
@@ -374,10 +374,38 @@ tmpmat  <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
 VarMat  <- Matrix::solve(tmpmat %*% dsnmatrix)
 ProjMat <- matrix((VarMat %*% tmpmat)[1,], nrow=3, byrow=TRUE)
 
-
 HatMat <- dsnmatrix %*% VarMat %*% tmpmat
 hi <- matrix(diag(HatMat),nrow=3,byrow=TRUE)
 ProjMat/(1-hi)
+
+## E[DFBETA] ####
+i <- 1
+V_inv <- solve(CovMat)
+v_ii  <- diag(V_inv)[i]
+v_i   <- V_inv[,i]
+sd_e_i<- sigma
+E_h_i <- (1/v_ii)*v_i*sigma
+q_i   <-
+
+g_i <-
+
+## Leverage ####
+
+V_inv <- solve(CovMat)
+X     <- wmp$DesignMatrix$dsnmatrix
+P  <- V_inv %*% X %*% solve(t(X) %*% V_inv %*% X) %*% t(X) %*% V_inv
+P2 <- V_inv %*% HatMat %*% V_inv
+round(P-P2,5)
+
+tmpmat2 <- t(X) %*% solve(CovMat)
+round(tmpmat-tmpmat2,5)
+
+HatMat2 <- X %*% solve(tmpmat2 %*% X) %*% tmpmat2
+round(HatMat-HatMat2,5)
+
+
+Q     <- V_inv - P
+round(matrix(diag(Q),3,3,byrow=TRUE),2)
 
 
 ## compare_designs #####
