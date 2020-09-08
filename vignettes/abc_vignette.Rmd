@@ -3,6 +3,7 @@ title: "SteppedPower"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Stepped Power}
   %\VignetteEngine{knitr::rmarkdown}
@@ -28,7 +29,7 @@ with a special focus on stepped wedge designs.
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
-package makes computation of large designs feasible.
+package makes computation of large designs feasible. [@hussey2007design]
 
 A longitudinal study design can be formulated as a mixed model: 
 
