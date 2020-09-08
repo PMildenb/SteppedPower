@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Stepped Power}
+  %\VignetteIndexEntry{SteppedPower}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -31,31 +31,61 @@ This code is modularised in order to be flexible and easy to use
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
 package makes computation of large designs feasible. [@hussey2007design]
 
-A longitudinal study design can be formulated as a mixed model: 
+## Methods and Notation
+
+A common approach to model the correlation in longitudinal studies are random effects.
+Assuming only random cluster effect, such a model has the form
+
+
+$$y_{ijk}= \mu + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
+with
+
+  * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
+  * $\mu$ a overall mean (under control)
+  * $\alpha_i$ is the time trend at time $i$
+  * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
+  * $\theta$ the treatment effect 
+  * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
+  * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
+
+
+For power calculation, the standard deviation of random effects is assumed to be known.
+Lets more define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
+This leads to a compact and more general notation of the above equation:
+
+$$\begin{align}
+y_{ijk}&= X_{ij}\beta + \omega_{ijk} \\ 
+\text{or, in matrix notation:} \qquad y&=X\beta + \omega
+\end{align}$$ 
+
+Where $X$ is the corresponding design matrix and $\omega\sim N(0,\Omega)$, where $\Omega$ depends on $\tau$ and $\sigma$.
+We are thus in a weighted least squares setting, so the variance of $\beta$ is
+
+$$ \text{Var}(\hat\beta) =  {(X'\Omega^{-1}X)^{-1}}$$ 
+
+
+  
+
+  
+  
+Extensions implemented in this package are
 
 $$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
 with
 
-  * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
   * $g(\cdot)$ a link function
-  * $\mu$ a overall mean (under control)
-  * $\alpha_i$ is the time trend at time $i$
-  * $X$ a design matrix 
-  * $b_j$ a (random) cluster effect 
   * $c_j$ a (random) treatment effect
   * $b_j$ and $c_j$ jointly distributed with 
   $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
-  * $e_{ijk}$ is a normal random error term with standard deviation $\sigma$
-   
+
 
 ## A quick tour
 
 For most users, the probably most important function is `wlsMixedPower`. 
-It calls several constructor functions that will be shortly discussed in the 
-next section.
+It calls several auxiliary functions which will be shortly discussed here.
 
-It calls `compute_wlsPower`, which is does the actual computation, but is not
-intended to be called directly by the user.
+
+### `compute_wlsPower`
 
 ### Define Study and Analysis Design
 
@@ -72,10 +102,10 @@ of periods (timepoints) possible with the given design;
 `construct_CovMat`
 
 
-### Features 
+## Features 
 
 
-#### Plot Method
+### Plot Method
 <!-- TODO: NAMING THINGS!! how to call the influence matrix??? -->
 In weighted least squares 
 $$\hat\beta = \underbrace{(X'\Omega^{-1}X)^{-1}(X'\Omega^{-1})}_{=:\text{M}}\cdot y$$
@@ -99,12 +129,12 @@ wlsPwr <- wlsMixedPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=TRUE
 plot(wlsPwr)
 ```
 
-#### Find Sample Size to achieve a given Power
+### Find Sample Size to achieve a given Power
 
-When the argument `Power` is 
+When the argument `Power` is passed to `wlsMixedPower`, 
+the sample size needed is calculated, under the assumption of equally sized clusters and periods. 
 ```{r}
-
-
+wlsMixedPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, Power=.8)
 ```
 
 
@@ -190,7 +220,7 @@ One can either scalar, which then defines the number of observed periods before 
 after the switch from control to intervention in each cluster.
 
 If for example the study consists of eight clusters in four waves (i.e. five timepoints), 
-and we observe four timepoints before and after the switch, then we receive
+and we observe two timepoints before and after the switch, then we receive
 
 ```{r}
 incompletePwr <- wlsMixedPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0,mu1=.5, N=80, 
