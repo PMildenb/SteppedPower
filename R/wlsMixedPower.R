@@ -10,38 +10,44 @@
 #' or number in control and intervention (in parallel designs)
 #' Else residual error on individual level
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
-#' If design is swd, timepoints defaults to length(Cl)+1. Defaults to 1 for parallel designs.
-#' @param DesMat matrix of dimension ... , if supplied, timepoints and Cl are ignored.
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
-#' intervention effect in the first (second ... ) intervention phase
-#' @param incomplete integer, either a vector (only for SWD) or a matrix. A vector defines the number of periods
-#' before and after the switch from control to intervention that are observed. A matrix consists of 1's for
+#' If design is swd, timepoints defaults to length(Cl)+1.
+#' Defaults to 1 for parallel designs.
+#' @param DesMat matrix of dimension ... , if supplied, `timepoints` and `Cl` are ignored.
+#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying
+#' the intervention effect in the first (second ... ) intervention phase
+#' @param incomplete integer, either a vector (only for SWD) or a matrix.
+#' A vector defines the number of periods before and after the switch from
+#' control to intervention that are observed. A matrix consists of 1's for
 #' observed clusterperiods and 0's for unobserved clusterperiods.
-#' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param dsntype character, defines the type of design. Options are "SWD", "parallel" and "parallel_baseline", defaults to "SWD".
+#' @param timeAdjust character, specifies adjustment for time periods.
+#' Defaults to "factor".
+#' @param dsntype character, defines the type of design. Options are "SWD",
+#' "parallel" and "parallel_baseline", defaults to "SWD".
 #' @param mu0 numeric (scalar), mean under control
 #' @param mu1 numeric (scalar), mean under treatment
-#' @param marginal_mu logical. Only relevant for non-gaussian outcome. Indicates whether mu0 and mu1 are to be
-#' interpreted as marginal prevalence under control  and under treatment, respectively, or whether they denote
+#' @param marginal_mu logical. Only relevant for non-gaussian outcome.
+#' Indicates whether mu0 and mu1 are to be interpreted as marginal prevalence
+#' under control  and under treatment, respectively, or whether they denote
 #' the prevalence conditional on random effects being 0 (It defaults to the latter).
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
-#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param rho numeric, correlation of tau and eta
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
+#' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param rho numeric, correlation of `tau` and `eta`
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
-#' @param family character, distribution family. One of "gaussian", "binomial". Defaults to "gaussian"
-#' @param Power numeric, a specified target power. If supplied, the minimal N is returned.
-#' @param N_range numeric, vector specifying the lower and upper bound for N, ignored if Power is NULL.
+#' @param family character, distribution family. One of "gaussian", "binomial".
+#' Defaults to "gaussian"
+#' @param Power numeric, a specified target power. If supplied, the minimal `N` is returned.
+#' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
 #' @param sig.level numeric, significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param period numeric (scalar)
-#' @param CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \eqn{\cdot} timepoints) **experimental**
-#' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
-#' `tau`, `eta` and `rho` are ignored.
+#' @param CovMat numeric, a positive-semidefinite matrix of dimension
+#' (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
+#' rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
 #'
 #' @details see vignette 'Getting Started'
 #'
@@ -51,8 +57,61 @@
 #' @export
 #'
 #' @examples
-#' wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-#' wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+#' ## See also vignette for more examples
+#' ##
+#' ##
+#' ## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
+#' ## cluster effect sd = 0.2, and 10 Individuals per cluster
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
+#' ##
+#' ##
+#' ## ... with auto-regressive cluster effect
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
+#' ##
+#' ##
+#' ## ... with varying cluster size
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
+#'               N=matrix(c(12,8,10,9,14,
+#'                          11,8,10,9,13,
+#'                          11,7,11,8,12,
+#'                          10,7,10,8,11,
+#'                           9,7, 9,7,11,
+#'                           9,6, 8,7,11),5,6))
+#' ##
+#' ##
+#' ## ... with random treatment effect (with sd=0.2), which is correlated with
+#' ## the cluster effect with rho=0.25
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10)
+#' ##
+#' ##
+#' ## ... with missing observations (a.k.a. incomplete stepped wedge design)
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3)
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
+#'              incomplete=matrix(c(1,1,1,0,0,
+#'                                  1,1,1,1,0,
+#'                                  1,1,1,1,1,
+#'                                  1,1,1,1,1,
+#'                                  0,1,1,1,1,
+#'                                  0,0,1,1,1),5,6))
+#'##
+#'##
+#'##
+#'## longitudinal parallel design, with 5 time periods, 3 clusters in treatment
+#'## and control arm each.
+#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#'               dsntype="parallel", timepoints=5)
+#'##
+#'##
+#'## ... with one baseline period and four parallel periods
+#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#'               dsntype="parallel_baseline", timepoints=c(1,4))
+#'##
+#'##
+#'##
+#'## cross-over design with two timepoints before and two after the switch
+#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#'               dsntype="crossover", timepoints=c(2,2))
 
 wlsMixedPower <- function(Cl            =NULL,
                           timepoints    =NULL,
@@ -136,7 +195,7 @@ wlsMixedPower <- function(Cl            =NULL,
 
     }else if(is.matrix(incomplete)){
       if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
-        stop("matrix dimensions of argument `incoplete` are ",dim(incomplete),
+        stop("matrix dimensions of argument `incomplete` are ",dim(incomplete),
              " but must be ", dim(DesMat$trtMat), "or ",
              dim(unique(DesMat$trtMat)))
       IM <- incomplete
