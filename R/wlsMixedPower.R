@@ -43,8 +43,11 @@
 #' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
 #' `tau`, `eta` and `rho` are ignored.
 #'
-#' @return a list. First element is the power,
-#' second element the weights of cluster per period for estimating the treatment effect **needs update**
+#' @details see vignette 'Getting Started'
+#'
+#' @return an element of class wlsPower, a list that contains power and the
+#' parameters of the specific setting.
+#' If requested (by verbose=TRUE) it contains also relevant matrices.
 #' @export
 #'
 #' @examples
@@ -357,7 +360,7 @@ plot.wlsPower <- function(x,...){
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
-  subp <- subplot(
+  subp <- suppressWarnings(subplot(
     plot_ly(data=data.frame(time=1:dim(wgt)[2], weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
       layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
@@ -376,10 +379,10 @@ plot.wlsPower <- function(x,...){
             type="bar", orientation="h",
             y=~cluster, x=~weight, color=I("grey")) %>%
       layout(xaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
-             yaxis=list(title="", showticklabels=FALSE))
+             yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
     ,
     nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-  ) %>% layout(showlegend=FALSE) %>% config(mathjax = 'cdn')
-  return(suppressWarnings(subp))
+  ) %>% layout(showlegend=FALSE) %>% config(mathjax = 'cdn'))
+  return(subp)
 }
 

@@ -93,14 +93,18 @@ of length #Clusters or a matrix of dimension #Clusters x timepoints}
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }
 \value{
-a list. First element is the power,
-second element the weights of cluster per period for estimating the treatment effect **needs update**
+an element of class wlsPower, a list that contains power and the
+parameters of the specific setting.
+If requested (by verbose=TRUE) it contains also relevant matrices.
 }
 \description{
 This is the work-horse function of the SteppedPower package.
 It calls the constructor functions for the design matrix $X$ and covariance matrix $V$,
 and then calculates the variance of the intervention effect via
 $$Var(trteff)=(X'V^{-1}X)^{-1}[1,1]$$
+}
+\details{
+see vignette 'Getting Started'
 }
 \examples{
 wlsMixedPower(mu0=0, mu1=1, Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
