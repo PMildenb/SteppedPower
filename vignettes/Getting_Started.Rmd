@@ -124,8 +124,8 @@ for stepped wedge designs.
 `construct_CovBlk` to 
 
 ```{r}
-debugonce(wlsMixedPower)
-a <- wlsMixedPower(mu0=0,mu1=1,Cl=c(2,2),CovMat = construct_CovMat(CovBlk = diag(3) + (2:4 %o% 2:4)/10,SumCl=4), verbose = TRUE)
+CovMat <- construct_CovMat(CovBlk = diag(3) + (2:4 %o% 2:4)/10,SumCl=4)
+a <- wlsMixedPower(mu0=0,mu1=1,Cl=c(2,2),CovMat = CovMat, verbose = TRUE)
 a <- wlsMixedPower(mu0=0,mu1=1,Cl=c(2,2),tau=.5,verbose=TRUE)
 a$CovarianceMatrix
 ```

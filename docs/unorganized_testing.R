@@ -18,32 +18,32 @@ matplot(tmp)
 construct_timeadjust(3,timeBlk=matrix(c(0,0,1,0,1,1),nrow=2))
 
 ## costruct_trtMat #####
-construct_trtMat(Cl=c(1,1,1), trtDelay=NULL, design="SWD",      timepoints=4)
-construct_trtMat(Cl=c(1,1),   trtDelay=NULL, design="parallel", timepoints=4)
-construct_trtMat(Cl=c(1,1,1), trtDelay=c(.2,.4),  design="SWD",      timepoints=4)
-construct_trtMat(Cl=c(1,1),   trtDelay=c(.2,.4),  design="parallel", timepoints=4)
-construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="parallel_baseline", timepoints=3)
-construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  design="crossover", timepoints=c(2,2))
+construct_trtMat(Cl=c(1,1,1), trtDelay=NULL, dsntype="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trtDelay=NULL, dsntype="parallel", timepoints=4)
+construct_trtMat(Cl=c(1,1,1), trtDelay=c(.2,.4),  dsntype="SWD",      timepoints=4)
+construct_trtMat(Cl=c(1,1),   trtDelay=c(.2,.4),  dsntype="parallel", timepoints=4)
+construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  dsntype="parallel_baseline", timepoints=3)
+construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  dsntype="crossover", timepoints=c(2,2))
 # debugonce(construct_trtMat)
 
 ## costruct_DesMat #####
 construct_DesMat(Cl=c(2,0,1))
 Des_PB <- construct_DesMat(Cl=c(2,2))
 
-construct_DesMat(Cl=c(5,5),design="parallel",timepoints=NULL)
-construct_DesMat(Cl=c(5,5),design="parallel",timepoints=1)
-Des_PB <-construct_DesMat(Cl=c(2,2),design="parallel",timepoints=3)
+construct_DesMat(Cl=c(5,5),dsntype="parallel",timepoints=NULL)
+construct_DesMat(Cl=c(5,5),dsntype="parallel",timepoints=1)
+Des_PB <-construct_DesMat(Cl=c(2,2),dsntype="parallel",timepoints=3)
 
-construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=NULL)
-construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=2)
-Des_PB <- construct_DesMat(Cl=c(2,2),design="parallel_baseline",timepoints=c(1,2))
+construct_DesMat(Cl=c(2,2),dsntype="parallel_baseline",timepoints=NULL)
+construct_DesMat(Cl=c(2,2),dsntype="parallel_baseline",timepoints=2)
+Des_PB <- construct_DesMat(Cl=c(2,2),dsntype="parallel_baseline",timepoints=c(1,2))
 
 construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7))
-construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel")
-construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),design="parallel_baseline")
+construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),dsntype="parallel")
+construct_DesMat(Cl=c(1,1),  trtDelay=c(.3,.7),dsntype="parallel_baseline")
 
 construct_DesMat(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="none")
-construct_DesMat(Cl=c(1,1),trtDelay=c(.3,.7),design="parallel_baseline",timeAdjust="linear")
+construct_DesMat(Cl=c(1,1),trtDelay=c(.3,.7),dsntype="parallel_baseline",timeAdjust="linear")
 
 construct_DesMat(Cl=c(1,1,1,1),timeAdjust="factor")
 construct_DesMat(Cl=c(1,1,1,1),timeAdjust="periodic")
@@ -110,12 +110,12 @@ compute_wlsPower(DesMat=construct_DesMat(Cl=c(4,4,4,4)),
 
 
 
-compute_wlsPower(DesMat=construct_DesMat(Cl=c(337,337),design="parallel",timepoints=1),
+compute_wlsPower(DesMat=construct_DesMat(Cl=c(337,337),dsntype="parallel",timepoints=1),
     EffSize=.25,sigma=1,tau=1,N=1,dfAdjust="none",sig.level=.05,verbose=F)
 
 Cl <- rep(10,10)
 DesMat <- construct_DesMat(Cl=Cl)
-DesMat_prl <- construct_DesMat(Cl=c(40,40),design="parallel",timepoints=3)
+DesMat_prl <- construct_DesMat(Cl=c(40,40),dsntype="parallel",timepoints=3)
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
@@ -127,7 +127,7 @@ wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,verbose=F)
 SteppedPower:::compute_wlsPower(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
                  dfAdjust="none",sig.level=.05,verbose=F)
 wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
-wlsMixedPower(Cl=c(4,4),timepoints=3,design="parallel",
+wlsMixedPower(Cl=c(4,4),timepoints=3,dsntype="parallel",
               mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
 
 
@@ -158,18 +158,18 @@ wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,
 wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 Cl=c(3,3) ; mu0=0 ; mu1=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
-design="parallel" ; N <- NULL ; sig.level=0.05
-wlsMixedPower(Cl=c(5,5),mu0=0,mu1=.2,sigma=1,tau=0.1,timepoints=2,design="parallel")
+dsntype="parallel" ; N <- NULL ; sig.level=0.05
+wlsMixedPower(Cl=c(5,5),mu0=0,mu1=.2,sigma=1,tau=0.1,timepoints=2,dsntype="parallel")
 
 microbenchmark::microbenchmark(
 wls_parBl1 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
-                           design="parallel_baseline",timepoints=51)
+                           dsntype="parallel_baseline",timepoints=51)
 ,
 wls_parBl2 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
-                           design="parallel_baseline",timepoints=c(15,36))
+                           dsntype="parallel_baseline",timepoints=c(15,36))
 ,
 wls_swd    <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(2,50),
-                            design="SWD")
+                            dsntype="SWD")
 ,times=10)
 system.time(sw <- swCRTdesign::swPwr(swCRTdesign::swDsn(rep(2,50)),distn="gaussian",
                                n=1,mu0=0,mu1=.1,
@@ -206,10 +206,10 @@ wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
 wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
 wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
-              Cl=c(50,50),timepoints=5,design="parallel",
+              Cl=c(50,50),timepoints=5,dsntype="parallel",
               Power=.9,verbose=F)
 wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
-              Cl=c(10,10),timepoints=5,design="parallel",
+              Cl=c(10,10),timepoints=5,dsntype="parallel",
               N=1000,verbose=F)
 
 
@@ -280,12 +280,12 @@ mod7$Power
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
 
-mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, design="parallel", verbose=TRUE)
-mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, design="parallel", verbose=TRUE)
-mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0,mu1=ES, design="parallel", verbose=TRUE)
-mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, design="parallel", verbose=TRUE)
-mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, design="parallel", verbose=TRUE)
-mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, design="parallel", verbose=TRUE)
+mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
 
 mod1$CovarianceMatrix[1:tp,1:tp]
 mod2$CovarianceMatrix[1:tp,1:tp]
@@ -325,7 +325,7 @@ all.equal(a,c)
 ################################################################################
 ## plot.wlsPower #####
 plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
-                            timepoints=5,design="parallel",verbose=T))
+                            timepoints=5,dsntype="parallel",verbose=T))
 
 ## compare_designs #####
 compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
