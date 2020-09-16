@@ -12,7 +12,7 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat matrix of dimension ... , if supplied, `timepoints` and `Cl` are ignored.
+#' @param DesMat matrix of dimension , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.
 #' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying
 #' the intervention effect in the first (second ... ) intervention phase
 #' @param incomplete integer, either a vector (only for SWD) or a matrix.
@@ -20,6 +20,7 @@
 #' control to intervention that are observed. A matrix consists of 1's for
 #' observed clusterperiods and 0's for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods.
+#' One of the following: "factor", "linear", "none", "periodic".
 #' Defaults to "factor".
 #' @param dsntype character, defines the type of design. Options are "SWD",
 #' "parallel" and "parallel_baseline", defaults to "SWD".
@@ -34,14 +35,15 @@
 #' @param eta numeric, standard deviation of random slopes
 #' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
 #' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param rho numeric, correlation of `tau` and `eta`
+#' @param rho numeric (scalar), correlation of `tau` and `eta`
+#' @param gamma numeric (scalar), random time effect
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
 #' @param family character, distribution family. One of "gaussian", "binomial".
 #' Defaults to "gaussian"
 #' @param Power numeric, a specified target power. If supplied, the minimal `N` is returned.
 #' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
-#' @param sig.level numeric, significance level, defaults to 0.05
+#' @param sig.level numeric (scalar), significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
 #' @param verbose logical, should the function return the design and covariance matrix?
 #' @param period numeric (scalar)
@@ -129,6 +131,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           eta           =NULL,
                           tauAR         =NULL,
                           rho           =NULL,
+                          gamma         =NULL,
                           CovMat        =NULL,
                           N             =NULL,
                           Power         =NULL,
@@ -147,30 +150,30 @@ wlsMixedPower <- function(Cl            =NULL,
     if( (-1)>rho | rho>1 )
       stop("Correlation rho must be between -1 and 1")
   }
-  if(!is.null(DesMat)){
-    if(min(sapply(list(Cl, timepoints, trtDelay, period),is.null))==0)
-      warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
-              "timeAdjust, period and dsntype are ignored.")
-    else{
-      if(!is.null(timepoints))
-        if(length(trtDelay)>timepoints)
-          stop("The length of vector trtDelay must be less or equal to timepoints.")
-    }
-  }
 
   ## check DesMat #####
   if(is.null(DesMat)){
+    if(!is.null(timepoints))
+      if(length(trtDelay)>timepoints)
+        stop("The length of vector trtDelay must be less or equal to timepoints.")
+
     DesMat    <- construct_DesMat(Cl         =Cl,
                                   trtDelay   =trtDelay,
-                                  dsntype     =dsntype,
+                                  dsntype    =dsntype,
                                   timepoints =timepoints,
                                   timeAdjust =timeAdjust,
                                   period     =period)
-  }else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
-    DesMat <- construct_DesMat(trtmatrix=DesMat) ## TODO : dimension checks
-  }else if(!inherits(DesMat,"DesMat"))
-    stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
-         "It must be either an object of class DesMat or a matrix")
+  }else{
+    if(min(sapply(list(Cl, timepoints, trtDelay, period),is.null))==0)
+      warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
+              "timeAdjust, period and dsntype are ignored.")
+
+    if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
+      DesMat <- construct_DesMat(trtmatrix=DesMat)
+    }else if(!inherits(DesMat,"DesMat"))
+      stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
+           "It must be either an object of class DesMat or a matrix")
+  }
 
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
@@ -252,7 +255,7 @@ wlsMixedPower <- function(Cl            =NULL,
                                                            eta       =eta,
                                                            tauAR     =tauAR,
                                                            rho       =rho,
-                                                           # gamma     =gamma,
+                                                           gamma     =gamma,
                                                            N         =N,
                                                            dfAdjust  =dfAdjust,
                                                            sig.level =sig.level,
@@ -273,7 +276,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           eta       =eta,
                           tauAR     =tauAR,
                           rho       =rho,
-                          # gamma     =gamma,
+                          gamma     =gamma,
                           N         =N,
                           dfAdjust =dfAdjust,
                           sig.level =sig.level,
@@ -298,6 +301,7 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
 #' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric, correlation of tau and eta **not implemented**
+#' @param gamma numeric (scalar), random time effect
 #' @param N integer, number of individuals per cluster.
 #' @param dfAdjust character, one of the following: **not implemented**
 #' @param sig.level numeric, significance level, defaults to 0.05
@@ -326,9 +330,10 @@ compute_wlsPower <- function(DesMat,
   SumCl      <- sum(DesMat$Cl)
   trtMat     <- DesMat$trtMat
 
-  ## Checks
+  ## Checks ####
   if(!is.null(CovMat) & sum(sapply(c(sigma, tau, eta, rho, gamma, N),is.null))>0)
-    warning("If argument CovMat is provided, sigma, tau, eta, rho, gamma and N are ignored.")
+    warning("If argument CovMat is provided, sigma, tau, eta, rho, gamma and N",
+            "are ignored.")
 
   ## get covariance matrix #####
   if(is.null(CovMat))

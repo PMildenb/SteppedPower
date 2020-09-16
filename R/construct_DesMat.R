@@ -42,7 +42,7 @@ construct_DesMat <- function(Cl          =NULL,
                                 trtDelay     =trtDelay,
                                 dsntype        =dsntype,
                                 timepoints    =timepoints)
-    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
+    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing number of timepoints (if not provided)
   }
 
   timeBlk <- construct_timeadjust(Cl          =Cl,

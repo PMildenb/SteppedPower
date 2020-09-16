@@ -58,3 +58,11 @@ muCond_to_muMarg <- function(muCond,tauLin){
           tol=100*.Machine$double.eps)$root
 }
 
+
+## icc and cac to random effects
+
+icc_to_RanEff <- function(icc,cac){
+  if(is.null(N) | N==1) warning("Cannot interpret icc and cac when sigma refers",
+                                " to cluster means. ")
+
+}

@@ -51,6 +51,8 @@ numeric timepoints, numeric total number of Clusters}
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
+
+\item{gamma}{numeric (scalar), random time effect}
 }
 \description{
 compute_wlsPower
