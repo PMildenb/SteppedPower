@@ -22,16 +22,17 @@
 #'
 
 construct_DesMat <- function(Cl          =NULL,
-                             trtDelay   =NULL,
+                             trtDelay    =NULL,
                              dsntype      ="SWD",
                              timepoints  =NULL,
-                             timeAdjust ="factor",
+                             timeAdjust  ="factor",
                              period      =NULL,
                              trtmatrix   =NULL,
                              timeBlk     =NULL){
 
   if(!is.null(trtmatrix)){
-    trtMat <- trtmatrix
+    trtMat  <- trtmatrix
+    dsntype <- "userdefined"
     if(inherits(trtMat,"matrix")){
       SumCl      <- nrow(trtMat)
       timepoints <- ncol(trtMat)
@@ -39,21 +40,22 @@ construct_DesMat <- function(Cl          =NULL,
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
-                                trtDelay     =trtDelay,
-                                dsntype        =dsntype,
+                                trtDelay      =trtDelay,
+                                dsntype       =dsntype,
                                 timepoints    =timepoints)
     timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing number of timepoints (if not provided)
   }
 
   timeBlk <- construct_timeadjust(Cl          =Cl,
                                   timepoints  =timepoints,
-                                  timeAdjust =timeAdjust,
+                                  timeAdjust  =timeAdjust,
                                   period      =period,
                                   timeBlk     =timeBlk)
 
   DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
                   timepoints = timepoints,
                   Cl         = Cl,
+                  dsntype    = dsntype,
                   trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
@@ -72,9 +74,16 @@ construct_DesMat <- function(Cl          =NULL,
 #'
 print.DesMat <- function(x, ...){
 
+dsn_out <- switch (dsntype,
+                  "SWD"               = "stepped wedge" ,
+                  "parallel"          = "parallel",
+                  "parallel_baseline" = "parallel with baseline period(s)",
+                  "userdefined"       = "userdefined")
+
 
   cat("Timepoints         = ", x$timepoints,"\n")
   cat("Number of Clusters = ", sum(x$Cl),"\n")
+  cat("Design type        = ", dsn_out,"\n")
   cat("Design matrix      = \n")
   print(x$dsnmatrix)
 }
