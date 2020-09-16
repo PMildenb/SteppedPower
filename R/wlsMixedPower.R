@@ -146,7 +146,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           mu1,
                           marginal_mu   =FALSE,
                           sigma         =1, ## default needed for CovMat input, still experimental
-                          tau           =0,
+                          tau           =NULL,
                           eta           =NULL,
                           tauAR         =NULL,
                           rho           =NULL,
@@ -162,18 +162,35 @@ wlsMixedPower <- function(Cl            =NULL,
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
-  if(!is.null(rho)){
-    if(is.null(eta))
-      stop("If the correlation rho between random intercept and slope is 0,",
-           "a random slope must be provided.")
-    if( (-1)>rho | rho>1 )
-      stop("Correlation rho must be between -1 and 1")
+
+  if(!all(sapply(c(tau,eta,rho,gamma,tauAR),is.null))){
+    if(any(c(tau,eta,gamma)<0))
+      stop("tau, eta and gamma must be >=0")
+    if(!is.null(tauAR)){
+      if(is.null(tau)) stop("If tauAR is supplied, tau is needed as well.")
+      if(tauAR<0 | tauAR>1) stop("tauAR must be between 0 and 1.")
+    }
+    if(!is.null(rho)){
+      if(is.null(eta) | is.null(tau))
+        stop("If the correlation rho between random intercept and slope is not 0,",
+             "a random slope must be provided.")
+      if( (-1)>rho | rho>1 )
+        stop("Correlation rho must be between -1 and 1")
+    }
+    if(is.null(tau)) tau <- 0 ## needed for computational reasons. Add warning?
+  }else if (FALSE) {
+    ## clause for alternative input options (icc & cac or alpha1-alpha3)
+  }else{
+    tau <- 0
+    warning("Random cluster effect tau and random treatment effect eta",
+            " are assumed to be 0, i.e. the observations across clusters are",
+            "assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
   ## check DesMat #####
   if(is.null(DesMat)){
-    if(!is.null(timepoints))
-      if(length(trtDelay)>timepoints)
+    if(!is.null(timepoints) & !is.null(trtDelay))
+      if(length(trtDelay)>max(timepoints))
         stop("The length of vector trtDelay must be less or equal to timepoints.")
 
     DesMat    <- construct_DesMat(Cl         =Cl,
@@ -183,7 +200,7 @@ wlsMixedPower <- function(Cl            =NULL,
                                   timeAdjust =timeAdjust,
                                   period     =period)
   }else{
-    if(min(sapply(list(Cl, timepoints, trtDelay, period),is.null))==0)
+    if(!all(sapply(list(Cl, timepoints, trtDelay, period),is.null)))
       warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
               "timeAdjust, period and dsntype are ignored.")
 
@@ -192,6 +209,7 @@ wlsMixedPower <- function(Cl            =NULL,
     }else if(!inherits(DesMat,"DesMat"))
       stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
            "It must be either an object of class DesMat or a matrix")
+    dsntype <- DesMat$dsntype
   }
 
   ## incomplete designs #####
@@ -217,9 +235,10 @@ wlsMixedPower <- function(Cl            =NULL,
 
     }else if(is.matrix(incomplete)){
       if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
-        stop("matrix dimensions of argument `incomplete` are ",dim(incomplete),
-             " but must be ", dim(DesMat$trtMat), "or ",
-             dim(unique(DesMat$trtMat)))
+        stop("matrix dimensions of argument `incomplete` are ",
+             paste(dim(incomplete),collapse="x"), " but must be ",
+             paste(dim(DesMat$trtMat),collapse="x"), " or ",
+             paste(dim(unique(DesMat$trtMat)),collapse="x"))
       IM <- incomplete
       IM[which(IM==0)] <- Inf
       if(nrow(incomplete)==lenCl) IM <- IM[rep(1:lenCl,DesMat$Cl),]
@@ -282,7 +301,8 @@ wlsMixedPower <- function(Cl            =NULL,
                                                            verbose   =FALSE)$Power},
                 interval=N_range)$root),
               error=function(cond){
-                message(paste0("Maximal N yields power below ",Power,". Increase argument N_range."))
+                message(paste0("Maximal N yields power below ",Power,
+                               ". Increase argument N_range."))
                 return(N_range[2])
               })
     N <- N_opt
@@ -297,7 +317,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           rho       =rho,
                           gamma     =gamma,
                           N         =N,
-                          dfAdjust =dfAdjust,
+                          dfAdjust  =dfAdjust,
                           sig.level =sig.level,
                           CovMat    =CovMat,
                           verbose   =verbose)
@@ -315,9 +335,11 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric, standard deviation of random slopes
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
+#' If `tauAR` is not NULL, the random intercept
 #' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL.
+#' If `etaAR` is not NULL, the random slope
 #' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric, correlation of tau and eta **not implemented**
 #' @param gamma numeric (scalar), random time effect
@@ -339,6 +361,7 @@ compute_wlsPower <- function(DesMat,
                              tauAR      =NULL,
                              etaAR      =NULL,
                              rho        =NULL,
+                             gamma      =NULL,
                              N          =NULL,
                              CovMat     =NULL,
                              dfAdjust   ="none",
