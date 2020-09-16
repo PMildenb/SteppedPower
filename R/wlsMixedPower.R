@@ -1,9 +1,9 @@
 #' wlsMixedPower
 #'
 #' This is the work-horse function of the SteppedPower package.
-#' It calls the constructor functions for the design matrix $X$ and covariance matrix $V$,
-#' and then calculates the variance of the intervention effect via
-#' $$Var(trteff)=(X'V^{-1}X)^{-1}[1,1]$$
+#' It calls the constructor functions for the design matrix \eqn{X} and
+#' covariance matrix \eqn{\Omega}, and then calculates the variance of the
+#' intervention effect via \eqn{Var(trteff)=(X'\Omega^{-1}X)^{-1}[1,1]}
 #'
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD),
@@ -63,7 +63,7 @@
 #' ##
 #' ##
 #' ## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
-#' ## cluster effect sd = 0.2, and 10 Individuals per cluster
+#' ## cluster effect sd = 0.33, and 10 Individuals per cluster
 #' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 #' ##
 #' ##
@@ -105,6 +105,7 @@
 #'               dsntype="parallel", timepoints=5)
 #'##
 #'##
+#'##
 #'## ... with one baseline period and four parallel periods
 #' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 #'               dsntype="parallel_baseline", timepoints=c(1,4))
@@ -114,6 +115,24 @@
 #'## cross-over design with two timepoints before and two after the switch
 #' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 #'               dsntype="crossover", timepoints=c(2,2))
+#'##
+#'##
+#'##
+#'## stepped wedge design with 32 Individuals in 8 waves, binomial outcome,
+#'## 50% incidence under control, 25% incidence under interventional treatment.
+#'## cluster effect sd = 0.5 (ICC of 1/3 under control),
+#'## every individual is its own cluster.
+#'## ... with incidences defined conditional on cluster effect=0
+#'wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+#'              family="binomial")
+#'##
+#'##
+#'## ... with  marginally defined incidences
+#' wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+#'               family="binomial", marginal_mu=TRUE)
+#'
+
+
 
 wlsMixedPower <- function(Cl            =NULL,
                           timepoints    =NULL,
@@ -242,7 +261,7 @@ wlsMixedPower <- function(Cl            =NULL,
   }
 
   EffSize <- mu1-mu0
-  if(marginal_mu) print(paste("The (raw) effect is",EffSize))
+  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
 
   ## calculate samplesize (if needed) #####
   if(!is.null(Power)){
