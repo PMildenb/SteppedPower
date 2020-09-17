@@ -95,6 +95,11 @@ construct_CovMat(SumCl=3,timepoints=4,sigma=sqrt(10),tau=1,eta=sqrt(.1),rho=.5,t
 
 construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=2, tauAR=.8)
 
+construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=2, tauAR=0)
+construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=0, gamma=2)
+construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=0, gamma=2)
+
+
 ################################################################################
 ## compute_wlsPower #####
 
@@ -260,6 +265,7 @@ mod4 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   mu0=0,mu1=ES, verbos
 mod5 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   mu0=0,mu1=ES, verbose=TRUE)
 mod6 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, verbose=TRUE)
 mod7 <- wlsMixedPower(Cl=cl, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, verbose=TRUE)
+mod8 <- wlsMixedPower(Cl=cl, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, verbose=TRUE)
 
 mod1$CovarianceMatrix[1:4,1:4]
 mod2$CovarianceMatrix[1:4,1:4]
@@ -268,6 +274,7 @@ mod4$CovarianceMatrix[1:4,1:4]
 mod5$CovarianceMatrix[1:4,1:4]
 mod6$CovarianceMatrix[1:4,1:4]
 mod7$CovarianceMatrix[1:4,1:4]
+mod8$CovarianceMatrix[1:4,1:4]
 
 mod1$Power
 mod2$Power
@@ -276,9 +283,13 @@ mod4$Power
 mod5$Power
 mod6$Power
 mod7$Power
+mod8$Power
 
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
+
+debugonce(wlsMixedPower)
+debugonce(compute_wlsPower)
 
 mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
 mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
@@ -286,6 +297,8 @@ mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0
 mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
 mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
 mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod7 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+
 
 mod1$CovarianceMatrix[1:tp,1:tp]
 mod2$CovarianceMatrix[1:tp,1:tp]
@@ -293,6 +306,7 @@ mod3$CovarianceMatrix[1:tp,1:tp]
 mod4$CovarianceMatrix[1:tp,1:tp]
 mod5$CovarianceMatrix[1:tp,1:tp]
 mod6$CovarianceMatrix[1:tp,1:tp]
+mod7$CovarianceMatrix[1:tp,1:tp]
 
 mod1$Power
 mod2$Power

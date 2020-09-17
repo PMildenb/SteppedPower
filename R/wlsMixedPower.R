@@ -184,7 +184,7 @@ wlsMixedPower <- function(Cl            =NULL,
     tau <- 0
     warning("Random cluster effect tau and random treatment effect eta",
             " are assumed to be 0, i.e. the observations across clusters are",
-            "assumed to be i.i.d. Declare tau=0 to supress this warning.")
+            " assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
   ## check DesMat #####
@@ -387,6 +387,7 @@ compute_wlsPower <- function(DesMat,
                                  tauAR      =tauAR,
                                  etaAR      =etaAR,
                                  rho        =rho,
+                                 gamma      =gamma,
                                  trtMat     =trtMat,
                                  N          =N)
 

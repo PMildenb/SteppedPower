@@ -74,7 +74,7 @@ construct_DesMat <- function(Cl          =NULL,
 #'
 print.DesMat <- function(x, ...){
 
-dsn_out <- switch (dsntype,
+dsn_out <- switch (x$dsntype,
                   "SWD"               = "stepped wedge" ,
                   "parallel"          = "parallel",
                   "parallel_baseline" = "parallel with baseline period(s)",
