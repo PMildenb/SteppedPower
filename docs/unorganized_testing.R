@@ -53,16 +53,45 @@ construct_DesMat(Cl=c(1,1,2),trtDelay=.5,timeBlk=diag(4))
 
 ################################################################################
 ## CovBlk #####
-timepoints=3; sigma=2; tau=rep(2,3)
-construct_CovBlk(timepoints=5, sigma=2, tau=2)
-construct_CovBlk(timepoints=3, sigma=2, tau=rep(2,3))
-construct_CovBlk(timepoints=3, sigma=c(1,2,3), tau=2)
+construct_CovBlk(sigma=2:4, tau=rep(1,3))
+construct_CovBlk(sigma=1:3, tau=c(5,1,0) )
+construct_CovBlk(sigma=c(1,2,3), tau=c(2,1,2))
 
 eta <- c(0,.2,.2)
-construct_CovBlk(timepoints,sigma,tau,eta)
+construct_CovBlk(sigma=rep(2,3),tau=rep(1,3),eta=eta)
 
 rho <- .3
-construct_CovBlk(timepoints,sigma,tau,eta,rho)
+construct_CovBlk(sigma=rep(2,3),tau=rep(1,3),eta=eta,rho=rho)
+
+## CovSubMat #####
+
+tp <- 6
+construct_CovSubMat(N=5,timepoints=2,sigma=c(1,1),tau=c(2,2),psi=c(3,3),
+                    eta=c(0,10),tauAR=.6,gamma=c(6,6))
+tp <- 4
+construct_CovSubMat(N          =3,
+                    timepoints =tp,
+                    sigma      =rep(sqrt(10000),tp),
+                    tau        =rep(sqrt(5),tp),
+                    psi        =rep(sqrt(2000),tp),
+                    eta        =c(0,0,rep(sqrt(40),(tp-2))),
+                    tauAR      =NULL,
+                    gamma      =rep(sqrt(300),tp))
+
+
+CovBlks <- mapply(construct_CovSubMat,
+                  N     =list(4,3),
+                  sigma =list(c(1,1),c(1,1)),
+                  tau   =list(c(2,2),c(2,2)),
+                  eta   =list(c(0,3),c(0,3)),
+                  rho   =list(NULL,NULL),
+                  psi   =list(c(10,10),c(10,10)),
+                  gamma =list(c(5,5),c(5,5)),
+                  MoreArgs =list(timepoints=2,
+                                 tauAR     =.9),
+                  SIMPLIFY = FALSE)
+bdiag(CovBlks)
+
 
 ## CovMat #####
 construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(1,1,2,1,2,2),nrow=2),tau=0.3)
@@ -98,6 +127,34 @@ construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=2, tauAR=.8)
 construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=2, tauAR=0)
 construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=0, gamma=2)
 construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=0, gamma=2)
+
+
+construct_CovMat(2,3,1,10,eta= .1, trtMat=matrix(c(0,0,1,0,1,1),2,3))
+construct_CovMat(2,3,1,10,eta= .1*matrix(c(0,0,1,0,1,1),2,3))
+
+
+# debugonce(construct_CovMat)
+
+construct_CovMat(SumCl=2,timepoints=4,sigma=1,tau=0,N=c(2,3),psi=5,gamma=9)
+construct_CovMat(SumCl=2,timepoints=4,
+                 sigma=matrix(c(1,Inf,1,1,1,1,Inf,1),2,4),
+                 tau=0,N=c(2,3),psi=5,gamma=9)
+construct_CovMat(SumCl=2,timepoints=4,
+                 sigma=matrix(c(1,Inf,1,1,1,1,Inf,1),2,4),
+                 tau  =matrix(c(0,1)),
+                 N=c(2,3),psi=5,gamma=9)
+construct_CovMat(SumCl=2,timepoints=4,
+                 sigma=matrix(c(1,Inf,1,1,1,1,Inf,1),2,4),
+                 tau  =matrix(c(1,1)),
+                 tauAR=c(1,.7),
+                 N=c(2,3),psi=5,gamma=9)
+construct_CovMat(SumCl=2,timepoints=4,
+                 sigma=matrix(c(1,Inf,1,1,1,1,Inf,1),2,4),
+                 tau  =matrix(c(1,1)),
+                 tauAR=c(1,1),
+                 eta    =1,
+                 trtMat =matrix(c(0,0,1,0,1,1,1,1),2,4),
+                 N=c(2,3),psi=5,gamma=9)
 
 
 ################################################################################
