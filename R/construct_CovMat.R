@@ -53,6 +53,30 @@ construct_CovBlk <- function(sigma,
 
 
 
+#' construct_CovSubMat
+#'
+#' @param N Number of individuals per cluster
+#' @param timepoints Number of timepoints
+#' @param sigma numeric (vector of length `timepoints`),
+#' residual error (usually of cluster means)
+#' @param tau numeric (vector of length *timepoints*), standard deviation of random intercepts,
+#' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
+#' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
+#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
+#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @param gamma numeric (scalar), standard deviation of a random time effect.
+#' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
+#' the function `construct_trtMat`, indicating the cluster-periods that receive
+#' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
+#' `SumCl` and `timepoints` are ignored (!).
+#' @param psi random individuum effect. Leads to a closed cohort setting
+#'
+#' @return
+#'
+
 construct_CovSubMat <- function(N,
                                 timepoints,
                                 sigma,
@@ -62,6 +86,7 @@ construct_CovSubMat <- function(N,
                                 etaAR =NULL,
                                 rho   =NULL,
                                 gamma =0,
+                                trtMat=NULL,
                                 psi   =NULL){
 
   SubMat <- construct_CovMat(SumCl      = N,

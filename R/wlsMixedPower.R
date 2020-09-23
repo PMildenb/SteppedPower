@@ -12,7 +12,7 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat matrix of dimension , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.
+#' @param DesMat matrix of dimension ... , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.
 #' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying
 #' the intervention effect in the first (second ... ) intervention phase
 #' @param incomplete integer, either a vector (only for SWD) or a matrix.
@@ -37,6 +37,7 @@
 #' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
+#' @param psi random individuum effect. Leads to a closed cohort setting
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints
 #' @param family character, distribution family. One of "gaussian", "binomial".
@@ -151,6 +152,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           tauAR         =NULL,
                           rho           =NULL,
                           gamma         =NULL,
+                          psi           =NULL,
                           CovMat        =NULL,
                           N             =NULL,
                           Power         =NULL,
@@ -179,20 +181,21 @@ wlsMixedPower <- function(Cl            =NULL,
     }
     if(is.null(tau)) tau <- 0 ## needed for computational reasons. Add warning?
   }else if (FALSE) {
-    ## clause for alternative input options (icc & cac or alpha1-alpha3)
+    ## clause for alternative input options (icc & cac or alpha0-alpha2)
   }else{
     tau <- 0
-    warning("Random cluster effect tau and random treatment effect eta",
-            " are assumed to be 0, i.e. the observations across clusters are",
-            " assumed to be i.i.d. Declare tau=0 to supress this warning.")
+    if(is.null(CovMat))
+      warning("Random cluster effect tau and random treatment effect eta",
+              " are assumed to be 0, i.e. the observations across clusters are",
+              " assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
   ## check DesMat #####
   if(is.null(DesMat)){
-    if(!is.null(timepoints) & !is.null(trtDelay))
-      if(length(trtDelay)>max(timepoints))
+    if(!is.null(timepoints) & !is.null(trtDelay)) {
+      if(length(trtDelay)>max(timepoints)) {
         stop("The length of vector trtDelay must be less or equal to timepoints.")
-
+    }}
     DesMat    <- construct_DesMat(Cl         =Cl,
                                   trtDelay   =trtDelay,
                                   dsntype    =dsntype,
@@ -212,11 +215,14 @@ wlsMixedPower <- function(Cl            =NULL,
     dsntype <- DesMat$dsntype
   }
 
+  ## temporary variables #####
+  timepoints <- DesMat$timepoints
+  lenCl      <- length(DesMat$Cl)
+  SumCl      <- sum(DesMat$Cl)
+
+
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
-    timepoints <- DesMat$timepoints
-    lenCl      <- length(DesMat$Cl)
-    SumCl      <- sum(DesMat$Cl)
 
     if(is.vector(incomplete) & dsntype=="SWD"){
       if(incomplete>timepoints) {
@@ -248,8 +254,6 @@ wlsMixedPower <- function(Cl            =NULL,
   }
 
   if(family =="binomial"){
-    SumCl      <- sum(DesMat$Cl)
-    timepoints <- dim(DesMat$trtMat)[2]
 
     MISSING_CONTROL_VARIABLE <- FALSE
     if(MISSING_CONTROL_VARIABLE){
@@ -294,6 +298,7 @@ wlsMixedPower <- function(Cl            =NULL,
                                                            tauAR     =tauAR,
                                                            rho       =rho,
                                                            gamma     =gamma,
+                                                           psi       =psi,
                                                            N         =N,
                                                            dfAdjust  =dfAdjust,
                                                            sig.level =sig.level,
@@ -316,6 +321,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           tauAR     =tauAR,
                           rho       =rho,
                           gamma     =gamma,
+                          psi       =psi,
                           N         =N,
                           dfAdjust  =dfAdjust,
                           sig.level =sig.level,
@@ -362,6 +368,7 @@ compute_wlsPower <- function(DesMat,
                              etaAR      =NULL,
                              rho        =NULL,
                              gamma      =NULL,
+                             psi        =NULL,
                              N          =NULL,
                              CovMat     =NULL,
                              dfAdjust   ="none",
@@ -388,6 +395,7 @@ compute_wlsPower <- function(DesMat,
                                  etaAR      =etaAR,
                                  rho        =rho,
                                  gamma      =gamma,
+                                 psi        =psi,
                                  trtMat     =trtMat,
                                  N          =N)
 
@@ -415,6 +423,8 @@ compute_wlsPower <- function(DesMat,
                            tauAR     =tauAR,
                            etaAR     =etaAR,
                            rho       =rho,
+                           gamma     =gamma,
+                           psi       =psi,
                            denomDF   =df,
                            dfAdjust  =dfAdjust,
                            sig.level =sig.level))

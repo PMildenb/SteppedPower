@@ -18,8 +18,12 @@
 #' @return a matrix (for a stepped wedge design)
 #' @export
 #'
-#' @examples construct_DesMat(Cl=c(2,0,1))
+#' @examples
+#' construct_DesMat(Cl=c(2,0,1))
+#' construct_DesMat(Cl=c(2,0,1), SubCl=c(1,3,2))
 #'
+SubCl <- 11:13
+SubCl <- 10
 
 construct_DesMat <- function(Cl          =NULL,
                              trtDelay    =NULL,
@@ -28,25 +32,31 @@ construct_DesMat <- function(Cl          =NULL,
                              timeAdjust  ="factor",
                              period      =NULL,
                              trtmatrix   =NULL,
-                             timeBlk     =NULL){
+                             timeBlk     =NULL,
+                             N           =NULL){
+  if(!is.null(SubCl)){
+    SubCl <- if(length(N)==1){ Cl*N
+             }else { sapply(split(N,rep(as.factor(1:length(Cl)),Cl)),sum) }
+    tmpCl <- SubCl
+  }else tmpCl <- Cl
 
   if(!is.null(trtmatrix)){
     trtMat  <- trtmatrix
     dsntype <- "userdefined"
     if(inherits(trtMat,"matrix")){
-      SumCl      <- nrow(trtMat)
-      timepoints <- ncol(trtMat)
-      Cl         <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
+      SumCl       <- nrow(trtMat)
+      timepoints  <- ncol(trtMat)
+      Cl <- tmpCl <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
-    trtMat  <- construct_trtMat(Cl            =Cl,
+    trtMat  <- construct_trtMat(Cl            =tmpCl,
                                 trtDelay      =trtDelay,
                                 dsntype       =dsntype,
                                 timepoints    =timepoints)
     timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing number of timepoints (if not provided)
   }
 
-  timeBlk <- construct_timeadjust(Cl          =Cl,
+  timeBlk <- construct_timeadjust(Cl          =tmpCl,
                                   timepoints  =timepoints,
                                   timeAdjust  =timeAdjust,
                                   period      =period,
@@ -55,12 +65,14 @@ construct_DesMat <- function(Cl          =NULL,
   DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
                   timepoints = timepoints,
                   Cl         = Cl,
+                  SubCl      = SubCl,
                   dsntype    = dsntype,
                   trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
 }
+
 
 ## Methods for class DesMat
 
@@ -81,10 +93,13 @@ dsn_out <- switch (x$dsntype,
                   "userdefined"       = "userdefined")
 
 
-  cat("Timepoints         = ", x$timepoints,"\n")
-  cat("Number of Clusters = ", sum(x$Cl),"\n")
-  cat("Design type        = ", dsn_out,"\n")
-  cat("Design matrix      = \n")
+  cat("Timepoints            = ", x$timepoints,"\n")
+  cat("Number of Clusters    = ", sum(x$Cl),"\n")
+  if(!is.null(x$SubCl)){
+  cat("Number of Subclusters = ", sum(x$SubCl),"\n")
+  }
+  cat("Design type           = ", dsn_out,"\n")
+  cat("Design matrix         = \n")
   print(x$dsnmatrix)
 }
 

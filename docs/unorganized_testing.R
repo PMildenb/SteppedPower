@@ -66,10 +66,10 @@ construct_CovBlk(sigma=rep(2,3),tau=rep(1,3),eta=eta,rho=rho)
 ## CovSubMat #####
 
 tp <- 6
-construct_CovSubMat(N=5,timepoints=2,sigma=c(1,1),tau=c(2,2),psi=c(3,3),
+SteppedPower:::construct_CovSubMat(N=5,timepoints=2,sigma=c(1,1),tau=c(2,2),psi=c(3,3),
                     eta=c(0,10),tauAR=.6,gamma=c(6,6))
 tp <- 4
-construct_CovSubMat(N          =3,
+SteppedPower:::construct_CovSubMat(N          =3,
                     timepoints =tp,
                     sigma      =rep(sqrt(10000),tp),
                     tau        =rep(sqrt(5),tp),
@@ -79,7 +79,7 @@ construct_CovSubMat(N          =3,
                     gamma      =rep(sqrt(300),tp))
 
 
-CovBlks <- mapply(construct_CovSubMat,
+CovBlks <- mapply(SteppedPower:::construct_CovSubMat,
                   N     =list(4,3),
                   sigma =list(c(1,1),c(1,1)),
                   tau   =list(c(2,2),c(2,2)),
