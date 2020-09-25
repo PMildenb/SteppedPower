@@ -13,10 +13,13 @@ compute_wlsPower(
   tauAR = NULL,
   etaAR = NULL,
   rho = NULL,
+  gamma = NULL,
+  psi = NULL,
   N = NULL,
   CovMat = NULL,
   dfAdjust = "none",
   sig.level = 0.05,
+  INDIV_LVL = FALSE,
   verbose = FALSE
 )
 }
@@ -32,15 +35,19 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{eta}{numeric, standard deviation of random slopes}
 
-\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `tauAR` is not NULL, the random intercept
 `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
-\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
+\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `etaAR` is not NULL, the random slope
 `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
 \item{rho}{numeric, correlation of tau and eta **not implemented**}
 
-\item{N}{integer, number of individuals per cluster.}
+\item{gamma}{numeric (scalar), random time effect}
+
+\item{N}{integer, number of individuals per cluster per timepoint.}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix  with
 *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
@@ -50,9 +57,11 @@ numeric timepoints, numeric total number of Clusters}
 
 \item{sig.level}{numeric, significance level, defaults to 0.05}
 
-\item{verbose}{logical, should the function return the design and covariance matrix?}
+\item{INDIV_LVL}{logical, Should the computation be done on a individual
+(subcluster) level or on cluster means? Defaults to FALSE, since computation
+on individual level is quite costly. This option exists mainly for demontration purposes.}
 
-\item{gamma}{numeric (scalar), random time effect}
+\item{verbose}{logical, should the function return the design and covariance matrix?}
 }
 \description{
 compute_wlsPower

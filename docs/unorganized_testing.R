@@ -153,8 +153,8 @@ construct_CovMat(2,3,1,10,eta= .1*matrix(c(0,0,1,0,1,1),2,3))
 
 ## psi ##
 
-debugonce(construct_CovMat)
-debugonce(construct_CovSubMat)
+# debugonce(construct_CovMat)
+# debugonce(construct_CovSubMat)
 
 construct_CovMat(SumCl=2,timepoints=4,sigma=1,tau=0,N=c(2,3),psi=5,gamma=9)
 construct_CovMat(SumCl=2,timepoints=4,sigma=1,tau=0,N=c(2,3),psi=5,gamma=9,INDIV_LVL=TRUE)
@@ -331,24 +331,6 @@ wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
 a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2),mu0=0,mu1=.01, sigma=sqrt(.025*.975),
               tau=0.0254, gamma=15, N=58, verbose=TRUE)
 a$CovarianceMatrix
-
-
-#### gamma #####
-
-CM  <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1))
-CMg <- construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=sqrt(.1), gamma=100)
-DM  <- construct_DesMat(rep(1,2), timeAdjust="none")
-
-Matrix::solve(CM) ; Matrix::solve(CMg)
-t(DM$dsnmatrix) %*% Matrix::solve(CM) ; t(DM$dsnmatrix) %*% Matrix::solve(CMg)
-
-tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CM)
-VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
-VarMat[1,1]
-
-tmpmat <- t(DM$dsnmatrix) %*% Matrix::solve(CMg)
-VarMat <- Matrix::solve(tmpmat %*% DM$dsnmatrix)
-VarMat[1,1]
 
 
 #### tauAR swd ####

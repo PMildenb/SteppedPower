@@ -17,11 +17,12 @@ wlsMixedPower(
   mu1,
   marginal_mu = FALSE,
   sigma = 1,
-  tau = 0,
+  tau = NULL,
   eta = NULL,
   tauAR = NULL,
   rho = NULL,
   gamma = NULL,
+  psi = NULL,
   CovMat = NULL,
   N = NULL,
   Power = NULL,
@@ -29,6 +30,7 @@ wlsMixedPower(
   N_range = c(1, 1000),
   sig.level = 0.05,
   dfAdjust = "none",
+  INDIV_LVL = FALSE,
   verbose = FALSE
 )
 }
@@ -41,7 +43,7 @@ Else residual error on individual level}
 If design is swd, timepoints defaults to length(Cl)+1.
 Defaults to 1 for parallel designs.}
 
-\item{DesMat}{matrix of dimension , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.}
+\item{DesMat}{matrix of dimension ... , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.}
 
 \item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
@@ -81,6 +83,8 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently
 \item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
 \item{gamma}{numeric (scalar), random time effect}
+
+\item{psi}{random individuum effect. Leads to a closed cohort setting}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix of dimension
 (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
@@ -154,6 +158,11 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
                                  1,1,1,1,1,
                                  0,1,1,1,1,
                                  0,0,1,1,1),5,6))
+##
+## ... with two levels of clustering. This arises if the patients are
+## observed over the whole  study period or if subclusters exist
+## (such as wards within clinics).
+## wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.5, N=10, incomplete=3)
 ##
 ##
 ##
