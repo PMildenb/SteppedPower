@@ -51,6 +51,17 @@ construct_DesMat(Cl=rep(1,6),timeAdjust="periodic",period=4)
 
 construct_DesMat(Cl=c(1,1,2),trtDelay=.5,timeBlk=diag(4))
 
+debugonce(construct_DesMat)
+a <- construct_DesMat(Cl=c(3,2,1),N=c(1,1,1,2,2,3))
+a$dsnmatrix
+
+b <- construct_DesMat(Cl=c(1,1,1),N=c(1,2,3),
+                 trtmatrix=matrix(c(0,0,0,1,0,0,1,1,0,1,1,1),3))
+
+c <- construct_DesMat(Cl=c(1,1,1),N=c(1,2,3), INDIV_LVL = TRUE,
+                 trtmatrix=matrix(c(0,0,0,1,0,0,1,1,0,1,1,1),3))
+
+
 ################################################################################
 ## CovBlk #####
 construct_CovBlk(sigma=2:4, tau=rep(1,3))
@@ -65,18 +76,24 @@ construct_CovBlk(sigma=rep(2,3),tau=rep(1,3),eta=eta,rho=rho)
 
 ## CovSubMat #####
 
-tp <- 6
-SteppedPower:::construct_CovSubMat(N=5,timepoints=2,sigma=c(1,1),tau=c(2,2),psi=c(3,3),
-                    eta=c(0,10),tauAR=.6,gamma=c(6,6))
 tp <- 4
 SteppedPower:::construct_CovSubMat(N          =3,
-                    timepoints =tp,
-                    sigma      =rep(sqrt(10000),tp),
-                    tau        =rep(sqrt(5),tp),
-                    psi        =rep(sqrt(2000),tp),
-                    eta        =c(0,0,rep(sqrt(40),(tp-2))),
-                    tauAR      =NULL,
-                    gamma      =rep(sqrt(300),tp))
+                                   timepoints =tp,
+                                   sigma      =rep(sqrt(10000),tp),
+                                   tau        =rep(sqrt(5),tp),
+                                   psi        =rep(sqrt(2000),tp),
+                                   eta        =c(0,0,rep(sqrt(40),(tp-2))),
+                                   tauAR      =NULL,
+                                   gamma      =rep(sqrt(300),tp))
+SteppedPower:::construct_CovSubMat(N          =3,
+                                   timepoints =tp,
+                                   sigma      =rep(sqrt(10000),tp),
+                                   tau        =rep(sqrt(5),tp),
+                                   psi        =rep(sqrt(2000),tp),
+                                   eta        =c(0,0,rep(sqrt(40),(tp-2))),
+                                   tauAR      =NULL,
+                                   gamma      =rep(sqrt(300),tp),
+                                   INDIV_LVL  =TRUE )
 
 
 CovBlks <- mapply(SteppedPower:::construct_CovSubMat,
@@ -94,6 +111,8 @@ bdiag(CovBlks)
 
 
 ## CovMat #####
+construct_CovMat(SumCl=2,timepoints=3, sigma=0,tau=0.3)
+
 construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(1,1,2,1,2,2),nrow=2),tau=0.3)
 construct_CovMat(SumCl=2,timepoints=3, sigma=1,tau=0.3,eta=1,trtMat = upper.tri(matrix(1,nrow=2,ncol=3)))
 
@@ -132,10 +151,13 @@ construct_CovMat(SumCl=3, timepoints=4, sigma=3, tau=0, gamma=2)
 construct_CovMat(2,3,1,10,eta= .1, trtMat=matrix(c(0,0,1,0,1,1),2,3))
 construct_CovMat(2,3,1,10,eta= .1*matrix(c(0,0,1,0,1,1),2,3))
 
+## psi ##
 
-# debugonce(construct_CovMat)
+debugonce(construct_CovMat)
+debugonce(construct_CovSubMat)
 
 construct_CovMat(SumCl=2,timepoints=4,sigma=1,tau=0,N=c(2,3),psi=5,gamma=9)
+construct_CovMat(SumCl=2,timepoints=4,sigma=1,tau=0,N=c(2,3),psi=5,gamma=9,INDIV_LVL=TRUE)
 construct_CovMat(SumCl=2,timepoints=4,
                  sigma=matrix(c(1,Inf,1,1,1,1,Inf,1),2,4),
                  tau=0,N=c(2,3),psi=5,gamma=9)
@@ -154,8 +176,18 @@ construct_CovMat(SumCl=2,timepoints=4,
                  tauAR=c(1,1),
                  eta    =1,
                  trtMat =matrix(c(0,0,1,0,1,1,1,1),2,4),
-                 N=c(2,3),psi=5,gamma=9)
+                 N=c(2,3),psi=5,gamma=9, INDIV_LVL=TRUE)
 
+construct_CovSubMat(N=2,
+                    sigma = rep(sqrt(2)/2,4),
+                    tau =rep(1,4),
+                    gamma=rep(9,4),
+                    psi=rep(5,4),
+                    timepoints = 4,
+                    INDIV_LVL = FALSE)
+
+construct_CovMat(SumCl=2,timepoints=3,sigma=4,tau=1,N=2,psi=.1,INDIV_LVL = TRUE)
+construct_CovMat(SumCl=2,timepoints=3,sigma=4,tau=1,N=2,psi=0,INDIV_LVL = TRUE)
 
 ################################################################################
 ## compute_wlsPower #####
@@ -203,8 +235,8 @@ wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 uniroot(function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
         interval=c(1,1000))
 
-wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=14,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,20))
+wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=17,verbose=F)
+wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,2000))
 
 
 ################################################################################
@@ -240,6 +272,12 @@ wls_parBl1$Power
 wls_parBl2$Power
 wls_swd$Power
 
+Rprof(interval=0.005,line.profiling=TRUE)
+wls_swd    <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(3,100),
+                            dsntype="SWD")
+Rprof(NULL)
+summaryRprof()
+
 
 wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
 wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
@@ -271,8 +309,8 @@ wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
               Cl=c(50,50),timepoints=5,dsntype="parallel",
               Power=.9,verbose=F)
 wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
-              Cl=c(10,10),timepoints=5,dsntype="parallel",
-              N=1000,verbose=F)
+              Cl=c(50,50),timepoints=5,dsntype="parallel",
+              N=300,verbose=F)
 
 
 wlsMixedPower(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,verbose=T)
@@ -345,8 +383,8 @@ mod8$Power
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
 
-debugonce(wlsMixedPower)
-debugonce(compute_wlsPower)
+#debugonce(wlsMixedPower)
+#debugonce(compute_wlsPower)
 
 mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
 mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
@@ -376,7 +414,7 @@ mod6$Power
 #### incomplete Stepped Wedge design  ####
 Des_SWD22 <- construct_DesMat(Cl=c(2,2))
 
-debugonce(wlsMixedPower)
+#debugonce(wlsMixedPower)
 a <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2, incomplete=2,verbose = T)
 plot(a)
 
@@ -392,6 +430,63 @@ c <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
                    incomplete=IncMat2,verbose = T)
 plot(c)
 all.equal(a,c)
+
+## closed cohort ####
+
+# debugonce(wlsMixedPower)
+# debugonce(compute_wlsPower)
+# debugonce(construct_CovMat)
+
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=1,tau=.1)
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=1,tau=.1,psi=0,N=1)
+
+sig <- .05
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=3:7)
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7)
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7,INDIV_LVL=TRUE)
+
+wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=matrix(11:25,5))
+
+a  <- wlsMixedPower(Cl=c(4,4),mu=0,mu1=1,tau=.1,verbose = TRUE)
+b1 <- wlsMixedPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE)
+b2 <- wlsMixedPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE, INDIV_LVL = TRUE)
+c1 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=TRUE)
+c2 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=TRUE, INDIV_LVL = TRUE)
+a;b1;b2;c1;c2
+
+plot(a)
+plot(b2)
+plot(c2)
+
+d1 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=TRUE)
+d2 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=TRUE, INDIV_LVL = TRUE)
+d1;d2
+
+e <- wlsMixedPower(Cl=c(2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=2,psi=.1,N=c(2,2,2,2,2,2), incomplete=2, verbose=TRUE)
+plot(e)
+
+f <- wlsMixedPower(Cl=c(2,2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=.5,gamma=.01, psi=1,N=rep(1:4,2), verbose=TRUE)
+f;plot(f)
+
+g <- wlsMixedPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, psi=0, N=100, verbose=TRUE)
+g;plot(g)
+wlsMixedPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, N=100, verbose=TRUE)
+
+
+###
+
+Cl <- rep(20,20) ; tp <- length(Cl)+1
+nInd <- 500
+tau <- .2 ; sigma <- .3 ; psi <- .3 ; eta <- 0 ; gamma <- .1
+
+system.time({
+  Rprof(filename="Rprof.out", interval=.005, line.profiling=TRUE)
+  b <- wlsMixedPower(Cl=Cl, sigma=sigma,
+              tau=tau, eta=eta, psi=psi, gamma=gamma,
+              mu0=0,mu1=.05, N=nInd)
+  Rprof(NULL)
+})
+summaryRprof(lines="show")
 
 ################################################################################
 ## plot.wlsPower #####

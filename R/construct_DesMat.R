@@ -27,46 +27,56 @@ SubCl <- 10
 
 construct_DesMat <- function(Cl          =NULL,
                              trtDelay    =NULL,
-                             dsntype      ="SWD",
+                             dsntype     ="SWD",
                              timepoints  =NULL,
                              timeAdjust  ="factor",
                              period      =NULL,
                              trtmatrix   =NULL,
                              timeBlk     =NULL,
-                             N           =NULL){
-  if(!is.null(SubCl)){
-    SubCl <- if(length(N)==1){ Cl*N
-             }else { sapply(split(N,rep(as.factor(1:length(Cl)),Cl)),sum) }
-    tmpCl <- SubCl
-  }else tmpCl <- Cl
+                             N           =NULL,
+                             INDIV_LVL   =FALSE){
+  if(INDIV_LVL){
+    if(length(N)==1){
+      N <- rep(N,sum(Cl))
+    }
+    tmpCl <- sapply(split(N,rep(as.factor(1:length(Cl)),Cl)),sum)
+  }else {
+    tmpCl <- Cl
+  }
 
+  ## TREATMENT MATRIX ####
   if(!is.null(trtmatrix)){
     trtMat  <- trtmatrix
     dsntype <- "userdefined"
     if(inherits(trtMat,"matrix")){
-      SumCl       <- nrow(trtMat)
       timepoints  <- ncol(trtMat)
-      Cl <- tmpCl <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
+      Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
-    trtMat  <- construct_trtMat(Cl            =tmpCl,
+    trtMat  <- construct_trtMat(Cl            =Cl,
                                 trtDelay      =trtDelay,
                                 dsntype       =dsntype,
                                 timepoints    =timepoints)
     timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing number of timepoints (if not provided)
   }
+  if(INDIV_LVL)  tmpTrtMat <- trtMat[rep(1:sum(Cl),N),] else
+                 tmpTrtMat <- trtMat
 
-  timeBlk <- construct_timeadjust(Cl          =tmpCl,
-                                  timepoints  =timepoints,
-                                  timeAdjust  =timeAdjust,
-                                  period      =period,
-                                  timeBlk     =timeBlk)
+  ## TIME ADJUSTMENT ####
+  timeBlks <- construct_timeadjust(Cl          =tmpCl,
+                                  timepoints   =timepoints,
+                                  timeAdjust   =timeAdjust,
+                                  period       =period,
+                                  timeBlk      =timeBlk)
 
-  DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
+  dsnmatrix <- cbind(trt=as.numeric(t(tmpTrtMat)), timeBlks)
+
+  DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
                   Cl         = Cl,
-                  SubCl      = SubCl,
+                  N          = if(INDIV_LVL) N else NULL,
                   dsntype    = dsntype,
+                  timeAdjust = ifelse(is.null(timeBlk),timeAdjust,"userdefined"),
                   trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
@@ -78,7 +88,7 @@ construct_DesMat <- function(Cl          =NULL,
 
 #'  print.DesMat
 #'
-#' @param x d
+#' @param x object of class DesMat
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print DesMat
@@ -93,14 +103,15 @@ dsn_out <- switch (x$dsntype,
                   "userdefined"       = "userdefined")
 
 
-  cat("Timepoints            = ", x$timepoints,"\n")
-  cat("Number of Clusters    = ", sum(x$Cl),"\n")
-  if(!is.null(x$SubCl)){
-  cat("Number of Subclusters = ", sum(x$SubCl),"\n")
+  cat("Timepoints                         = ", x$timepoints,"\n")
+  cat("Number of Clusters per wave        = ", x$Cl,"\n")
+  if(!is.null(x$N)){
+  cat("Number of Subclusters per cluster  = ", x$N,"\n")
   }
-  cat("Design type           = ", dsn_out,"\n")
-  cat("Design matrix         = \n")
-  print(x$dsnmatrix)
+  cat("Design type                        = ", dsn_out,"\n")
+  cat("Time adjustment                    = ", x$timeAdjust, "\n")
+  cat("\nTreatment status (clusters x timepoints):\n")
+  print(x$trtMat)
 }
 
 
