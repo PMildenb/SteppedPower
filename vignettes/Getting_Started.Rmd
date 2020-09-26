@@ -355,81 +355,18 @@ plot(wlsPower2)
 
 ### Closed cohort SWD
 
-This requires quite a bit of configuration that will be incorporated into the package in the future.
+Closed cohort the patients are observed over the whole study period or 
+if subclusters exist (such as wards within clinics). 
+The argument `psi` denotes the standard deviation of a random subcluster effect.
 
-Here we have just a simple example as a sketch. 20 clusters in 4 waves. 
-50 Individuals within each cluster.
 ```{r}
-Cl <- c(5,5,5,5)
-nInd <- 50
-tp <- length(Cl)+1
-psi <- .1 ; sigma <- .3 ; tau=.5
-
-Ind    <- construct_CovBlk(timepoints=tp, sigma=.3, tau=.5)
-CovBlk <- bdiag(replicate(nInd,Ind,simplify=FALSE)) + matrix(psi^2,nrow=5*nInd,ncol=5*nInd)
-CovMat <- construct_CovMat(CovBlk=CovBlk,SumCl=sum(Cl))
-
-wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, mu0=0,mu1=0.05, verbose=TRUE)
-wlsMixedPower(Cl=c(250,250,250,250),sigma=.3,tau=.5,mu0=0,mu1=.05)
-
-sigma<-.3 ; tau <- .5 ;n <- 50
-sqrt(sigma^2+1/n*tau^2)
-
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= .5/sqrt(50), mu0=0,mu1=.05)
-wlsMixedPower(Cl=Cl, sigma=.3, tau= .5/sqrt(50), N=50, mu0=0,mu1=.05)
-
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2), mu0=0,mu1=.05, verbose = TRUE)
-tmp <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((.5/sqrt(50))^2+(psi)^2), mu0=0,mu1=.05, verbose = TRUE)
-tmp$CovarianceMatrix[1:5,1:5]
-
-CM50 <- CovMat[1:50,1:50]
-sum(CM50^2)/2500
-
-(diag(CM50))/(50)
+wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.5, N=10, incomplete=3)
 ```
+
+`INDIV_LVL` 
+
 
 > runtime is O(timepoints^2 nInd^2) , but O(sum(Cl)) 
-
-
-```{r}
-
-## tau is random effect in subcluster, psi is random effect in Cluster
-## 
-
-Cl <- c(5,5,5,5)
-nInd <- 50
-tp <- length(Cl)+1
-psi <- .2 ; sigma <- .3 ; tau=.3 ; eta <- .4 ; rho <- 0
-DesMat <- construct_DesMat(Cl=Cl)
-etaMat <- eta * DesMat$trtMat
-etaLst <- split(etaMat, row(etaMat)) 
-
-# debugonce(construct_CovBlk)
-Ind_to_CovBlk <- function(etas,Cl_i){
-  Ind    <- construct_CovBlk(timepoints=tp, sigma=sigma, tau=tau, eta=etas)
-  CovBlk <- bdiag(replicate(nInd,Ind,simplify=FALSE)) + matrix(psi^2,Cl_i*nInd,Cl_i*nInd)
-}
-
-CovMat <- bdiag(mapply(Ind_to_CovBlk, etas=etaLst, Cl_i=Cl))
-wlsMixedPower(Cl=c(5,5,5,5)*50, CovMat=CovMat, mu0=0,mu1=0.05)
-
-wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), mu0=0,mu1=.05)
-
-## with rho
-b3 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= sqrt((tau/sqrt(50))^2+(psi)^2), eta=eta/sqrt(50), 
-                    rho=rho, mu0=0,mu1=.05, verbose=TRUE)
-
-
-# without random cluster effect (only random subcluster effect)
-b1 <- wlsMixedPower(Cl=Cl, sigma=.3/sqrt(50), tau= (.5/sqrt(50)), eta=.4/sqrt(50), 
-                    mu0=0,mu1=.05, verbose = TRUE)
-
-plot(b3)
-b3$CovarianceMatrix[1:5,1:5]
-
-```
-
-
 
 
 ### Binomial Outcomes

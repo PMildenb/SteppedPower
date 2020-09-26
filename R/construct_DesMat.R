@@ -110,6 +110,7 @@ dsn_out <- switch (x$dsntype,
   }
   cat("Design type                        = ", dsn_out,"\n")
   cat("Time adjustment                    = ", x$timeAdjust, "\n")
+  cat("Dimension of design matrix         = ", dim(x$dsnmatrix),"\n")
   cat("\nTreatment status (clusters x timepoints):\n")
   print(x$trtMat)
 }
