@@ -160,7 +160,8 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
                                  0,0,1,1,1),5,6))
 ##
 ## ... with two levels of clustering. This arises if the patients are
-## observed over the whole  study period or if subclusters exist
+## observed over the whole  study period
+## (often referred to as closed cohort design) or if subclusters exist
 ## (such as wards within clinics).
 ## wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.5, N=10, incomplete=3)
 ##

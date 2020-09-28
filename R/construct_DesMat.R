@@ -22,9 +22,6 @@
 #' construct_DesMat(Cl=c(2,0,1))
 #' construct_DesMat(Cl=c(2,0,1), SubCl=c(1,3,2))
 #'
-SubCl <- 11:13
-SubCl <- 10
-
 construct_DesMat <- function(Cl          =NULL,
                              trtDelay    =NULL,
                              dsntype     ="SWD",

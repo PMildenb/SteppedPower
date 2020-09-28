@@ -148,7 +148,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           incomplete    =NULL,
                           timeAdjust    ="factor",
                           period        =NULL,
-                          dsntype        ="SWD",
+                          dsntype       ="SWD",
                           mu0,
                           mu1,
                           marginal_mu   =FALSE,
@@ -195,6 +195,16 @@ wlsMixedPower <- function(Cl            =NULL,
       warning("Random cluster effect tau and random treatment effect eta",
               " are assumed to be 0, i.e. the observations across clusters are",
               " assumed to be i.i.d. Declare tau=0 to supress this warning.")
+  }
+
+  dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
+  tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,dsntypeOptions,
+                                                   cost=c(insertions    =1,
+                                                          deletions     =100,
+                                                          substitutions =100)))]
+  if(dsntype != tmpdsntype) {
+    message("Assumes ", tmpdsntype, " design")
+    dsntype <- tmpdsntype
   }
 
   ## DesMat #####
