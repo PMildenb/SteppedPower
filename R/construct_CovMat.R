@@ -37,7 +37,7 @@ construct_CovBlk <- function(sigma,
 
   tauMat <- if(is.null(tauAR)) tau %o% tau
             else toeplitz(tau^2 * tauAR ** c(0:(timepoints-1)))
-  out    <- diag(sigma^2) + tauMat
+  out    <- diag(sigma^2, timepoints) + tauMat
 
   if(!is.null(eta)) {
     etaMat <- if(is.null(etaAR)) eta %o% eta

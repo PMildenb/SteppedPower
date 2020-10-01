@@ -183,9 +183,9 @@ wlsMixedPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1,
               dsntype="parallel", timepoints=1)
 
 ## the same:
-wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, 
-              dsntype="parallel", timepoints=1)
-
+wlsMixedPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, tau=0,
+              dsntype="parallel", timepoints=1, INDIV_LVL = TRUE)
+debugonce(construct_CovMat)
 ```
 
 
@@ -221,7 +221,7 @@ $$  \frac{1-icc}{icc} = \frac{sigma^2}{tau^2}  $$
 
 $$ \tau^2 = \sigma^2 \frac{icc}{1-icc}$$ 
 
-```{r}
+```{r, eval=FALSE}
 library(swCRTdesign)
 
 # icc <- 0.1
@@ -312,8 +312,8 @@ The argument `N` defines the cluster size. `N` can be
    over time
    * a vector, if the size differs between clusters but is assumed to be constant
    over time
-   * a matrix where each row corresponds to a cluster and each column corresponds 
-   to a timepoint
+   * a matrix where each row corresponds to either a wave or a cluster and each
+   column corresponds to a timepoint
 
 ```{r}
 a <- wlsMixedPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=TRUE)

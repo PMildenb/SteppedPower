@@ -26,6 +26,10 @@ construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  dsntype="parallel_baseline", timep
 construct_trtMat(Cl=c(2,2),   trtDelay=NULL,  dsntype="crossover", timepoints=c(2,2))
 # debugonce(construct_trtMat)
 
+adist("b", c("SWD","parallel","parallel_baseline","crossover"),
+      cost=c(insertions=1, deletions=100, substitutions=100))
+
+
 ## costruct_DesMat #####
 construct_DesMat(Cl=c(2,0,1))
 Des_PB <- construct_DesMat(Cl=c(2,2))
@@ -469,6 +473,46 @@ system.time({
   Rprof(NULL)
 })
 summaryRprof(lines="show")
+
+## other design types for closed cohorts
+
+nCl <- 10 ; N <- 20
+microbenchmark::microbenchmark({
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+              sigma=1, tau=2, N=N)
+# },{
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=0, N=N)
+# },{
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=0, N=N, INDIV_LVL = TRUE)
+# })
+
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=1, N=N)
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=1, N=N)
+
+
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=1, N=1)
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+              sigma=1, tau=sqrt(5), psi=0, N=1)
+
+
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=1, eta=.5, N=1)
+wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+              sigma=1, tau=2, psi=1, eta=.5, N=1, INDIV_LVL = TRUE)
+
+
+
+
+microbenchmark::microbenchmark( cat(" ") ,  cat(".") , cat("_") )
+
+
+
+
 
 ################################################################################
 ## plot.wlsPower #####

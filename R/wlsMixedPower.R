@@ -98,11 +98,22 @@
 #'                                  0,1,1,1,1,
 #'                                  0,0,1,1,1),5,6))
 #'##
+#'##
 #'## ... with two levels of clustering. This arises if the patients are
 #'## observed over the whole  study period
 #'## (often referred to as closed cohort design) or if subclusters exist
-#'## (such as wards within clinics).
-#'## wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.5, N=10, incomplete=3)
+#'## (such as wards within clinics). For
+#'mod_aggr  <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+#'                           sigma=2, tau=0.33, psi=.5,
+#'                           N=10, incomplete=3, verbose=TRUE)
+#'mod_indiv <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+#'                           sigma=2, tau=0.33, psi=.5,
+#'                           N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
+#'mod_aggr
+#'mod_indiv
+#'## Compare covariance matrices of first cluster
+#'mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
+#'##
 #'##
 #'##
 #'##
@@ -197,15 +208,30 @@ wlsMixedPower <- function(Cl            =NULL,
               " assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
+  if(!is.null(psi)){
+    if(is.null(N))
+      stop("If the standard deviation `psi` is not null, N is needed.")
+    if(is.matrix(N)){
+      N <- N[,1]
+      warning("If psi is not NULL, the number of individuals per cluster must",
+              "not change over time. Only the first column of N is considered.")
+    }
+  }
+
+  ## Match string inputs ####
+  ### dsntype
   dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
   tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,dsntypeOptions,
                                                    cost=c(insertions    =1,
                                                           deletions     =100,
-                                                          substitutions =100)))]
+                                                          substitutions =100),
+                                                   ignore.case=TRUE))]
   if(dsntype != tmpdsntype) {
     message("Assumes ", tmpdsntype, " design")
     dsntype <- tmpdsntype
   }
+
+  ###
 
   ## DesMat #####
   if(is.null(DesMat)){

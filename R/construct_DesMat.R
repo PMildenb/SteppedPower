@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' construct_DesMat(Cl=c(2,0,1))
-#' construct_DesMat(Cl=c(2,0,1), SubCl=c(1,3,2))
+#' construct_DesMat(Cl=c(2,0,1), N=c(1,3,2))
 #'
 construct_DesMat <- function(Cl          =NULL,
                              trtDelay    =NULL,
@@ -170,7 +170,8 @@ construct_trtMat <- function(Cl,trtDelay,dsntype,timepoints=NULL){
         timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")
       }else{
         timepoints <- length(trtDelay)+1
-        message("timepoints unspecified. Defaults to length(trtDelay)+1")
+        message("timepoints unspecified. Defaults to ", length(trtDelay)+1,
+                " (length of trtDelay plus 1)")
       }
     }
     trt     <- matrix(0,nrow=2,ncol=timepoints)
