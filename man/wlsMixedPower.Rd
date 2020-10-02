@@ -36,8 +36,7 @@ wlsMixedPower(
 }
 \arguments{
 \item{Cl}{integer (vector), number of clusters per wave (in SWD),
-or number in control and intervention (in parallel designs)
-Else residual error on individual level}
+or number in control and intervention (in parallel designs)}
 
 \item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
 If design is swd, timepoints defaults to length(Cl)+1.

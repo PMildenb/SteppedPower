@@ -4,18 +4,12 @@
 #'
 #' Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
-#' intervention effect in the first (second ... ) intervention phase
-#' @param dsntype character, specifies the study design. Defaults to "SWD".
-#' @param timepoints numeric, scalar
-#' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param period integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.
+#' @inheritParams wlsMixedPower
 #' @param trtmatrix an optional user defined matrix to define treatment allocation
 #' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
 #' Is repeated for every cluster.
 #'
-#' @return a matrix (for a stepped wedge design)
+#' @return an object of class DesMat
 #' @export
 #'
 #' @examples
@@ -137,19 +131,19 @@ plot.DesMat <- function(x, ...){
 
 #' construct_trtMat
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
-#' intervention effect in the first (second ... ) intervention phase
-#' @param dsntype character, specifies the study design. Defaults to "SWD".
-#' @param timepoints numeric, scalar
+#' @inheritParams construct_DesMat
 #'
-#' @return a matrix trtMat
+#' @return a matrix trtMat, where rows and columns correspond to cluster
+#' and timepoints, respectively
 #' @export
 #'
 #' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 #'
 #'
-construct_trtMat <- function(Cl,trtDelay,dsntype,timepoints=NULL){
+construct_trtMat <- function(Cl,
+                             trtDelay,
+                             dsntype,
+                             timepoints=NULL){
 
   SumCl         <- sum(Cl)
   lenCl         <- length(Cl)
@@ -226,21 +220,16 @@ construct_trtMat <- function(Cl,trtDelay,dsntype,timepoints=NULL){
 
 #' construct_timeadjust
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param timepoints numeric, scalar
-#' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param period number of timepoints per period. Defaults to `timepoints` **experimental!**
-#' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
-#' Is repeated for every cluster.
+#' @inheritParams construct_DesMat
 #'
-#' @return What is returned? TODO
+#' @return
 #' @export
 
 construct_timeadjust <- function(Cl,
                                  timepoints,
-                                 timeAdjust="factor",
-                                 period=NULL,
-                                 timeBlk=NULL){
+                                 timeAdjust ="factor",
+                                 period     =NULL,
+                                 timeBlk    =NULL){
 
   SumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {
@@ -255,7 +244,8 @@ construct_timeadjust <- function(Cl,
   timeBlks <- switch (timeAdjust,
     factor   = cbind(1,rbind(0,diag(timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
-    linear   = cbind(rep(1,timepoints*SumCl),rep(1:timepoints/timepoints,SumCl)),
+    linear   = cbind(rep(1,timepoints*SumCl),
+                     rep(1:timepoints/timepoints,SumCl)),
     periodic = cbind(rep(1,timepoints),
                      sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]

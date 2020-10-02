@@ -8,7 +8,6 @@
 #'
 #' @param Cl integer (vector), number of clusters per wave (in SWD),
 #' or number in control and intervention (in parallel designs)
-#' Else residual error on individual level
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
@@ -32,25 +31,31 @@
 #' the prevalence conditional on random effects being 0 (It defaults to the latter).
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
-#' @param eta numeric, standard deviation of random slopes
+#' @param eta numeric (scalar or matrix), standard deviation of random slopes.
+#' If `eta` is given as scalar, `trtMat` is needed as well.
 #' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
 #' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi random individuum effect. Leads to a closed cohort setting
+#' @param alphas numeric vector of length 3, that consists of alpha_0, alpha_1
+#' and alpha_2. This is an alternative way to define the correlation structure.
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
-#' of length #Clusters or a matrix of dimension #Clusters x timepoints
+#' of length #Clusters or a matrix of dimension #Clusters x timepoints.
+#' Defaults to 'rep(1,sum(Cl))' if not passed.
 #' @param family character, distribution family. One of "gaussian", "binomial".
 #' Defaults to "gaussian"
 #' @param Power numeric, a specified target power. If supplied, the minimal `N` is returned.
 #' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
 #' @param sig.level numeric (scalar), significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
-#' @param verbose logical, should the function return the design and covariance matrix?
+#' @param verbose logical, should the function return  design and covariance matrices?
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix of dimension
 #' (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
 #' rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
+#' @param INDIV_LVL logical, should the computation be conducted on an individual
+#' level? This leads to longer run time and is mainly for diagnostic purposes.
 #'
 #' @details see vignette 'Getting Started'
 #'
@@ -383,30 +388,9 @@ wlsMixedPower <- function(Cl            =NULL,
 
 #' compute_wlsPower
 #'
+#' @inheritParams wlsMixedPower
 #' @param DesMat  list, containing a matrix, the design matrix,
 #' numeric timepoints, numeric total number of Clusters
-#' @param EffSize  numeric, raw effect
-#' @param sigma numeric, residual error of cluster means if no N given.
-#' @param tau numeric, standard deviation of random intercepts
-#' @param eta numeric, standard deviation of random slopes
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `tauAR` is not NULL, the random intercept
-#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `etaAR` is not NULL, the random slope
-#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param rho numeric, correlation of tau and eta **not implemented**
-#' @param gamma numeric (scalar), random time effect
-#' @param N integer, number of individuals per cluster per timepoint.
-#' @param dfAdjust character, one of the following: **not implemented**
-#' @param INDIV_LVL logical, Should the computation be done on a individual
-#' (subcluster) level or on cluster means? Defaults to FALSE, since computation
-#' on individual level is quite costly. This option exists mainly for demontration purposes.
-#' @param sig.level numeric, significance level, defaults to 0.05
-#' @param verbose logical, should the function return the design and covariance matrix?
-#' @param CovMat numeric, a positive-semidefinite matrix  with
-#' *#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
-#' `tau`, `eta` and `rho` are ignored.
 #'
 #' @export
 

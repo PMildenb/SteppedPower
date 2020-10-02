@@ -18,26 +18,35 @@ construct_DesMat(
 )
 }
 \arguments{
-\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+or number in control and intervention (in parallel designs)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
-intervention effect in the first (second ... ) intervention phase}
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+the intervention effect in the first (second ... ) intervention phase}
 
-\item{dsntype}{character, specifies the study design. Defaults to "SWD".}
+\item{dsntype}{character, defines the type of design. Options are "SWD",
+"parallel" and "parallel_baseline", defaults to "SWD".}
 
-\item{timepoints}{numeric, scalar}
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1.
+Defaults to 1 for parallel designs.}
 
-\item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+\item{timeAdjust}{character, specifies adjustment for time periods.
+One of the following: "factor", "linear", "none", "periodic".
+Defaults to "factor".}
 
-\item{period}{integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.}
+\item{period}{numeric (scalar)}
 
 \item{trtmatrix}{an optional user defined matrix to define treatment allocation}
 
 \item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
 Is repeated for every cluster.}
+
+\item{N}{numeric, number of individuals per cluster. Either a scalar, vector
+of length #Clusters or a matrix of dimension #Clusters x timepoints}
 }
 \value{
-a matrix (for a stepped wedge design)
+an object of class DesMat
 }
 \description{
 constructs the design matrix.

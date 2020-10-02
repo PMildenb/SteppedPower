@@ -27,8 +27,6 @@ compute_wlsPower(
 \item{DesMat}{list, containing a matrix, the design matrix,
 numeric timepoints, numeric total number of Clusters}
 
-\item{EffSize}{numeric, raw effect}
-
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
@@ -36,30 +34,24 @@ numeric timepoints, numeric total number of Clusters}
 \item{eta}{numeric, standard deviation of random slopes}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept
-`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
-\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `etaAR` is not NULL, the random slope
-`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
-
-\item{rho}{numeric, correlation of tau and eta **not implemented**}
+\item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
 \item{gamma}{numeric (scalar), random time effect}
 
-\item{N}{integer, number of individuals per cluster per timepoint.}
+\item{psi}{random individuum effect. Leads to a closed cohort setting}
 
-\item{CovMat}{numeric, a positive-semidefinite matrix  with
-*#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
-`tau`, `eta` and `rho` are ignored.}
+\item{N}{numeric, number of individuals per cluster. Either a scalar, vector
+of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
-\item{dfAdjust}{character, one of the following: **not implemented**}
+\item{CovMat}{numeric, a positive-semidefinite matrix of dimension
+(#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
+rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.}
 
-\item{sig.level}{numeric, significance level, defaults to 0.05}
+\item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
 
-\item{INDIV_LVL}{logical, Should the computation be done on a individual
-(subcluster) level or on cluster means? Defaults to FALSE, since computation
-on individual level is quite costly. This option exists mainly for demontration purposes.}
+\item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }

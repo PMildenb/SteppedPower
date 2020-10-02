@@ -4,18 +4,11 @@
 #' constructs the covariance matrix for multiple measurements of one cluster.
 #' This function is not designed to be used directly.
 #'
-#' @param sigma numeric (vector of length `timepoints`),
-#' residual error (usually of cluster means)
-#' @param tau numeric (vector of length *timepoints*), standard deviation of random intercepts,
-#' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
-#' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
-#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
-#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
-#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' @inheritParams construct_CovSubMat
 #'
-#' @return a block of a covariance matrix, corresponding to intra-cluster covariance over time for one cluster
+#' @return a block of a covariance matrix,
+#' corresponding to intra-cluster covariance over time for one cluster
+#'
 #' @export
 #'
 #' @examples
@@ -55,26 +48,19 @@ construct_CovBlk <- function(sigma,
 
 #' construct_CovSubMat
 #'
+#' @inheritParams construct_CovMat
 #' @param N Number of individuals per cluster
-#' @param timepoints Number of timepoints
 #' @param sigma numeric (vector of length `timepoints`),
-#' residual error (usually of cluster means)
-#' @param tau numeric (vector of length *timepoints*), standard deviation of random intercepts,
-#' A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).
-#' @param eta numeric (vector of length *timepoints*), standard deviation of random slope
-#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
-#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
-#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param gamma numeric (scalar), standard deviation of a random time effect.
-#' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
-#' the function `construct_trtMat`, indicating the cluster-periods that receive
-#' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
-#' `SumCl` and `timepoints` are ignored (!).
-#' @param psi random individuum effect. Leads to a closed cohort setting
+#' residual error
+#' @param tau numeric (vector of length `timepoints`),
+#'  standard deviation of random intercepts
+#' @param eta numeric (vector of length `timepoints`),
+#' standard deviation of random slope
+#' @param gamma numeric (vector of length `timepoints`),
+#' standard deviation of a random time effect.
 #'
-#' @return
+#' @return a block of a covariance matrix with two levels of clustering,
+#' corresponding to intra-cluster covariance over time for one cluster
 #'
 
 construct_CovSubMat <- function(N,
@@ -109,10 +95,6 @@ construct_CovSubMat <- function(N,
     out <- ClBlk + (1/N)*SubBlk
   }
 
-    # tmpout <- split(out,matrix(1,N,N) %x% matrix(1:timepoints^2,timepoints))
-    # tmpout <- sapply(tmpout,mean)
-    # out    <- matrix(tmpout,timepoints,timepoints)
-
   return(out)
 }
 
@@ -120,39 +102,37 @@ construct_CovSubMat <- function(N,
 
 #' construct_CovMat
 #'
-#' constructs a covariance matrix, a bloc diagonal matrix. Calls `construct_CovBlk`
-#' for each block.
+#' constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
+#' (or `construct_CovSubMat` in case of two levels of clustering) for each block.
 #'
+#' @inheritParams wlsMixedPower
 #' @param SumCl total number of clusters
-#' @param timepoints numeric, scalar
-#' @param sigma numeric (scalar, vector or matrix), residual error of cluster means.
-#' @param tau numeric (scalar, vector or matrix), standard deviation of random intercepts
-#' @param N numeric (scalar, vector or matrix), number of individuals per cluster.
-#' Defaults to 'rep(1,sum(Cl))' if not passed.
-#' @param eta numeric (scalar or matrix), standard deviation of random slopes.
-#' If `eta` is given as scalar, `trtMat` is needed as well.
-#' @param rho numeric (scalar), correlation of random effects `tau` and `eta`.
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `tauAR` is not NULL, the random intercept
-#' `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `etaAR` is not NULL, the random slope
-#' `eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
-#' @param gamma numeric (scalar), standard deviation of a random time effect.
 #' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive
 #' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 #' `SumCl` and `timepoints` are ignored (!).
-#' @param psi random individuum effect. Leads to a closed cohort setting
 #' @param CovBlk a matrix of dimension *timepoints* x *timepoints*.
 #'
 #' @return a covariance matrix
 #' @export
 #'
 #' @examples
+#'
+#' ## Two clusters, three timepoints, residual standard error sd=3, random slope sd=1.
+#' construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1)
+#' ##
+#' ##
+#' ## ... with random slope as AR-1 process
+#' construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1, tauAR=.8)
+#' ##
+#' ##
+#'
+#'
+#' ## ... with sigma and tau variing over time and between clusters:
 #' construct_CovMat(SumCl=2,timepoints=3,
 #'                  sigma=matrix(c(1,2,2,1,1,2),nrow=2, byrow=TRUE),
-#'                  tau=matrix(c(.2,.1,.1,.2,.2,.1),nrow=2, byrow=TRUE),N=c(20,16))
+#'                  tau=matrix(c(.2,.1,.1,.2,.2,.1),nrow=2, byrow=TRUE),
+#'                  N=c(3,4))
 
 
 
