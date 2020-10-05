@@ -13,10 +13,13 @@ compute_wlsPower(
   tauAR = NULL,
   etaAR = NULL,
   rho = NULL,
+  gamma = NULL,
+  psi = NULL,
   N = NULL,
   CovMat = NULL,
   dfAdjust = "none",
   sig.level = 0.05,
+  INDIV_LVL = FALSE,
   verbose = FALSE
 )
 }
@@ -24,31 +27,31 @@ compute_wlsPower(
 \item{DesMat}{list, containing a matrix, the design matrix,
 numeric timepoints, numeric total number of Clusters}
 
-\item{EffSize}{numeric, raw effect}
-
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
 \item{eta}{numeric, standard deviation of random slopes}
 
-\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
-`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
-\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
-`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+\item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
-\item{rho}{numeric, correlation of tau and eta **not implemented**}
+\item{gamma}{numeric (scalar), random time effect}
 
-\item{N}{integer, number of individuals per cluster.}
+\item{psi}{random individuum effect. Leads to a closed cohort setting}
 
-\item{CovMat}{numeric, a positive-semidefinite matrix  with
-*#Cluster* \eqn{\cdot} *timepoints* rows/columns. If `CovMat` is given, `sigma`,
-`tau`, `eta` and `rho` are ignored.}
+\item{N}{numeric, number of individuals per cluster. Either a scalar, vector
+of length #Clusters or a matrix of dimension #Clusters x timepoints}
 
-\item{dfAdjust}{character, one of the following: **not implemented**}
+\item{CovMat}{numeric, a positive-semidefinite matrix of dimension
+(#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
+rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.}
 
-\item{sig.level}{numeric, significance level, defaults to 0.05}
+\item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
+
+\item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
 \item{verbose}{logical, should the function return the design and covariance matrix?}
 }

@@ -13,19 +13,24 @@ construct_timeadjust(
 )
 }
 \arguments{
-\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+or number in control and intervention (in parallel designs)}
 
-\item{timepoints}{numeric, scalar}
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1.
+Defaults to 1 for parallel designs.}
 
-\item{timeAdjust}{character, specifies adjustment for time periods. Defaults to "factor".}
+\item{timeAdjust}{character, specifies adjustment for time periods.
+One of the following: "factor", "linear", "none", "periodic".
+Defaults to "factor".}
 
-\item{period}{number of timepoints per period. Defaults to `timepoints` **experimental!**}
+\item{period}{numeric (scalar)}
 
 \item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
 Is repeated for every cluster.}
 }
 \value{
-What is returned? TODO
+What is returned? T
 }
 \description{
 construct_timeadjust

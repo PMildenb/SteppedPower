@@ -4,67 +4,82 @@
 #'
 #' Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
-#' intervention effect in the first (second ... ) intervention phase
-#' @param design character, specifies the study design. Defaults to "SWD".
-#' @param timepoints numeric, scalar
-#' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param period integer, only used if timeAdjust=="periodic". Defines the frequency of a periodic time trend.
+#' @inheritParams wlsMixedPower
 #' @param trtmatrix an optional user defined matrix to define treatment allocation
 #' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
 #' Is repeated for every cluster.
 #'
-#' @return a matrix (for a stepped wedge design)
+#' @return an object of class DesMat
 #' @export
 #'
-#' @examples construct_DesMat(Cl=c(2,0,1))
+#' @examples
+#' construct_DesMat(Cl=c(2,0,1))
+#' construct_DesMat(Cl=c(2,0,1), N=c(1,3,2))
 #'
-
 construct_DesMat <- function(Cl          =NULL,
-                             trtDelay   =NULL,
-                             design      ="SWD",
+                             trtDelay    =NULL,
+                             dsntype     ="SWD",
                              timepoints  =NULL,
-                             timeAdjust ="factor",
+                             timeAdjust  ="factor",
                              period      =NULL,
                              trtmatrix   =NULL,
-                             timeBlk     =NULL){
+                             timeBlk     =NULL,
+                             N           =NULL,
+                             INDIV_LVL   =FALSE){
+  if(INDIV_LVL){
+    if(length(N)==1){
+      N <- rep(N,sum(Cl))
+    }
+    tmpCl <- sapply(split(N,rep(as.factor(1:length(Cl)),Cl)),sum)
+  }else {
+    tmpCl <- Cl
+  }
 
+  ## TREATMENT MATRIX ####
   if(!is.null(trtmatrix)){
-    trtMat <- trtmatrix
+    trtMat  <- trtmatrix
+    dsntype <- "userdefined"
     if(inherits(trtMat,"matrix")){
-      SumCl      <- nrow(trtMat)
-      timepoints <- ncol(trtMat)
-      Cl         <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
+      timepoints  <- ncol(trtMat)
+      Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
-                                trtDelay     =trtDelay,
-                                design        =design,
+                                trtDelay      =trtDelay,
+                                dsntype       =dsntype,
                                 timepoints    =timepoints)
-    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing timepoints (if not provided)
+    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing number of timepoints (if not provided)
   }
+  if(INDIV_LVL)  tmpTrtMat <- trtMat[rep(1:sum(Cl),N),] else
+                 tmpTrtMat <- trtMat
 
-  timeBlk <- construct_timeadjust(Cl          =Cl,
-                                  timepoints  =timepoints,
-                                  timeAdjust =timeAdjust,
-                                  period      =period,
-                                  timeBlk     =timeBlk)
+  ## TIME ADJUSTMENT ####
+  timeBlks <- construct_timeadjust(Cl          =tmpCl,
+                                  timepoints   =timepoints,
+                                  timeAdjust   =timeAdjust,
+                                  period       =period,
+                                  timeBlk      =timeBlk)
 
-  DesMat  <- list(dsnmatrix  = cbind(trt=as.numeric(t(trtMat)),timeBlk),
+  dsnmatrix <- cbind(trt=as.numeric(t(tmpTrtMat)), timeBlks)
+
+  DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
                   Cl         = Cl,
+                  N          = if(INDIV_LVL) N else NULL,
+                  dsntype    = dsntype,
+                  timeAdjust = ifelse(is.null(timeBlk),timeAdjust,"userdefined"),
                   trtMat     = trtMat)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
 }
 
+
 ## Methods for class DesMat
 
 #'  print.DesMat
 #'
-#' @param x d
+#' @param x object of class DesMat
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print DesMat
@@ -72,11 +87,23 @@ construct_DesMat <- function(Cl          =NULL,
 #'
 print.DesMat <- function(x, ...){
 
+dsn_out <- switch (x$dsntype,
+                  "SWD"               = "stepped wedge" ,
+                  "parallel"          = "parallel",
+                  "parallel_baseline" = "parallel with baseline period(s)",
+                  "userdefined"       = "userdefined")
 
-  cat("Timepoints         = ", x$timepoints,"\n")
-  cat("Number of Clusters = ", sum(x$Cl),"\n")
-  cat("Design matrix      = \n")
-  print(x$dsnmatrix)
+
+  cat("Timepoints                         = ", x$timepoints,"\n")
+  cat("Number of Clusters per wave        = ", x$Cl,"\n")
+  if(!is.null(x$N)){
+  cat("Number of Subclusters per cluster  = ", x$N,"\n")
+  }
+  cat("Design type                        = ", dsn_out,"\n")
+  cat("Time adjustment                    = ", x$timeAdjust, "\n")
+  cat("Dimension of design matrix         = ", dim(x$dsnmatrix),"\n")
+  cat("\nTreatment status (clusters x timepoints):\n")
+  print(x$trtMat)
 }
 
 
@@ -104,24 +131,24 @@ plot.DesMat <- function(x, ...){
 
 #' construct_trtMat
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying the
-#' intervention effect in the first (second ... ) intervention phase
-#' @param design character, specifies the study design. Defaults to "SWD".
-#' @param timepoints numeric, scalar
+#' @inheritParams construct_DesMat
 #'
-#' @return a matrix trtMat
+#' @return a matrix trtMat, where rows and columns correspond to cluster
+#' and timepoints, respectively
 #' @export
 #'
-#' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), design="SWD")
+#' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 #'
 #'
-construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
+construct_trtMat <- function(Cl,
+                             trtDelay,
+                             dsntype,
+                             timepoints=NULL){
 
   SumCl         <- sum(Cl)
   lenCl         <- length(Cl)
 
-  if(design=="SWD"){
+  if(dsntype=="SWD"){
     if(is.null(timepoints)) timepoints <- length(Cl) + 1
     trt    <- matrix(0,lenCl,timepoints)
     trt[upper.tri(trt)] <- 1
@@ -130,19 +157,20 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
         diag(trt[,-(1:i)]) <- trtDelay[i]  ## doesnt work if length(delay)>=length(timepoints)-1
       }
     }
-  }else if(design=="parallel"){
+  }else if(dsntype=="parallel"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(is.null(timepoints)){
       if(is.null(trtDelay)){
         timepoints <- 1 ;  warning("timepoints unspecified. Defaults to 1.")
       }else{
         timepoints <- length(trtDelay)+1
-        message("timepoints unspecified. Defaults to length(trtDelay)+1")
+        message("timepoints unspecified. Defaults to ", length(trtDelay)+1,
+                " (length of trtDelay plus 1)")
       }
     }
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(trtDelay,rep(1,(timepoints-length(trtDelay))))
-  }else if(design=="parallel_baseline"){
+  }else if(dsntype=="parallel_baseline"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
@@ -159,9 +187,10 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     trt     <- matrix(0,nrow=2,ncol=timepoints)
     trt[2,] <- c(rep(0,timepoints01[1]),
                 trtDelay,rep(1,(timepoints01[2]-length(trtDelay))))
-  }else if (design=="crossover"){
+  }else if (dsntype=="crossover"){
     if(length(Cl)!=2) {stop("In construct_DesMat: Cl must be of length 2.")}
     if(length(timepoints)==1){
+      if(timepoints==1) stop("crossover designs must consist of at least 2 timepoints.")
       timepoints01 <- c(floor(timepoints/2),ceiling(timepoints/2))
       message(paste("assumes", floor(timepoints/2) ,"AB period(s) and",
                     ceiling(timepoints/2),"BA period(s). If intended otherwise,
@@ -172,9 +201,9 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
     }else if(is.null(timepoints)){
       len          <- length(trtDelay)+1
       lenTp        <- c(len,len)
-      timepoints   <- sum(timepoints01)
-      message("timepoints unspecified. Defaults to", len, "AB period(s), and",
-                len, " parallel period(s).")
+      timepoints   <- sum(lenTp)
+      message("timepoints unspecified. Defaults to ", len, " AB period(s), and ",
+                len, " BA period(s).")
     }
     trt   <- matrix(0, nrow=2, ncol=timepoints)
     vecAB <- c(trtDelay,rep(1,lenTp[1]-length(trtDelay)))
@@ -191,21 +220,16 @@ construct_trtMat <- function(Cl,trtDelay,design,timepoints=NULL){
 
 #' construct_timeadjust
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD)
-#' @param timepoints numeric, scalar
-#' @param timeAdjust character, specifies adjustment for time periods. Defaults to "factor".
-#' @param period number of timepoints per period. Defaults to `timepoints` **experimental!**
-#' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
-#' Is repeated for every cluster.
+#' @inheritParams construct_DesMat
 #'
-#' @return What is returned? TODO
+#' @return
 #' @export
 
 construct_timeadjust <- function(Cl,
                                  timepoints,
-                                 timeAdjust="factor",
-                                 period=NULL,
-                                 timeBlk=NULL){
+                                 timeAdjust ="factor",
+                                 period     =NULL,
+                                 timeBlk    =NULL){
 
   SumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {
@@ -220,7 +244,8 @@ construct_timeadjust <- function(Cl,
   timeBlks <- switch (timeAdjust,
     factor   = cbind(1,rbind(0,diag(timepoints-1)))[rep(1:timepoints,SumCl),],
     none     = matrix(rep(1,timepoints*SumCl)),
-    linear   = cbind(rep(1,timepoints*SumCl),rep(1:timepoints/timepoints,SumCl)),
+    linear   = cbind(rep(1,timepoints*SumCl),
+                     rep(1:timepoints/timepoints,SumCl)),
     periodic = cbind(rep(1,timepoints),
                      sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period)))[rep(1:timepoints,SumCl),]

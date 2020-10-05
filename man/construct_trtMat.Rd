@@ -4,26 +4,31 @@
 \alias{construct_trtMat}
 \title{construct_trtMat}
 \usage{
-construct_trtMat(Cl, trtDelay, design, timepoints = NULL)
+construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 }
 \arguments{
-\item{Cl}{integer (vector), number of clusters per wave (in SWD)}
+\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+or number in control and intervention (in parallel designs)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying the
-intervention effect in the first (second ... ) intervention phase}
+\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+the intervention effect in the first (second ... ) intervention phase}
 
-\item{design}{character, specifies the study design. Defaults to "SWD".}
+\item{dsntype}{character, defines the type of design. Options are "SWD",
+"parallel" and "parallel_baseline", defaults to "SWD".}
 
-\item{timepoints}{numeric, scalar}
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1.
+Defaults to 1 for parallel designs.}
 }
 \value{
-a matrix trtMat
+a matrix trtMat, where rows and columns correspond to cluster
+and timepoints, respectively
 }
 \description{
 construct_trtMat
 }
 \examples{
-construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), design="SWD")
+construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 
 
 }

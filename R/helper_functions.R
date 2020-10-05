@@ -58,3 +58,17 @@ muCond_to_muMarg <- function(muCond,tauLin){
           tol=100*.Machine$double.eps)$root
 }
 
+
+## icc and cac to random effects
+
+icc_to_RandEffs <- function(icc,cac=1,sigSq){
+  # if(is.null(N) | N==1)
+  #   warning("Cannot interpret icc and cac when sigma refers to cluster means. ")
+  if(any(c(icc,cac)<0,c(icc,cac)>1))
+
+  gamma <- sqrt(icc * sigSq * (1 - cac)/(1 - icc))
+  tau   <- sqrt(gamma^2 * cac/(1 - cac))
+  return(list(gamma =gamma,
+              tau   =tau))
+}
+
