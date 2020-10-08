@@ -108,7 +108,7 @@ Defaults to "gaussian"}
 \value{
 an element of class wlsPower, a list that contains power and the
 parameters of the specific setting.
-If requested (by verbose=TRUE) it contains also relevant matrices.
+If requested (by verbose=2), it also contains relevant matrices.
 }
 \description{
 This is the work-horse function of the SteppedPower package.
@@ -117,6 +117,22 @@ covariance matrix \eqn{\Omega}, and then calculates the variance of the
 intervention effect via \eqn{Var(trteff)=(X'\Omega^{-1}X)^{-1}[1,1]}
 }
 \details{
+<<<<<<< Updated upstream:man/wlsMixedPower.Rd
+=======
+\eqn{y_{ijk}= g( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk})}
+
+with
+
+\eqn{\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)}
+
+
+\eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right)}
+
+
+where \eqn{\text{Var}(\hat \theta)} is the diagonal element of \eqn{\Omega}
+that corresponds to \eqn{\hat\theta}.
+
+>>>>>>> Stashed changes:man/wlsPower.Rd
 see vignette 'Getting Started'
 }
 \examples{
