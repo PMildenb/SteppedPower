@@ -2,17 +2,8 @@
 #'
 #' a short wrapper that compares parallel, sw, and parallel+ baseline design
 #'
-#' @param mu0 as in wlsMixedPower
-#' @param mu1 as in wlsMixedPower
-#' @param sigma as in wlsMixedPower
-#' @param tau as in wlsMixedPower
-#' @param family as in wlsMixedPower
-#' @param timepoints as in wlsMixedPower
-#' @param N as in wlsMixedPower
-#' @param sig.level as in wlsMixedPower
-#' @param DesMat as in wlsMixedPower
-#' @param Cl as in wlsMixedPower
-#' @param trtDelay as in wlsMixedPower
+#' @inheritParams wlsMixedPower
+#'
 
 compare_designs <- function(Cl=NULL,
                             mu0,
@@ -48,15 +39,8 @@ compare_designs <- function(Cl=NULL,
 # sigma <- 1 ; tau <- .5 ; eta <- .2 ; rho <- .1 ; EffSize <- .2
 #' Title
 #'
+#' @inheritParams wlsMixedPower
 #' @param Designs different designs to compare
-#' @param mu0 as in wlsMixedPower
-#' @param mu1 as in wlsMixedPower
-#' @param family as in wlsMixedPower
-#' @param sigma as in wlsMixedPower
-#' @param tau as in wlsMixedPower
-#' @param eta as in wlsMixedPower
-#' @param rho as in wlsMixedPower
-#' @param sig.level as in wlsMixedPower
 #'
 #' @return
 #' @export
@@ -75,26 +59,5 @@ compare_designs2 <- function(Designs, mu0,mu1, family=gaussian(),
 }
 
 
+################################################################################
 
-# x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trtDelay = .5, EffSize=.01, N=500,
-#                    sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=TRUE)
-#
-# # debugonce(plot_wls2)
-# plot_wls2(x)
-#
-# plot_wls3 <- function(x){
-#   p      <- x$CovParams
-#   tauRange <- seq(0, 2*p$tau,length.out=5)
-#   etaRange <- if(is.null(p$eta)) seq(0,max(tauRange),length.out=5) else seq(0,2*p$eta,length.out=5)
-#
-#   grid <- expand.grid(tau=tauRange,eta=etaRange)
-#   pwr <- list()
-#   for(i in 1:dim(grid)[1]){
-#     pwr[[i]] <- wlsMixedPower(DesMat=x$DesignMatrix,EffSize=.01,sigma=p$sigma,N=200,
-#                               tau=grid$tau[i], eta=grid$eta[i])[["Power"]]
-#   }
-#   tmp <- data.frame(grid,pwr=unlist(pwr))
-#   plot_ly(type="scatter",mode="lines+marker",x=~tau, y=~pwr, split=~eta, data=tmp)
-# }
-#
-#
