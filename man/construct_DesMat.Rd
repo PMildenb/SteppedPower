@@ -43,7 +43,11 @@ Defaults to "factor".}
 Is repeated for every cluster.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
-of length #Clusters or a matrix of dimension #Clusters x timepoints}
+of length #Clusters or a matrix of dimension #Clusters x timepoints.
+Defaults to 'rep(1,sum(Cl))' if not passed.}
+
+\item{INDIV_LVL}{logical, should the computation be conducted on an individual
+level? This leads to longer run time and is mainly for diagnostic purposes.}
 }
 \value{
 an object of class DesMat

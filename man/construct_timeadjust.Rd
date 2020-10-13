@@ -30,7 +30,7 @@ Defaults to "factor".}
 Is repeated for every cluster.}
 }
 \value{
-What is returned? T
+
 }
 \description{
 construct_timeadjust

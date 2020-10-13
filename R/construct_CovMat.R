@@ -105,7 +105,7 @@ construct_CovSubMat <- function(N,
 #' constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
 #' (or `construct_CovSubMat` in case of two levels of clustering) for each block.
 #'
-#' @inheritParams wlsMixedPower
+#' @inheritParams compute_wlsPower
 #' @param SumCl total number of clusters
 #' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive

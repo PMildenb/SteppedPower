@@ -27,14 +27,22 @@ compute_wlsPower(
 \item{DesMat}{list, containing a matrix, the design matrix,
 numeric timepoints, numeric total number of Clusters}
 
+\item{EffSize}{raw effect, i.e. difference between mean under control and
+mean under intervention}
+
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
-\item{eta}{numeric, standard deviation of random slopes}
+\item{eta}{numeric (scalar or matrix), standard deviation of random slopes.
+If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+
+\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
@@ -43,7 +51,8 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently
 \item{psi}{random individuum effect. Leads to a closed cohort setting}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
-of length #Clusters or a matrix of dimension #Clusters x timepoints}
+of length #Clusters or a matrix of dimension #Clusters x timepoints.
+Defaults to 'rep(1,sum(Cl))' if not passed.}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix of dimension
 (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
@@ -53,7 +62,10 @@ rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
 
 \item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
-\item{verbose}{logical, should the function return the design and covariance matrix?}
+\item{INDIV_LVL}{logical, should the computation be conducted on an individual
+level? This leads to longer run time and is mainly for diagnostic purposes.}
+
+\item{verbose}{logical, should the function return  design and covariance matrices?}
 }
 \description{
 compute_wlsPower

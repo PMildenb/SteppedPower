@@ -6,7 +6,7 @@ Author: Philipp Mildenberger
 Maintainer: Philipp Mildenberger <pmildenb@uni-mainz.de>
 Description: SteppedPower offers options for power calculation as well 
     as sample size calculation (by the use of uniroot() ) for 
-    longitudinal mixed model settings. 
+    longitudinal mixed model settings with up to two levels of clustering.
     All calculations are oracle estimates i.e. assume random effect variances 
     to be known (or guessed) in advance. 
 Imports:

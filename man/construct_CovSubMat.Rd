@@ -22,25 +22,26 @@ construct_CovSubMat(
 \arguments{
 \item{N}{Number of individuals per cluster}
 
-\item{timepoints}{Number of timepoints}
-
 \item{sigma}{numeric (vector of length `timepoints`),
-residual error (usually of cluster means)}
+residual error}
 
-\item{tau}{numeric (vector of length *timepoints*), standard deviation of random intercepts,
-A vector of length *timepoints* is interpreted as a variing sd over time (also used for binomial outcomes).}
+\item{tau}{numeric (vector of length `timepoints`),
+standard deviation of random intercepts}
 
-\item{eta}{numeric (vector of length *timepoints*), standard deviation of random slope}
+\item{eta}{numeric (vector of length `timepoints`),
+standard deviation of random slope}
 
-\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `tauAR` is not NULL, the random intercept
-`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
-\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL. If `etaAR` is not NULL, the random slope
-`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+\item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
+If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
-\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
+\item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
-\item{gamma}{numeric (scalar), standard deviation of a random time effect.}
+\item{gamma}{numeric (vector of length `timepoints`),
+standard deviation of a random time effect.}
 
 \item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
 the function `construct_trtMat`, indicating the cluster-periods that receive
@@ -48,9 +49,13 @@ interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 `SumCl` and `timepoints` are ignored (!).}
 
 \item{psi}{random individuum effect. Leads to a closed cohort setting}
+
+\item{INDIV_LVL}{logical, should the computation be conducted on an individual
+level? This leads to longer run time and is mainly for diagnostic purposes.}
 }
 \value{
-
+a block of a covariance matrix with two levels of clustering,
+corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
 construct_CovSubMat

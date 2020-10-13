@@ -23,6 +23,7 @@ wlsMixedPower(
   rho = NULL,
   gamma = NULL,
   psi = NULL,
+  alpha_0_1_2 = NULL,
   CovMat = NULL,
   N = NULL,
   Power = NULL,
@@ -74,7 +75,8 @@ the prevalence conditional on random effects being 0 (It defaults to the latter)
 
 \item{tau}{numeric, standard deviation of random intercepts}
 
-\item{eta}{numeric, standard deviation of random slopes}
+\item{eta}{numeric (scalar or matrix), standard deviation of random slopes.
+If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
@@ -85,12 +87,17 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently
 
 \item{psi}{random individuum effect. Leads to a closed cohort setting}
 
+\item{alpha_0_1_2}{numeric vector of length 3, that consists of alpha_0, alpha_1
+and alpha_2. This is an alternative way to define the correlation structure,
+following Li et al. (2018).}
+
 \item{CovMat}{numeric, a positive-semidefinite matrix of dimension
 (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
 rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
-of length #Clusters or a matrix of dimension #Clusters x timepoints}
+of length #Clusters or a matrix of dimension #Clusters x timepoints.
+Defaults to 'rep(1,sum(Cl))' if not passed.}
 
 \item{Power}{numeric, a specified target power. If supplied, the minimal `N` is returned.}
 
@@ -103,7 +110,10 @@ Defaults to "gaussian"}
 
 \item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
 
-\item{verbose}{logical, should the function return the design and covariance matrix?}
+\item{INDIV_LVL}{logical, should the computation be conducted on an individual
+level? This leads to longer run time and is mainly for diagnostic purposes.}
+
+\item{verbose}{logical, should the function return  design and covariance matrices?}
 }
 \value{
 an element of class wlsPower, a list that contains power and the
@@ -175,6 +185,14 @@ mod_indiv
 mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
 ##
 ##
+## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
+## cluster effect sd = 0.33. How many Individuals are needed to achieve a
+## power of 80\% ?
+wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
+##
+## ... How many are needed if we have a closed cohort design with a random
+## individuum effect of .7?
+wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
 ##
 ##
 ## longitudinal parallel design, with 5 time periods, 3 clusters in treatment

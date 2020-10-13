@@ -558,14 +558,20 @@ construct_DesMat(c(2,2,0,2))
 
 
 ################################################################################
-## closed cohort
+## alpha0_1_2 to random effects
 
-function(sigma, tau, eta, rho, alpha, K){
+# alpha0 := within-period corr of different individuals
+# alpha1 := different indivs across periods
+# alpha2 := same individual across periods
 
-  tauNew <- sqrt(tau^2 + alph^2/K)
+sigSq <- 1
+tauSq <- 2
 
-}
+alpha_0 <- 1/2
+alpha_1 <- 1/3
 
+tauSq   <- (sigSq*alpha_1)/(1-alpha_1)
+gammaSq <-
 
 ################################################################################
 
@@ -612,70 +618,3 @@ lines(mus,mus,col=2)
 plot(mus,(y1-mus),"l")
 
 plot(taus,y2/.25, "l")
-
-
-# ## wlsGlmmPower #####
-sig <- .025
-sig <- .03
-tau <- 0.00262
-wlsMixedPower(Cl=rep(2,6),mu0=0,mu1=.01,sigma=sqrt(sig*(1-sig)), tau=tau, N=250)
-wlsMixedPower(Cl=rep(2,6),mu0=0,mu1=.01,sigma=sqrt(sig*(1-sig)/250), tau=tau, N=1)
-
-
-debugonce(wlsGlmmPower)
-
-mubar <- .025
-sigSd <- sqrt(mubar*(1-mubar))
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = TRUE)
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.00262,N=250, marginal_mu = FALSE)
-# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.00262,N=250)
-wlsMixedPower(Cl=rep(2,6),mu0=.03,mu1=.02,family="binomial", tau=.00262,N=250)
-
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = TRUE)
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.0262,N=250, marginal_mu = FALSE)
-# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.0262,N=250)
-
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = TRUE)
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.062,N=250, marginal_mu = FALSE)
-# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.062,N=250)
-
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = TRUE)
-wlsGlmmPower (Cl=rep(2,6),mu0=.03,mu1=.02,            tau=.262,N=250, marginal_mu = FALSE)
-# wlsMixedPower(Cl=rep(2,6),EffSize = .01, sigma=sigSd, tau=.262,N=250)
-
-wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = TRUE)
-wlsGlmmPower (Cl=rep(2,6),mu0=.3,mu1=.2,                      tau=.62,N=20, marginal_mu = FALSE)
-# wlsMixedPower(Cl=rep(2,6),EffSize = .1, sigma=sqrt(.25*.75),  tau=.62,N=20)
-
-
-### compairing marginal-adjusted mu versus unadjusted (as in swCRTdesigns)
-mu <- .235  ## mu conditional on tau=0
-mu <- .285  ## marginal mu if muCond=.235
-N  <- 60
-sigSd <- sqrt(mu*(1-mu)/N)
-tau   <- 3*sigSd
-# wlsMixedPower(Cl=rep(2,6), EffSize=.05, sigma=sigSd, tau=tau, N=1)
-
-N <- 1e6
-binCond <- rbinom(N,1,p=inv_logit(logit(.2)+rnorm(N,0,.4)))
-mean(binCond)
-
-# wlsGlmmPower(Cl=c(1,1,1),mu0=0.04,mu1=0.02,tau=0.0,N=250)
-# swPwr(swDsn(c(1,1,1)),mu0=.04,mu1=.02,tau=.0,eta=0,n=250,distn="binomial")
-#
-# wlsGlmmPower(Cl=rep(10,5),mu0=0.04,mu1=0.02,tau=0.01,N=1, verbose=F)
-# swPwr(swDsn(rep(10,5)),mu0=.04,mu1=.02,tau=.01,eta=0,n=1,distn="binomial")
-#
-#
-# ## binomial <-> gaussian analogy
-# ## noch benoetigt fuer den "Wrapper"
-# swPwr(swDsn(rep(25,4)),"binomial",200,0.03,0.025,tau=0.01,eta=0)
-# sigtmp <- sqrt(.0275*.9725/200)
-# microbenchmark::microbenchmark(
-#   swPwr(swDsn(rep(25,4)),"gaussian",1,0.03,0.025,tau=0.01,eta=0,sigma=sigtmp)
-#   ,
-#   wlsMixedPower(EffSize=0.005,Cl=c(25,25,25,25),sigma=sigtmp,tau=0.01)[[1]]
-#   ,times=100)
-#
-#
-

@@ -24,48 +24,62 @@ construct_CovMat(
 \arguments{
 \item{SumCl}{total number of clusters}
 
-\item{timepoints}{numeric, scalar}
+\item{sigma}{numeric, residual error of cluster means if no N given.}
 
-\item{sigma}{numeric (scalar, vector or matrix), residual error of cluster means.}
-
-\item{tau}{numeric (scalar, vector or matrix), standard deviation of random intercepts}
+\item{tau}{numeric, standard deviation of random intercepts}
 
 \item{eta}{numeric (scalar or matrix), standard deviation of random slopes.
 If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept
-`tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `etaAR` is not NULL, the random slope
-`eta` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
-\item{rho}{numeric (scalar), correlation of random effects `tau` and `eta`.}
+\item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
-\item{gamma}{numeric (scalar), standard deviation of a random time effect.}
+\item{gamma}{numeric (scalar), random time effect}
 
 \item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
 the function `construct_trtMat`, indicating the cluster-periods that receive
 interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 `SumCl` and `timepoints` are ignored (!).}
 
-\item{N}{numeric (scalar, vector or matrix), number of individuals per cluster.
+\item{N}{numeric, number of individuals per cluster. Either a scalar, vector
+of length #Clusters or a matrix of dimension #Clusters x timepoints.
 Defaults to 'rep(1,sum(Cl))' if not passed.}
 
 \item{CovBlk}{a matrix of dimension *timepoints* x *timepoints*.}
 
 \item{psi}{random individuum effect. Leads to a closed cohort setting}
+
+\item{INDIV_LVL}{logical, should the computation be conducted on an individual
+level? This leads to longer run time and is mainly for diagnostic purposes.}
 }
 \value{
 a covariance matrix
 }
 \description{
-constructs a covariance matrix, a bloc diagonal matrix. Calls `construct_CovBlk`
-for each block.
+constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
+(or `construct_CovSubMat` in case of two levels of clustering) for each block.
 }
 \examples{
+
+## Two clusters, three timepoints, residual standard error sd=3, random slope sd=1.
+construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1)
+##
+##
+## ... with random slope as AR-1 process
+construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1, tauAR=.8)
+##
+##
+
+
+## ... with sigma and tau variing over time and between clusters:
 construct_CovMat(SumCl=2,timepoints=3,
                  sigma=matrix(c(1,2,2,1,1,2),nrow=2, byrow=TRUE),
-                 tau=matrix(c(.2,.1,.1,.2,.2,.1),nrow=2, byrow=TRUE),N=c(20,16))
+                 tau=matrix(c(.2,.1,.1,.2,.2,.1),nrow=2, byrow=TRUE),
+                 N=c(3,4))
 }

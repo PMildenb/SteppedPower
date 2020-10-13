@@ -38,8 +38,9 @@
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi random individuum effect. Leads to a closed cohort setting
-#' @param alphas numeric vector of length 3, that consists of alpha_0, alpha_1
-#' and alpha_2. This is an alternative way to define the correlation structure.
+#' @param alpha_0_1_2 numeric vector of length 3, that consists of alpha_0, alpha_1
+#' and alpha_2. This is an alternative way to define the correlation structure,
+#' following Li et al. (2018).
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
@@ -120,6 +121,14 @@
 #'mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
 #'##
 #'##
+#'## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
+#'## cluster effect sd = 0.33. How many Individuals are needed to achieve a
+#'## power of 80% ?
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
+#'##
+#'## ... How many are needed if we have a closed cohort design with a random
+#'## individuum effect of .7?
+#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
 #'##
 #'##
 #'## longitudinal parallel design, with 5 time periods, 3 clusters in treatment
@@ -175,6 +184,7 @@ wlsMixedPower <- function(Cl            =NULL,
                           rho           =NULL,
                           gamma         =NULL,
                           psi           =NULL,
+                          alpha_0_1_2   =NULL,
                           CovMat        =NULL,
                           N             =NULL,
                           Power         =NULL,
@@ -213,7 +223,7 @@ wlsMixedPower <- function(Cl            =NULL,
               " assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
-  if(!is.null(psi)){
+  if(!is.null(psi) & is.null(Power)){
     if(is.null(N))
       stop("If the standard deviation `psi` is not null, N is needed.")
     if(is.matrix(N)){
@@ -226,10 +236,11 @@ wlsMixedPower <- function(Cl            =NULL,
   ## Match string inputs ####
   ### dsntype
   dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
-  tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,dsntypeOptions,
-                                                   cost=c(insertions    =1,
-                                                          deletions     =100,
-                                                          substitutions =100),
+  tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,
+                                                   dsntypeOptions,
+                                                   costs=c(insertions    =1,
+                                                           deletions     =100,
+                                                           substitutions =100),
                                                    ignore.case=TRUE))]
   if(dsntype != tmpdsntype) {
     message("Assumes ", tmpdsntype, " design")
@@ -391,6 +402,11 @@ wlsMixedPower <- function(Cl            =NULL,
 #' @inheritParams wlsMixedPower
 #' @param DesMat  list, containing a matrix, the design matrix,
 #' numeric timepoints, numeric total number of Clusters
+#' @param EffSize raw effect, i.e. difference between mean under control and
+#' mean under intervention
+#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL.
+#' If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
+#' *Currently not compatible with `rho`!=0 !*
 #'
 #' @export
 
