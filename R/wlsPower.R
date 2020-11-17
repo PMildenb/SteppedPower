@@ -1,12 +1,37 @@
-#' wlsMixedPower
+#' wlsPower
 #'
-#' This is the work-horse function of the SteppedPower package.
+#' This is the main function of the SteppedPower package.
 #' It calls the constructor functions for the design matrix \eqn{X} and
 #' covariance matrix \eqn{\Omega}, and then calculates the variance of the
-#' intervention effect via \eqn{Var(trteff)=(X'\Omega^{-1}X)^{-1}[1,1]}
+#' intervention effect \eqn{Var(\theta)}
+#'
+#' @details
+#'
+#' \eqn{y_{ijk}= g( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk})}
+#'
+#' with
+#'
+# * \eqn{y_{ijk}} the response in cluster $j$ at time $i$ for individual $k$
+# * $\mu$ a overall mean (under control)
+# * $\alpha_i$ is the time trend at time $i$
+# * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
+# * $\theta$ the treatment effect
+# * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
+# * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
+# * $g(\cdot)$ a link function
+# * $c_j$ a (random) treatment effect
+# * $b_j$ and $c_j$ jointly distributed with
+#' \eqn{\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)}
 #'
 #'
-#' @param Cl integer (vector), number of clusters per wave (in SWD),
+#' \eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right)}
+#'
+#'
+#' where \eqn{\text{Var}(\hat \theta)} is the diagonal element of \eqn{\Omega}
+#' that corresponds to \eqn{\hat\theta}.
+#'
+#'
+#' @param Cl integer (vector), number of clusters per sequence group (in SWD),
 #' or number in control and intervention (in parallel designs)
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
@@ -62,7 +87,7 @@
 #'
 #' @return an element of class wlsPower, a list that contains power and the
 #' parameters of the specific setting.
-#' If requested (by verbose=TRUE) it contains also relevant matrices.
+#' If requested (by verbose=2), it also contains relevant matrices.
 #' @export
 #'
 #' @examples
@@ -71,16 +96,16 @@
 #' ##
 #' ## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
 #' ## cluster effect sd = 0.33, and 10 Individuals per cluster
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 #' ##
 #' ##
 #' ## ... with auto-regressive cluster effect
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
 #' ##
 #' ##
 #' ## ... with varying cluster size
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
 #'               N=matrix(c(12,8,10,9,14,
 #'                          11,8,10,9,13,
 #'                          11,7,11,8,12,
@@ -91,12 +116,12 @@
 #' ##
 #' ## ... with random treatment effect (with sd=0.2), which is correlated with
 #' ## the cluster effect with rho=0.25
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10)
 #' ##
 #' ##
 #' ## ... with missing observations (a.k.a. incomplete stepped wedge design)
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3)
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
 #'              incomplete=matrix(c(1,1,1,0,0,
 #'                                  1,1,1,1,0,
 #'                                  1,1,1,1,1,
@@ -109,10 +134,10 @@
 #'## observed over the whole  study period
 #'## (often referred to as closed cohort design) or if subclusters exist
 #'## (such as wards within clinics). For
-#'mod_aggr  <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+#'mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
 #'                           sigma=2, tau=0.33, psi=.5,
 #'                           N=10, incomplete=3, verbose=TRUE)
-#'mod_indiv <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+#'mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
 #'                           sigma=2, tau=0.33, psi=.5,
 #'                           N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
 #'mod_aggr
@@ -124,28 +149,28 @@
 #'## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
 #'## cluster effect sd = 0.33. How many Individuals are needed to achieve a
 #'## power of 80% ?
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
 #'##
 #'## ... How many are needed if we have a closed cohort design with a random
 #'## individuum effect of .7?
-#' wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
 #'##
 #'##
 #'## longitudinal parallel design, with 5 time periods, 3 clusters in treatment
 #'## and control arm each.
-#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#' wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 #'               dsntype="parallel", timepoints=5)
 #'##
 #'##
 #'##
 #'## ... with one baseline period and four parallel periods
-#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#' wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 #'               dsntype="parallel_baseline", timepoints=c(1,4))
 #'##
 #'##
 #'##
 #'## cross-over design with two timepoints before and two after the switch
-#' wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+#' wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 #'               dsntype="crossover", timepoints=c(2,2))
 #'##
 #'##
@@ -155,18 +180,18 @@
 #'## cluster effect sd = 0.5 (ICC of 1/3 under control),
 #'## every individual is its own cluster.
 #'## ... with incidences defined conditional on cluster effect=0
-#'wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+#'wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 #'              family="binomial")
 #'##
 #'##
 #'## ... with  marginally defined incidences
-#' wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+#' wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 #'               family="binomial", marginal_mu=TRUE)
 #'
 
 
 
-wlsMixedPower <- function(Cl            =NULL,
+wlsPower <- function(Cl            =NULL,
                           timepoints    =NULL,
                           DesMat        =NULL,
                           trtDelay      =NULL,
@@ -272,7 +297,7 @@ wlsMixedPower <- function(Cl            =NULL,
     if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
       DesMat <- construct_DesMat(trtmatrix=DesMat)
     }else if(!inherits(DesMat,"DesMat"))
-      stop("In wlsMixedPower: Cannot interpret input for DesMat. ",
+      stop("In wlsPower: Cannot interpret input for DesMat. ",
            "It must be either an object of class DesMat or a matrix")
     dsntype <- DesMat$dsntype
   }
@@ -399,7 +424,7 @@ wlsMixedPower <- function(Cl            =NULL,
 
 #' compute_wlsPower
 #'
-#' @inheritParams wlsMixedPower
+#' @inheritParams wlsPower
 #' @param DesMat  list, containing a matrix, the design matrix,
 #' numeric timepoints, numeric total number of Clusters
 #' @param EffSize raw effect, i.e. difference between mean under control and
@@ -528,7 +553,7 @@ print.wlsPower <- function(x, ...){
 #'
 plot.wlsPower <- function(x,...){
   if(!"ProjMatrix" %in% names(x))
-    stop("Please rerun wlsMixedPower() with `verbose=TRUE` ")
+    stop("Please rerun wlsPower() with `verbose=TRUE` ")
   wgt <- x$ProjMatrix
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]

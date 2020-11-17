@@ -13,7 +13,7 @@ construct_timeadjust(
 )
 }
 \arguments{
-\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+\item{Cl}{integer (vector), number of clusters per sequence group (in SWD),
 or number in control and intervention (in parallel designs)}
 
 \item{timepoints}{numeric (scalar or vector), number of timepoints (periods).

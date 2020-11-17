@@ -211,3 +211,12 @@ SteppedPower::wlsMixedPower(Cl=c(2,2,2,0,2,2,2), EffSize=.01,
 swCRTdesign::swPwr(design=swCRTdesign::swDsn(c(2,2,2,0,2,2,2),.5), "gaussian",n=50,mu0=0,mu1=.01,
                    sigma=sqrt(.025*.975), tau=0.00254, eta=0.0001, rho=0, gamma=0)
 
+###########################################################################################
+##
+TrtMatrix <- SteppedPower::construct_DesMat(rep(2,5))$trtMat
+DESIGN    <- construct_DesMat(trtmatrix=TrtMatrix[rep(1:10,10),])
+COVARIANCE<- construct_CovMat(10, 6, sigma=1, tau=.1, psi=5, INDIV_LVL=TRUE, N=10)
+wlsPower(DesMat=DESIGN, CovMat = COVARIANCE, mu0=0, mu1=1)
+
+
+

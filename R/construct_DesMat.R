@@ -4,7 +4,7 @@
 #'
 #' Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
 #'
-#' @inheritParams wlsMixedPower
+#' @inheritParams wlsPower
 #' @param trtmatrix an optional user defined matrix to define treatment allocation
 #' @param timeBlk an optional user defined matrix that defines the time adjustment in one cluster.
 #' Is repeated for every cluster.
@@ -42,6 +42,7 @@ construct_DesMat <- function(Cl          =NULL,
     if(inherits(trtMat,"matrix")){
       timepoints  <- ncol(trtMat)
       Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))  ## TODO: 1. add checks 2. find better alternative
+      tmpCl       <- Cl
     }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,

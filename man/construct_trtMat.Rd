@@ -7,7 +7,7 @@
 construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 }
 \arguments{
-\item{Cl}{integer (vector), number of clusters per wave (in SWD),
+\item{Cl}{integer (vector), number of clusters per sequence group (in SWD),
 or number in control and intervention (in parallel designs)}
 
 \item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
