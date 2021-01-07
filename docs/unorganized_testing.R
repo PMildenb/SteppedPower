@@ -55,7 +55,7 @@ construct_DesMat(Cl=rep(1,6),timeAdjust="periodic",period=4)
 
 construct_DesMat(Cl=c(1,1,2),trtDelay=.5,timeBlk=diag(4))
 
-debugonce(construct_DesMat)
+# debugonce(construct_DesMat)
 a <- construct_DesMat(Cl=c(3,2,1),N=c(1,1,1,2,2,3))
 a$dsnmatrix
 
@@ -64,7 +64,6 @@ b <- construct_DesMat(Cl=c(1,1,1),N=c(1,2,3),
 
 c <- construct_DesMat(Cl=c(1,1,1),N=c(1,2,3), INDIV_LVL = TRUE,
                  trtmatrix=matrix(c(0,0,0,1,0,0,1,1,0,1,1,1),3))
-
 
 ################################################################################
 ## CovBlk #####
@@ -98,20 +97,6 @@ SteppedPower:::construct_CovSubMat(N          =3,
                                    tauAR      =NULL,
                                    gamma      =rep(sqrt(300),tp),
                                    INDIV_LVL  =TRUE )
-
-
-CovBlks <- mapply(SteppedPower:::construct_CovSubMat,
-                  N     =list(4,3),
-                  sigma =list(c(1,1),c(1,1)),
-                  tau   =list(c(2,2),c(2,2)),
-                  eta   =list(c(0,3),c(0,3)),
-                  rho   =list(NULL,NULL),
-                  psi   =list(c(10,10),c(10,10)),
-                  gamma =list(c(5,5),c(5,5)),
-                  MoreArgs =list(timepoints=2,
-                                 tauAR     =.9),
-                  SIMPLIFY = FALSE)
-bdiag(CovBlks)
 
 
 ## CovMat #####
@@ -516,8 +501,223 @@ microbenchmark::microbenchmark( cat(" ") ,  cat(".") , cat("_") )
 
 ################################################################################
 ## plot.wlsPower #####
-plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1,EffSize=1,
-                            timepoints=5,dsntype="parallel",verbose=T))
+plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1, mu0=0, mu1=1,
+                            timepoints=5,design="parallel",verbose=T))
+
+
+DesMat11 <- construct_DesMat(Cl=c(2,1))
+CovMat11 <- construct_CovMat(3,3,1,2)
+IncMat11 <- matrix(c(0,1,1,1,1,1,1,1,1),3,3)
+IncMat22 <- matrix(c(1,1,1,1,0,1,1,1,1),3,3)
+IncMat31 <- matrix(c(1,1,0,1,1,1,1,1,1),3,3)
+IncMat2122 <- matrix(c(1,0,1,1,0,1,1,1,1),3,3)
+
+wmp <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = NULL, verbose=TRUE)
+wmpinc11 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat11, verbose=TRUE)
+wmpinc22 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat22, verbose=TRUE)
+wmpinc31 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat31, verbose=TRUE)
+wmpinc2122 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat2122, verbose=TRUE)
+plot(wmp)
+plot(wmpinc11)
+plot(wmpinc22)
+plot(wmpinc31)
+
+wmp_to_Var <- function(wmp){
+  dsnmatrix <- wmp$DesignMatrix$dsnmatrix
+  CovMat    <- wmp$CovarianceMatrix
+
+  tmpmat  <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
+  VarMat  <- Matrix::solve(tmpmat %*% dsnmatrix)
+  return(VarMat)
+}
+
+sqrt(wmp_to_Var(wmp)[1,1])
+sqrt(wmp_to_Var(wmpinc11)[1,1])
+sqrt(wmp_to_Var(wmpinc22)[1,1])
+sqrt(wmp_to_Var(wmpinc31)[1,1])
+sqrt(wmp_to_Var(wmpinc2122)[1,1])
+
+
+
+dsnmatrix <- wmp$DesignMatrix$dsnmatrix
+CovMat    <- wmp$CovarianceMatrix
+
+tmpmat  <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
+VarMat  <- Matrix::solve(tmpmat %*% dsnmatrix)
+ProjMat <- matrix((VarMat %*% tmpmat)[1,], nrow=3, byrow=TRUE)
+
+HatMat <- dsnmatrix %*% VarMat %*% tmpmat
+hi <- matrix(diag(HatMat),nrow=3,byrow=TRUE)
+ProjMat/(1-hi)
+
+## E[DFBETA] ####
+i <- 1
+V_inv <- solve(CovMat)
+v_ii  <- diag(V_inv)[i]
+v_i   <- V_inv[,i]
+sd_e_i<- sigma
+E_h_i <- (1/v_ii)*v_i*sigma
+q_i   <-
+
+g_i <-
+
+## Leverage ####
+
+V_inv <- solve(CovMat)
+X     <- wmp$DesignMatrix$dsnmatrix
+P  <- V_inv %*% X %*% solve(t(X) %*% V_inv %*% X) %*% t(X) %*% V_inv
+P2 <- V_inv %*% HatMat %*% V_inv
+round(P-P2,5)
+
+tmpmat2 <- t(X) %*% solve(CovMat)
+round(tmpmat-tmpmat2,5)
+
+HatMat2 <- X %*% solve(tmpmat2 %*% X) %*% tmpmat2
+round(HatMat-HatMat2,5)
+
+
+Q     <- V_inv - P
+round(matrix(diag(Q),3,3,byrow=TRUE),2)
+
+############################### plot random effect robustness ##################
+
+library(plotly)
+
+x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trtDelay = .5, mu0=0, mu1=.01, N=500,
+                   sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=2)
+x <- wlsMixedPower(Cl=c(8,8), trtDelay = .5, mu0=0, mu1=.01, N=500,
+                   sigma=sqrt(0.0244), tau=0.02,
+                   eta=0.02, verbose=2)
+x$Params
+
+
+p <- x$Params
+
+Range <- seq(0,2,length.out=4)
+rhoRange <- c(-.5,0,.5)
+if(!is.null(p$rho)) rhoRange <- append(rhoRange,p$rho)
+
+tauRange <- lapply(Range,function(x) x * p$tau)
+etaRange <- lapply(Range,function(x) x * p$eta)
+
+taugrid <- expand.grid(rhoRange=rhoRange,tauRange=tauRange)
+
+tauPwr   <-  mapply(wlsMixedPower,
+                    tau=tauRange,
+                    # tau=as.list(taugrid$tauRange),
+                    # rho=as.list(taugrid$rhoRange),
+                    MoreArgs = list(DesMat=x$DesignMatrix,
+                                    N=p$N,
+                                    sigma=p$sigma,
+                                    eta=p$eta,
+                                    mu0=p$mu0,
+                                    mu1=p$mu1,
+                                    verbose=0),
+                    SIMPLIFY = TRUE)
+
+# plot_ly(type="scatter",mode="lines+marker",
+#         x=~tauRange, y=~tauPwr, split=~rhoRange,
+#         data=cbind(taugrid,tauPwr))
+
+etaPwr   <-  mapply(wlsMixedPower,eta=as.list(etaRange),
+                    MoreArgs = list(DesMat=x$DesignMatrix,
+                                    N=p$N,
+                                    sigma=p$sigma,
+                                    tau=p$tau,
+                                    mu0=p$mu0,
+                                    mu1=p$mu1,
+                                    verbose=0),
+                    SIMPLIFY = TRUE)
+
+
+tauplt <- plotly::plot_ly()
+for(i in 1:1){
+  tauplt <- add_lines(tauplt,x=Range, y=tauPwr)
+}
+
+etaplt <- plotly::plot_ly()
+for(i in 1:1){
+  etaplt <- add_lines(etaplt,x=Range, y=etaPwr)
+}
+
+
+
+add_original_Pwr <- function(plt,xRange,pwr){
+  plt <- add_segments(plt,
+                      x=xRange[1], xend=xRange[2],
+                      y=pwr, yend=pwr,
+                      line=list(color='darkgrey', dash="dash", width=5))
+}
+
+
+
+plot_randeffs <- function(X,Range=seq(0,2,length.out=10)){
+
+  p        <- X$Params
+  tauRange <- lapply(Range, function(x) x * p$tau)
+  etaRange <- lapply(Range, function(x) x * p$eta)
+  tauPwr   <-  mapply(wlsMixedPower,
+                      tau=as.list(tauRange),
+                      MoreArgs = list(DesMat=X$DesignMatrix,
+                                      N=p$N,
+                                      sigma=p$sigma,
+                                      eta=p$eta,
+                                      mu0=p$mu0,
+                                      mu1=p$mu1,
+                                      verbose=0) )
+
+  etaPwr   <-  mapply(wlsMixedPower,
+                      eta=as.list(etaRange),
+                      MoreArgs = list(DesMat=X$DesignMatrix,
+                                      N=p$N,
+                                      sigma=p$sigma,
+                                      tau=p$tau,
+                                      mu0=p$mu0,
+                                      mu1=p$mu1,
+                                      verbose=0) )
+
+  tauplt <- plotly::plot_ly()
+  tauplt <- add_lines(tauplt,x=Range, y=tauPwr)
+  tauplt <- add_original_Pwr(tauplt,xRange=range(Range),pwr=x$Power)
+
+  etaplt <- plotly::plot_ly()
+  etaplt <- add_lines(etaplt,x=Range, y=etaPwr)
+  etaplt <- add_original_Pwr(etaplt,xRange=range(Range),pwr=x$Power)
+
+  subplot(  tauplt, etaplt, shareY=TRUE  )
+}
+
+
+x <- wlsMixedPower(Cl=c(2,2,2,2), trtDelay=.3, sigma=1, tau=.2, eta=.3,
+                   mu0=0, mu1=1, verbose = 2)
+
+plot_randeffs(x)
+
+
+plot_wls3(x)
+
+plot_wls3 <- function(x){
+  p      <- x$Params
+  tauRange <- seq(0, 2*p$tau,length.out=5)
+  etaRange <- if(is.null(p$eta)) seq(0,max(tauRange),length.out=5) else seq(0,2*p$eta,length.out=5)
+
+  grid <- expand.grid(tau=tauRange,eta=etaRange)
+  pwr <- list()
+  for(i in 1:dim(grid)[1]){
+    pwr[[i]] <- wlsMixedPower(DesMat=x$DesignMatrix,mu0=0,mu1=.01,sigma=p$sigma,N=200,
+                              tau=grid$tau[i], eta=grid$eta[i])[["Power"]]
+  }
+  tmp <- data.frame(grid,pwr=unlist(pwr))
+  plot_ly(type="scatter",mode="lines+marker",x=~tau, y=~pwr, split=~eta, data=tmp)
+}
+
+
+################################################################################
 
 ## compare_designs #####
 compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.3, Cl=c(2,2,2,2))
@@ -545,6 +745,8 @@ tTestPwr2(.6,1,18)
 tTestPwr2(.6,1,Inf)
 View(pwr::pwr.t.test)
 View(tTestPwr)
+
+
 
 
 ################################################################################
