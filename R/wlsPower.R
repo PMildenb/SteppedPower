@@ -75,7 +75,7 @@
 #' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
 #' @param sig.level numeric (scalar), significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
-#' @param verbose logical, should the function return  design and covariance matrices?
+#' @param verbose interger, how much information should the function return?
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix of dimension
 #' (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
@@ -85,9 +85,12 @@
 #'
 #' @details see vignette 'Getting Started'
 #'
-#' @return an element of class wlsPower, a list that contains power and the
-#' parameters of the specific setting.
-#' If requested (by verbose=2), it also contains relevant matrices.
+#' @return
+#' The return depends on the `verbose` parameter.
+#' If `verbose`=0, only the power is returned
+#' If `verbose`=1 (the default), a list containing contains power and the
+#' parameters of the specific setting is returned.
+#' If requested (by verbose=2) this list also contains relevant matrices.#' @export
 #' @export
 #'
 #' @examples
@@ -136,10 +139,10 @@
 #'## (such as wards within clinics). For
 #'mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
 #'                           sigma=2, tau=0.33, psi=.5,
-#'                           N=10, incomplete=3, verbose=TRUE)
+#'                           N=10, incomplete=3, verbose=2)
 #'mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
 #'                           sigma=2, tau=0.33, psi=.5,
-#'                           N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
+#'                           N=10, incomplete=3, verbose=2, INDIV_LVL=TRUE)
 #'mod_aggr
 #'mod_indiv
 #'## Compare covariance matrices of first cluster
@@ -218,7 +221,7 @@ wlsPower <- function(Cl            =NULL,
                           sig.level     =0.05,
                           dfAdjust      ="none",
                           INDIV_LVL     =FALSE,
-                          verbose       =FALSE){
+                          verbose       =1){
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
@@ -391,7 +394,7 @@ wlsPower <- function(Cl            =NULL,
                                                            sig.level =sig.level,
                                                            CovMat    =CovMat,
                                                            INDIV_LVL =INDIV_LVL,
-                                                           verbose   =FALSE)$Power},
+                                                           verbose   =0)},
                 interval=N_range)$root),
               error=function(cond){
                 message(paste0("Maximal N yields power below ",Power,
@@ -418,9 +421,32 @@ wlsPower <- function(Cl            =NULL,
                           verbose   =verbose)
   if(!is.null(Power)) out$N_opt <- N_opt
 
+  out <- compute_wlsPower(DesMat    =DesMat,
+                          EffSize   =EffSize,
+                          sigma     =sigma,
+                          tau       =tau,
+                          eta       =eta,
+                          tauAR     =tauAR,
+                          rho       =rho,
+                          gamma     =gamma,
+                          psi       =psi,
+                          N         =N,
+                          dfAdjust  =dfAdjust,
+                          sig.level =sig.level,
+                          CovMat    =CovMat,
+                          INDIV_LVL =INDIV_LVL,
+                          verbose   =verbose)
+  if(!is.null(Power)) out$N_opt <- N_opt
+
+  if(verbose>0) {
+    out$Params <- append(out$Params,
+                         list(mu0=mu0,
+                              mu1=mu1))
+    class(out) <- "wlsPower"
+  }
+
   return(out)
 }
-
 
 #' compute_wlsPower
 #'
@@ -450,7 +476,7 @@ compute_wlsPower <- function(DesMat,
                              dfAdjust   ="none",
                              sig.level  =.05,
                              INDIV_LVL  =FALSE,
-                             verbose    =FALSE){
+                             verbose    =1){
   dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
   SumCl      <- sum(DesMat$Cl)
@@ -481,7 +507,7 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  if(verbose) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
+  if(verbose==2) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
                                 nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
                                 byrow=TRUE)
 
@@ -496,25 +522,28 @@ compute_wlsPower <- function(DesMat,
     df <- Inf }
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
-  out <- list(Power  =Pwr,
-              Params =list(N         =N,
-                           sigma     =sigma, ## NOT compatible with CovMat-Input (!)
-                           tau       =tau,
-                           eta       =eta,
-                           tauAR     =tauAR,
-                           etaAR     =etaAR,
-                           rho       =rho,
-                           gamma     =gamma,
-                           psi       =psi,
-                           denomDF   =df,
-                           dfAdjust  =dfAdjust,
-                           sig.level =sig.level))
-  if(verbose)
+  if(verbose==0){
+    out <- c(Pwr)
+  } else {
+    out <- list(Power  =Pwr,
+                Params =list(N         =N,
+                             sigma     =sigma, ## NOT compatible with CovMat-Input (!)
+                             tau       =tau,
+                             eta       =eta,
+                             tauAR     =tauAR,
+                             etaAR     =etaAR,
+                             rho       =rho,
+                             gamma     =gamma,
+                             psi       =psi,
+                             denomDF   =df,
+                             dfAdjust  =dfAdjust,
+                             sig.level =sig.level))
+  }
+  if(verbose==2)
     out <- append(out,
                   list(ProjMatrix       =ProjMat,
                        DesignMatrix     =DesMat,
                        CovarianceMatrix =CovMat))
-  class(out) <- append(class(out),"wlsPower")
   return(out)
 }
 

@@ -20,7 +20,7 @@ compute_wlsPower(
   dfAdjust = "none",
   sig.level = 0.05,
   INDIV_LVL = FALSE,
-  verbose = FALSE
+  verbose = 1
 )
 }
 \arguments{
@@ -65,7 +65,7 @@ rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}
 
-\item{verbose}{logical, should the function return  design and covariance matrices?}
+\item{verbose}{interger, how much information should the function return?}
 }
 \description{
 compute_wlsPower

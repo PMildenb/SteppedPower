@@ -213,10 +213,31 @@ swCRTdesign::swPwr(design=swCRTdesign::swDsn(c(2,2,2,0,2,2,2),.5), "gaussian",n=
 
 ###########################################################################################
 ##
-TrtMatrix <- SteppedPower::construct_DesMat(rep(2,5))$trtMat
-DESIGN    <- construct_DesMat(trtmatrix=TrtMatrix[rep(1:10,10),])
-COVARIANCE<- construct_CovMat(10, 6, sigma=1, tau=.1, psi=5, INDIV_LVL=TRUE, N=10)
-wlsPower(DesMat=DESIGN, CovMat = COVARIANCE, mu0=0, mu1=1)
+devtools::install_github("PMildenb/SteppedPower")
+library(SteppedPower)
+
+## DEFINIERE STUDIENDESIGN
+tmpDSN    <- construct_DesMat(rep(2,5))$trtMat
+DESIGN    <- construct_DesMat(trtmatrix=tmpDSN[rep(1:10,10),])
+
+## DEFINIERE COVARIANZSTRUKTUR
+## dabei ist tau der Random effect der Standorte und psi der random effect der Studien
+## Sigma ist die Residualvarianz
+COVARIANCE<- construct_CovMat(SumCl=10, timepoints=6,
+                              sigma=sqrt(100), tau=sqrt(1), psi=sqrt(10),
+                              INDIV_LVL=TRUE, N=10)
+
+## POWERBERECHNUNG
+a <- wlsPower(DesMat=DESIGN, CovMat = COVARIANCE, mu0=0, mu1=.57, verbose=2)
+
+plot(a)
+
+power.t.test(50,.57)
+
+1/3.67
+
+.57*1/sqrt(5)
+.57*1/sqrt(20)
 
 
 

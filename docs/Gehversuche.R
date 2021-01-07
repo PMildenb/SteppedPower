@@ -24,7 +24,8 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 sp<-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=2, tauAR=0.5, N=10,verbose=TRUE)
 wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=1, N=10)# passt
 
-# AR means (cov-matrix of cluster effects)_ij = tau^2*rho^|i-j|, rho=tauAR  [rho laut SAS proc mixed repeated statement doc]
+# AR means (cov-matrix of cluster effects)_ij = tau^2*rho^|i-j|, rho=tauAR
+# [rho laut SAS proc mixed repeated statement doc]
 # tauAR defines the correlation of cluster-period effects a_it between adjacent time points
 
 ## ... with varying cluster size
@@ -37,7 +38,8 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
                          9,7, 9,7,11,
                          9,6, 8,7,11),5,6))
 ## N gives the sample size per cluster per period. It may be specified as a number representing constant sample sizes that are constant
- ## across periods and clusters, or a vector of cluster specific sample sizes that are constant across periods or a matrix with cluster and period specific sample sizes with rows representing clusters and columns representing periods
+## across periods and clusters, or a vector of cluster specific sample sizes that are constant across periods or a matrix with cluster
+## and period specific sample sizes with rows representing clusters and columns representing periods
 
 ##
 ##

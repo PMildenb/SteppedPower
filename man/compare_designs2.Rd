@@ -18,22 +18,6 @@ compare_designs2(
 }
 \arguments{
 \item{Designs}{different designs to compare}
-
-\item{mu0}{as in wlsMixedPower}
-
-\item{mu1}{as in wlsMixedPower}
-
-\item{family}{as in wlsMixedPower}
-
-\item{sigma}{as in wlsMixedPower}
-
-\item{tau}{as in wlsMixedPower}
-
-\item{eta}{as in wlsMixedPower}
-
-\item{rho}{as in wlsMixedPower}
-
-\item{sig.level}{as in wlsMixedPower}
 }
 \value{
 

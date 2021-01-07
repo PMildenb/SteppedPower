@@ -32,7 +32,7 @@ wlsPower(
   sig.level = 0.05,
   dfAdjust = "none",
   INDIV_LVL = FALSE,
-  verbose = FALSE
+  verbose = 1
 )
 }
 \arguments{
@@ -113,12 +113,14 @@ Defaults to "gaussian"}
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}
 
-\item{verbose}{logical, should the function return  design and covariance matrices?}
+\item{verbose}{interger, how much information should the function return?}
 }
 \value{
-an element of class wlsPower, a list that contains power and the
-parameters of the specific setting.
-If requested (by verbose=TRUE) it contains also relevant matrices.
+The return depends on the `verbose` parameter.
+If `verbose`=0, only the power is returned
+If `verbose`=1 (the default), a list containing contains power and the
+parameters of the specific setting is returned.
+If requested (by verbose=2) this list also contains relevant matrices.#' @export
 }
 \description{
 This is the main function of the SteppedPower package.
@@ -127,7 +129,7 @@ covariance matrix \eqn{\Omega}, and then calculates the variance of the
 intervention effect \eqn{Var(\theta)}
 }
 \details{
-\eqn{y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)}
+\eqn{y_{ijk}= g( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk})}
 
 with
 
@@ -188,10 +190,10 @@ wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
 ## (such as wards within clinics). For
 mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
                           sigma=2, tau=0.33, psi=.5,
-                          N=10, incomplete=3, verbose=TRUE)
+                          N=10, incomplete=3, verbose=2)
 mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
                           sigma=2, tau=0.33, psi=.5,
-                          N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
+                          N=10, incomplete=3, verbose=2, INDIV_LVL=TRUE)
 mod_aggr
 mod_indiv
 ## Compare covariance matrices of first cluster
