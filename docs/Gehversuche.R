@@ -7,30 +7,30 @@ require(swCRTdesign)
 # bei swdesigns wären das in dem Bsp. dann 6 wellen = perioden.
 # ich finde waves daher nicht so glücklich.
 
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
-wlsMixedPower(mu0=0,mu1=1) # geht nicht
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
+wlsPower(mu0=0,mu1=1) # geht nicht
 
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=c(12,8,10,9,14)) # geht nicht
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=c(12,8,10,9,14,12,8,10,9,14)) #geht
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=8) #geht
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=rep(8,10)) #geht ist dasselbe
+wlsPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=c(12,8,10,9,14)) # geht nicht
+wlsPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=c(12,8,10,9,14,12,8,10,9,14)) #geht
+wlsPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=8) #geht
+wlsPower(mu0=0, mu1=1, Cl=rep(2,5), sigma=2, tau=0.33, N=rep(8,10)) #geht ist dasselbe
 # random slopes besser auch random intervention effect (time constant, cluster-specific)
 
 
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 ##
 ##
 ## ... with auto-regressive cluster effect
-sp<-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=2, tauAR=0.5, N=10,verbose=TRUE)
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=1, N=10)# passt
+sp<-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=2, tauAR=0.5, N=10,verbose=TRUE)
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=1, N=10)# passt
 
 # AR means (cov-matrix of cluster effects)_ij = tau^2*rho^|i-j|, rho=tauAR
 # [rho laut SAS proc mixed repeated statement doc]
 # tauAR defines the correlation of cluster-period effects a_it between adjacent time points
 
 ## ... with varying cluster size
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=c(12,8,10,9,14))
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
               N=matrix(c(12,8,10,9,14,
                          11,8,10,9,13,
                          11,7,11,8,12,
@@ -46,27 +46,27 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
 ## ... with random treatment effect (with sd=0.2), which is correlated with
 ## the cluster effect with rho=0.25
 ##
-##  with time constant random treatment effect b_ik, (b_i0=0) cor(a_i, b_i1)=rho
+## with time constant random treatment effect b_ik, (b_i0=0) cor(a_i, b_i1)=rho
 ## note that random cluster effect variance is representative for controls (k=0)
 ## variance of cluster effects in intervention group (k=1) is tau^2+eta^2+2*tau*eta*rho
 ## Hence rho=-eta/tau/2 leads to equal variance of cluster under both treatment conditions.
 ##
 ## [Die Erläuterung stimmt im Moment nur für time-constant effects]
 ##
-sp<-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10,verbose=TRUE)
+sp<-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10,verbose=TRUE)
 h<-sp$CovarianceMatrix[1:6,1:6]
 hh<- swPwr(swDsn(rep(1,5)),distn="gaussian",n=10, mu0=0, mu1=1,sigma=2, tau=0.33, eta=.2, rho=.25, gamma=0)
 hh
 
-sp<-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=-.2/.33/2, N=10,verbose=TRUE)
+sp<-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=-.2/.33/2, N=10,verbose=TRUE)
 h<-sp$CovarianceMatrix[1:6,1:6]
 ##
 ##
 ##
 ## ... with missing observations (a.k.a. incomplete stepped wedge design)
 #  with empty cells
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3)
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3)
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
               incomplete=matrix(c(1,1,1,0,0,
                                   1,1,1,1,0,
                                   1,1,1,1,1,
@@ -74,8 +74,8 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
                                   0,1,1,1,1,
                                   0,0,1,1,1),5,6))
 
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3) # same as above?
-wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10, incomplete=3) # same as above?
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
               incomplete=matrix(c(1,1,1,0,0,
                                   0,1,1,1,0,
                                   1,0,1,1,1,
@@ -92,9 +92,9 @@ wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
 #
 # Kommentar: im Beispiel übergibts du numeric xx<-matrix(c(1L,1L,1L,0L),2,2) wäre integer (long integer) aber das spielt keine Rolle oder?
 
-sp<- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=c(1,1,1,0,0)) # geht nicht
-sp<- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=c(2,2,2,2,2)) # geht nicht
-sp<- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=2,verbose=TRUE) # geht nicht
+sp<- wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=c(1,1,1,0,0)) # geht nicht
+sp<- wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=c(2,2,2,2,2)) # geht nicht
+sp<- wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomplete=2,verbose=TRUE) # geht nicht
 
 
 ##
@@ -110,7 +110,9 @@ sp<- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomple
 
 #   random individuum effect kenne ich als random subject effect or random subject specific intercept
 #
-# CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \cdot timepoints) *#Cluster* \cdot *timepoints* rows/columns. If 'CovMat' is given, 'sigma', 'tau', 'eta' and 'rho' are ignored.
+# CovMat numeric, a positive-semidefinite matrix of dimension (#Clusters \cdot timepoints)
+# *#Cluster* \cdot *timepoints* rows/columns.
+# If 'CovMat' is given, 'sigma', 'tau', 'eta' and 'rho' are ignored.
 #
 #   geht kürzer
 #
@@ -121,10 +123,10 @@ sp<- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,  incomple
 
 ## (often referred to as closed cohort design) or if subclusters exist
 ## (such as wards within clinics). For
-mod_aggr  <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
                            sigma=2, tau=0.33, psi=.5,
                            N=10, incomplete=3, verbose=TRUE)
-mod_indiv <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
                            sigma=2, tau=0.33, psi=.5,
                            N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
 mod_aggr
@@ -146,12 +148,13 @@ within cluster between subject (=off diagonal blocks) tau^2
 [6,] 0.1339 0.1339 0.1339 0.1339 0.1339    Inf
 
 Stimmt das denn??????
- # auch schön: Now. two patients sharing a cluster and a period have more similarity than two patients sharing a cluster but
-#  not a period.
+# auch schön: Now. two patients sharing a cluster and a period have
+# more similarity than two patients sharing a cluster but
+# not a period.
 
-  mod_i <- wlsMixedPower(mu0=0, mu1=1, Cl=rep(1,5),
+  mod_i <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
                              sigma=2, tau=0.33, psi=.5,gamma=.4,
-                             N=10, incomplete=3, verbose=TRUE, INDIV_LVL=TRUE)
+                             N=10, incomplete=3, verbose=2, INDIV_LVL=TRUE)
 mod_i$CovarianceMatrix[1:12,1:12]
 
 ##
@@ -159,19 +162,19 @@ mod_i$CovarianceMatrix[1:12,1:12]
 ##
 ## longitudinal parallel design, with 5 time periods, 3 clusters in treatment
 ## and control arm each.
-wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
               dsntype="parallel", timepoints=5)
 ##
 ##
 ##
 ## ... with one baseline period and four parallel periods
-wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
               dsntype="parallel_baseline", timepoints=c(1,4))
 ##
 ##
 ##
 ## cross-over design with two timepoints before and two after the switch
-wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
+wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
               dsntype="crossover", timepoints=c(2,2))
 ##
 ##
@@ -182,20 +185,20 @@ wlsMixedPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 ## every individual is its own cluster.
 ## ... with incidences defined conditional on cluster effect=0
 
-# du meinst: 32 individuals each observed once in each periods, were the intra individual correlation is modelled as a
-subject specific random intercept.
-"cluster effect =0"  meint:
+# du meinst: 32 individuals each observed once in each periods,
+# were the intra individual correlation is modelled as a
+# subject specific random intercept.
+# "cluster effect =0"  meint:
   logit(p_it) =mu+ a_i + b_t + theta*X_it, a_i~N(0,tau^2), mu=logit(mu0)
   .5= 1/(1+exp(-mu)), .25=1/(1+exp(-mu-theta))
 
 # was heißt jetzt cluster effect sd???
-
-sp<-wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+sp<-wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
               family="binomial",verbose=TRUE)
 ##
 ##
 ## ... with  marginally defined incidences
-wlsMixedPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
+wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
               family="binomial", marginal_mu=TRUE)
 
 

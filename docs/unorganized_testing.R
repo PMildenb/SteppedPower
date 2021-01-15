@@ -203,14 +203,14 @@ DesMat_prl <- construct_DesMat(Cl=c(40,40),dsntype="parallel",timepoints=3)
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat, EffSize=.05, sigma=1,tau=.3,N=1,
                  dfAdjust="none",sig.level=.05,verbose=F)
-wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,verbose=F)
+wlsPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,verbose=F)
 
 
 
 SteppedPower:::compute_wlsPower(DesMat=DesMat_prl, EffSize=.5, sigma=1,tau=.3,N=1,
                  dfAdjust="none",sig.level=.05,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
-wlsMixedPower(Cl=c(4,4),timepoints=3,dsntype="parallel",
+wlsPower(DesMat=DesMat_prl,mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
+wlsPower(Cl=c(4,4),timepoints=3,dsntype="parallel",
               mu0=0,mu1=.5,sigma=1,tau=.3,verbose=F)
 
 
@@ -218,40 +218,40 @@ wlsMixedPower(Cl=c(4,4),timepoints=3,dsntype="parallel",
 
 
 DesMat <- construct_DesMat(rep(1,8))
-wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,N=720,verbose=F)
-wlsMixedPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,Power=.9,verbose=F)
+wlsPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,N=720,verbose=F)
+wlsPower(DesMat=DesMat,mu0=0,mu1=.05,sigma=1,tau=.3,Power=.9,verbose=F)
 
 uniroot(function(N){compute_wlsPower(DesMat,EffSize=.05,sigma=1,tau=.3,N=N)$Power-.9},
         interval=c(1,1000))
 
-wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=17,verbose=F)
-wlsMixedPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,2000))
+wlsPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,N=17,verbose=F)
+wlsPower(DesMat=DesMat_prl,mu0=0,mu1=.15,sigma=1,tau=.15,Power=.9,verbose=F,N_range = c(1,2000))
 
 
 ################################################################################
-## wlsMixedPower #####
-wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
+## wlsPower #####
+wlsPower(mu0=0,mu1=.1,sigma=1,tau=.01,Cl=c(1,1,1,1),verbose=F)
 
 Cl <- c(2,2,2,2,2); sigma <- 4; tau <- 0.9 ; mu0=0 ; mu1=1.5
-wlsMixedPower(Cl=Cl,sigma=sigma,tau=tau,mu0=mu0,mu1=mu1,verbose=F)
+wlsPower(Cl=Cl,sigma=sigma,tau=tau,mu0=mu0,mu1=mu1,verbose=F)
 swCRTdesign::swPwr(swCRTdesign::swDsn(Cl),distn="gaussian",1,0,EffSize,
       tau=tau,eta=0,rho=0,sigma=sigma)
 
-wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
-wlsMixedPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
+wlsPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2 ,        tau=0.2, N=c(1,1,1,1,1) )
+wlsPower(mu0=0,mu1=1,Cl=c(1,1,1,1,1),sigma=2*sqrt(2) ,tau=0.2, N=c(2,2,2,2,2) )
 
 Cl=c(3,3) ; mu0=0 ; mu1=1 ; sigma=1 ; tau=0.1 ; family=gaussian() ; timepoints=1 ;
 dsntype="parallel" ; N <- NULL ; sig.level=0.05
-wlsMixedPower(Cl=c(5,5),mu0=0,mu1=.2,sigma=1,tau=0.1,timepoints=2,dsntype="parallel")
+wlsPower(Cl=c(5,5),mu0=0,mu1=.2,sigma=1,tau=0.1,timepoints=2,dsntype="parallel")
 
 microbenchmark::microbenchmark(
-wls_parBl1 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
+wls_parBl1 <- wlsPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
                            dsntype="parallel_baseline",timepoints=51)
 ,
-wls_parBl2 <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
+wls_parBl2 <- wlsPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=c(50,50),
                            dsntype="parallel_baseline",timepoints=c(15,36))
 ,
-wls_swd    <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(2,50),
+wls_swd    <- wlsPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(2,50),
                             dsntype="SWD")
 ,times=10)
 system.time(sw <- swCRTdesign::swPwr(swCRTdesign::swDsn(rep(2,50)),distn="gaussian",
@@ -262,24 +262,24 @@ wls_parBl2$Power
 wls_swd$Power
 
 Rprof(interval=0.005,line.profiling=TRUE)
-wls_swd    <- wlsMixedPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(3,100),
+wls_swd    <- wlsPower(mu0=0,mu1=0.1,sigma=1,tau=1,Cl=rep(3,100),
                             dsntype="SWD")
 Rprof(NULL)
 summaryRprof()
 
 
-wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
-wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
+wlsPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),Power=.9,verbose=F)
+wlsPower(mu0=0,mu1=.1,sigma=1,tau=.3,Cl=c(2,2,2,2,2),N=224,verbose=F)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=0,rho=0,gamma=0,sigma=1)
 
-wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
+wlsPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,Cl=c(2,2,2,2,2),N=224)
 swCRTdesign::swPwr(swCRTdesign::swDsn(c(2,2,2,2,2)),distn="gaussian",n=224,
                    mu0=0,mu1=.1,tau=.3,eta=.1,rho=0,gamma=0,sigma=1)
 
 cls <- rep(5,10)
 microbenchmark::microbenchmark(
-a1 <- wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
+a1 <- wlsPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=cls,N=224)
 ,
 a2 <- swCRTdesign::swPwr(swCRTdesign::swDsn(cls),distn="gaussian",n=1,
                    mu0=0,mu1=.1,tau=0,eta=0,rho=0,gamma=0,sigma=5,retDATA=TRUE)
@@ -288,50 +288,50 @@ a2$Wmat
 a1$CovarianceMatrix[1:6,1:6];a2$Wmat[1:6,1:6]
 a1$Power ; a2$pwrWLS
 
-wlsMixedPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,timeAdjust="none")
+wlsPower(mu0=0,mu1=.1,sigma=1,tau=.3,eta=.1,rho=1,Cl=c(2,2,2,2,2),N=224,timeAdjust="none")
 
 
-wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
-wlsMixedPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
+wlsPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),Power=.9,verbose=F)
+wlsPower(mu0=0,mu1=.05,sigma=1,tau=.3,Cl=rep(2,20),N=60,verbose=F)
 
-wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
+wlsPower(mu0=0,mu1=.02,sigma=1,tau=.0,
               Cl=c(50,50),timepoints=5,dsntype="parallel",
               Power=.9,verbose=F)
-wlsMixedPower(mu0=0,mu1=.02,sigma=1,tau=.0,
+wlsPower(mu0=0,mu1=.02,sigma=1,tau=.0,
               Cl=c(50,50),timepoints=5,dsntype="parallel",
               N=300,verbose=F)
 
 
-wlsMixedPower(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsPower(Cl=c(1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,verbose=T)
+wlsPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.1,Power=.8,verbose=T)
+wlsPower(Cl=c(1,1,1,1),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
-wlsMixedPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="None",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
+wlsPower(Cl=c(2,2,2,2,2,2),trtDelay=c(.3,.7),timeAdjust="factor",mu0=0,mu1=.1,sigma=1,tau=.01,Power=.8,verbose=T)
 
 
-wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
+wlsPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
               sigma=sqrt(.025*.975), timeAdjust="none",
-              tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
-wlsMixedPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
+              tau=0.00254,trtDelay=.5, N=58, verbose=2)
+wlsPower(Cl=c(2,2,2,0,2,2,2,0),mu0=0,mu1=.01,
               sigma=sqrt(.025*.975), timeAdjust="periodic", period=4,
-              tau=0.00254,trtDelay=.5, N=58, verbose=TRUE)
+              tau=0.00254,trtDelay=.5, N=58, verbose=2)
 
-a <- wlsMixedPower(Cl=c(2,2,2,0,2,2,2),mu0=0,mu1=.01, sigma=sqrt(.025*.975),
-              tau=0.0254, gamma=15, N=58, verbose=TRUE)
+a <- wlsPower(Cl=c(2,2,2,0,2,2,2),mu0=0,mu1=.01, sigma=sqrt(.025*.975),
+              tau=0.0254, gamma=15, N=58, verbose=2)
 a$CovarianceMatrix
 
 
 #### tauAR swd ####
 cl <- rep(6,3) ; si <- 2 ; tau <- .1 ; ES <- 1
-mod1 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, verbose=TRUE)
-mod2 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, verbose=TRUE)
-mod3 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.7,   mu0=0,mu1=ES, verbose=TRUE)
-mod4 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   mu0=0,mu1=ES, verbose=TRUE)
-mod5 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   mu0=0,mu1=ES, verbose=TRUE)
-mod6 <- wlsMixedPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, verbose=TRUE)
-mod7 <- wlsMixedPower(Cl=cl, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, verbose=TRUE)
-mod8 <- wlsMixedPower(Cl=cl, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, verbose=TRUE)
+mod1 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, verbose=2)
+mod2 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, verbose=2)
+mod3 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=.7,   mu0=0,mu1=ES, verbose=2)
+mod4 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=.2,   mu0=0,mu1=ES, verbose=2)
+mod5 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=.1,   mu0=0,mu1=ES, verbose=2)
+mod6 <- wlsPower(Cl=cl, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, verbose=2)
+mod7 <- wlsPower(Cl=cl, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, verbose=2)
+mod8 <- wlsPower(Cl=cl, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, verbose=2)
 
 mod1$CovarianceMatrix[1:4,1:4]
 mod2$CovarianceMatrix[1:4,1:4]
@@ -354,16 +354,16 @@ mod8$Power
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
 
-#debugonce(wlsMixedPower)
+#debugonce(wlsPower)
 #debugonce(compute_wlsPower)
 
-mod1 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod2 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod3 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod4 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod5 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod6 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
-mod7 <- wlsMixedPower(Cl=cl, timepoints=tp, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, dsntype="parallel", verbose=TRUE)
+mod1 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=NULL, mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod2 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=1,    mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod3 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.8,   mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod4 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=.5,   mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod5 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=tau, tauAR=0,    mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod6 <- wlsPower(Cl=cl, timepoints=tp, sigma=sqrt(si^2+tau^2),        mu0=0,mu1=ES, dsntype="parallel", verbose=2)
+mod7 <- wlsPower(Cl=cl, timepoints=tp, sigma=si, tau=0,   gamma=tau,  mu0=0,mu1=ES, dsntype="parallel", verbose=2)
 
 
 mod1$CovarianceMatrix[1:tp,1:tp]
@@ -385,63 +385,63 @@ mod6$Power
 #### incomplete Stepped Wedge design  ####
 Des_SWD22 <- construct_DesMat(Cl=c(2,2))
 
-#debugonce(wlsMixedPower)
-a <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2, incomplete=2,verbose = T)
+#debugonce(wlsPower)
+a <- wlsPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2, incomplete=2,verbose = T)
 plot(a)
 
 IncMat1 <- matrix(c(1,1,0,1,1,1,1,1,1,0,1,1),3,4)
-b <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
+b <- wlsPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
                    incomplete=IncMat1,verbose = T)
 plot(b)
 all.equal(a,b)
 
 IncMat2 <- IncMat1[rep(1:3,each=2),]
 
-c <- wlsMixedPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
+c <- wlsPower(Cl=c(2,2,2), mu=0, mu1=1, sigma=1, tau=2,
                    incomplete=IncMat2,verbose = T)
 plot(c)
 all.equal(a,c)
 
 ## closed cohort ####
 
-# debugonce(wlsMixedPower)
+# debugonce(wlsPower)
 # debugonce(compute_wlsPower)
 # debugonce(construct_CovMat)
 
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=1,tau=.1)
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=1,tau=.1,psi=0,N=1)
+wlsPower(Cl=c(2,3),mu=0,mu1=1,tau=.1)
+wlsPower(Cl=c(2,3),mu=0,mu1=1,tau=.1,psi=0,N=1)
 
 sig <- .05
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=3:7)
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7)
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7,INDIV_LVL=TRUE)
+wlsPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=3:7)
+wlsPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7)
+wlsPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,psi=0,N=3:7,INDIV_LVL=TRUE)
 
-wlsMixedPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=matrix(11:25,5))
+wlsPower(Cl=c(2,3),mu=0,mu1=.05,sigma=sig, tau=10,N=matrix(11:25,5))
 
-a  <- wlsMixedPower(Cl=c(4,4),mu=0,mu1=1,tau=.1,verbose = TRUE)
-b1 <- wlsMixedPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE)
-b2 <- wlsMixedPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE, INDIV_LVL = TRUE)
-c1 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=TRUE)
-c2 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=TRUE, INDIV_LVL = TRUE)
+a  <- wlsPower(Cl=c(4,4),mu=0,mu1=1,tau=.1,verbose = TRUE)
+b1 <- wlsPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE)
+b2 <- wlsPower(Cl=c(1,1),mu=0,mu1=1,tau=0,psi=.1,N=c(4,4), verbose = TRUE, INDIV_LVL = TRUE)
+c1 <- wlsPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=2)
+c2 <- wlsPower(Cl=c(2,2),mu=0,mu1=1,tau=0,psi=.1,N=c(2,2,2,2), verbose=2, INDIV_LVL = TRUE)
 a;b1;b2;c1;c2
 
 plot(a)
 plot(b2)
 plot(c2)
 
-d1 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=TRUE)
-d2 <- wlsMixedPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=TRUE, INDIV_LVL = TRUE)
+d1 <- wlsPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=2)
+d2 <- wlsPower(Cl=c(2,2),mu=0,mu1=1,sigma=.001,tau=1,psi=.1,N=c(2,2,2,2),eta=1, verbose=2, INDIV_LVL = TRUE)
 d1;d2
 
-e <- wlsMixedPower(Cl=c(2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=2,psi=.1,N=c(2,2,2,2,2,2), incomplete=2, verbose=TRUE)
+e <- wlsPower(Cl=c(2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=2,psi=.1,N=c(2,2,2,2,2,2), incomplete=2, verbose=2)
 plot(e)
 
-f <- wlsMixedPower(Cl=c(2,2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=.5,gamma=.01, psi=1,N=rep(1:4,2), verbose=TRUE)
+f <- wlsPower(Cl=c(2,2,2,2),mu=0,mu1=1,sigma=1,tau=1,eta=.5,gamma=.01, psi=1,N=rep(1:4,2), verbose=2)
 f;plot(f)
 
-g <- wlsMixedPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, psi=0, N=100, verbose=TRUE)
+g <- wlsPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, psi=0, N=100, verbose=2)
 g;plot(g)
-wlsMixedPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, N=100, verbose=TRUE)
+wlsPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, N=100, verbose=2)
 
 
 ###
@@ -452,7 +452,7 @@ tau <- .2 ; sigma <- .3 ; psi <- .3 ; eta <- 0 ; gamma <- .1
 
 system.time({
   Rprof(filename="Rprof.out", interval=.005, line.profiling=TRUE)
-  b <- wlsMixedPower(Cl=Cl, sigma=sigma,
+  b <- wlsPower(Cl=Cl, sigma=sigma,
               tau=tau, eta=eta, psi=psi, gamma=gamma,
               mu0=0,mu1=.05, N=nInd)
   Rprof(NULL)
@@ -463,31 +463,31 @@ summaryRprof(lines="show")
 
 nCl <- 10 ; N <- 20
 microbenchmark::microbenchmark({
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, N=N)
 # },{
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, psi=0, N=N)
 # },{
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, psi=0, N=N, INDIV_LVL = TRUE)
 # })
 
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, psi=1, N=N)
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, psi=1, N=N)
 
 
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
               sigma=1, tau=2, psi=1, N=1)
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
               sigma=1, tau=sqrt(5), psi=0, N=1)
 
 
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
               sigma=1, tau=2, psi=1, eta=.5, N=1)
-wlsMixedPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
+wlsPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
               sigma=1, tau=2, psi=1, eta=.5, N=1, INDIV_LVL = TRUE)
 
 
@@ -501,8 +501,8 @@ microbenchmark::microbenchmark( cat(" ") ,  cat(".") , cat("_") )
 
 ################################################################################
 ## plot.wlsPower #####
-plot(wlsMixedPower(Cl=c(2,5),sigma=1,tau=0.1, mu0=0, mu1=1,
-                            timepoints=5,design="parallel",verbose=T))
+plot(wlsPower(Cl=c(2,5),sigma=1,tau=0.1, mu0=0, mu1=1,
+                            timepoints=5,dsntype="parallel",verbose=2))
 
 
 DesMat11 <- construct_DesMat(Cl=c(2,1))
@@ -512,16 +512,16 @@ IncMat22 <- matrix(c(1,1,1,1,0,1,1,1,1),3,3)
 IncMat31 <- matrix(c(1,1,0,1,1,1,1,1,1),3,3)
 IncMat2122 <- matrix(c(1,0,1,1,0,1,1,1,1),3,3)
 
-wmp <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
-                          incomplete = NULL, verbose=TRUE)
-wmpinc11 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
-                          incomplete = IncMat11, verbose=TRUE)
-wmpinc22 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
-                          incomplete = IncMat22, verbose=TRUE)
-wmpinc31 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
-                          incomplete = IncMat31, verbose=TRUE)
-wmpinc2122 <- wlsMixedPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
-                          incomplete = IncMat2122, verbose=TRUE)
+wmp <- wlsPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = NULL, verbose=2)
+wmpinc11 <- wlsPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat11, verbose=2)
+wmpinc22 <- wlsPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat22, verbose=2)
+wmpinc31 <- wlsPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat31, verbose=2)
+wmpinc2122 <- wlsPower(DesMat=DesMat11, mu0=0, mu1=1, sigma=1, tau=2,
+                          incomplete = IncMat2122, verbose=2)
 plot(wmp)
 plot(wmpinc11)
 plot(wmpinc22)
@@ -588,9 +588,9 @@ round(matrix(diag(Q),3,3,byrow=TRUE),2)
 
 library(plotly)
 
-x <- wlsMixedPower(Cl=c(2,2,2,2,1,1,2,2), trtDelay = .5, mu0=0, mu1=.01, N=500,
+x <- wlsPower(Cl=c(2,2,2,2,1,1,2,2), trtDelay = .5, mu0=0, mu1=.01, N=500,
                    sigma=sqrt(0.0244), tau=0.005, eta=0.005, verbose=2)
-x <- wlsMixedPower(Cl=c(8,8), trtDelay = .5, mu0=0, mu1=.01, N=500,
+x <- wlsPower(Cl=c(8,8), trtDelay = .5, mu0=0, mu1=.01, N=500,
                    sigma=sqrt(0.0244), tau=0.02,
                    eta=0.02, verbose=2)
 x$Params
@@ -607,7 +607,7 @@ etaRange <- lapply(Range,function(x) x * p$eta)
 
 taugrid <- expand.grid(rhoRange=rhoRange,tauRange=tauRange)
 
-tauPwr   <-  mapply(wlsMixedPower,
+tauPwr   <-  mapply(wlsPower,
                     tau=tauRange,
                     # tau=as.list(taugrid$tauRange),
                     # rho=as.list(taugrid$rhoRange),
@@ -624,7 +624,7 @@ tauPwr   <-  mapply(wlsMixedPower,
 #         x=~tauRange, y=~tauPwr, split=~rhoRange,
 #         data=cbind(taugrid,tauPwr))
 
-etaPwr   <-  mapply(wlsMixedPower,eta=as.list(etaRange),
+etaPwr   <-  mapply(wlsPower,eta=as.list(etaRange),
                     MoreArgs = list(DesMat=x$DesignMatrix,
                                     N=p$N,
                                     sigma=p$sigma,
@@ -661,7 +661,7 @@ plot_randeffs <- function(X,Range=seq(0,2,length.out=10)){
   p        <- X$Params
   tauRange <- lapply(Range, function(x) x * p$tau)
   etaRange <- lapply(Range, function(x) x * p$eta)
-  tauPwr   <-  mapply(wlsMixedPower,
+  tauPwr   <-  mapply(wlsPower,
                       tau=as.list(tauRange),
                       MoreArgs = list(DesMat=X$DesignMatrix,
                                       N=p$N,
@@ -671,7 +671,7 @@ plot_randeffs <- function(X,Range=seq(0,2,length.out=10)){
                                       mu1=p$mu1,
                                       verbose=0) )
 
-  etaPwr   <-  mapply(wlsMixedPower,
+  etaPwr   <-  mapply(wlsPower,
                       eta=as.list(etaRange),
                       MoreArgs = list(DesMat=X$DesignMatrix,
                                       N=p$N,
@@ -693,7 +693,7 @@ plot_randeffs <- function(X,Range=seq(0,2,length.out=10)){
 }
 
 
-x <- wlsMixedPower(Cl=c(2,2,2,2), trtDelay=.3, sigma=1, tau=.2, eta=.3,
+x <- wlsPower(Cl=c(2,2,2,2), trtDelay=.3, sigma=1, tau=.2, eta=.3,
                    mu0=0, mu1=1, verbose = 2)
 
 plot_randeffs(x)
@@ -709,7 +709,7 @@ plot_wls3 <- function(x){
   grid <- expand.grid(tau=tauRange,eta=etaRange)
   pwr <- list()
   for(i in 1:dim(grid)[1]){
-    pwr[[i]] <- wlsMixedPower(DesMat=x$DesignMatrix,mu0=0,mu1=.01,sigma=p$sigma,N=200,
+    pwr[[i]] <- wlsPower(DesMat=x$DesignMatrix,mu0=0,mu1=.01,sigma=p$sigma,N=200,
                               tau=grid$tau[i], eta=grid$eta[i])[["Power"]]
   }
   tmp <- data.frame(grid,pwr=unlist(pwr))

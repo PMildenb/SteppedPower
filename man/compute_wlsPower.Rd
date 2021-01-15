@@ -48,15 +48,16 @@ If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
 
 \item{gamma}{numeric (scalar), random time effect}
 
-\item{psi}{random individuum effect. Leads to a closed cohort setting}
+\item{psi}{numeric (scalar), random subject specific intercept.
+Leads to a closed cohort setting}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
 Defaults to 'rep(1,sum(Cl))' if not passed.}
 
-\item{CovMat}{numeric, a positive-semidefinite matrix of dimension
-(#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
-rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.}
+\item{CovMat}{numeric, a positive-semidefinite matrix with
+(#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
+`sigma`, `tau`, `eta`, `rho` and `psi` are ignored.}
 
 \item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
 
@@ -65,7 +66,7 @@ rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}
 
-\item{verbose}{interger, how much information should the function return?}
+\item{verbose}{integer, how much information should the function return?}
 }
 \description{
 compute_wlsPower

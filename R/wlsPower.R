@@ -1,34 +1,11 @@
 #' wlsPower
 #'
 #' This is the main function of the SteppedPower package.
-#' It calls the constructor functions for the design matrix \eqn{X} and
-#' covariance matrix \eqn{\Omega}, and then calculates the variance of the
-#' intervention effect \eqn{Var(\theta)}
+#' It calls the constructor functions for the design matrix and
+#' covariance matrix, and then calculates the variance of the
+#' intervention effect estimator. The latter is then used
+#' to compute the power of a Wald test of a (given) intervention effect.
 #'
-#' @details
-#'
-#' \eqn{y_{ijk}= g( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk})}
-#'
-#' with
-#'
-# * \eqn{y_{ijk}} the response in cluster $j$ at time $i$ for individual $k$
-# * $\mu$ a overall mean (under control)
-# * $\alpha_i$ is the time trend at time $i$
-# * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
-# * $\theta$ the treatment effect
-# * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
-# * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
-# * $g(\cdot)$ a link function
-# * $c_j$ a (random) treatment effect
-# * $b_j$ and $c_j$ jointly distributed with
-#' \eqn{\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)}
-#'
-#'
-#' \eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right)}
-#'
-#'
-#' where \eqn{\text{Var}(\hat \theta)} is the diagonal element of \eqn{\Omega}
-#' that corresponds to \eqn{\hat\theta}.
 #'
 #'
 #' @param Cl integer (vector), number of clusters per sequence group (in SWD),
@@ -62,7 +39,8 @@
 #' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
-#' @param psi random individuum effect. Leads to a closed cohort setting
+#' @param psi numeric (scalar), random subject specific intercept.
+#' Leads to a closed cohort setting
 #' @param alpha_0_1_2 numeric vector of length 3, that consists of alpha_0, alpha_1
 #' and alpha_2. This is an alternative way to define the correlation structure,
 #' following Li et al. (2018).
@@ -75,34 +53,45 @@
 #' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
 #' @param sig.level numeric (scalar), significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
-#' @param verbose interger, how much information should the function return?
+#' @param verbose integer, how much information should the function return?
 #' @param period numeric (scalar)
-#' @param CovMat numeric, a positive-semidefinite matrix of dimension
-#' (#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
-#' rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.
+#' @param CovMat numeric, a positive-semidefinite matrix with
+#' (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
+#' `sigma`, `tau`, `eta`, `rho` and `psi` are ignored.
 #' @param INDIV_LVL logical, should the computation be conducted on an individual
 #' level? This leads to longer run time and is mainly for diagnostic purposes.
 #'
-#' @details see vignette 'Getting Started'
+#' @details
+#' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
+#' The variance of the treatment effect estimator \eqn{\hat\theta} can then be
+#' estimated via weighted least squares (see also vignette 'Getting Started').
+#'
+#'
+#'
+#'
 #'
 #' @return
 #' The return depends on the `verbose` parameter.
 #' If `verbose`=0, only the power is returned
-#' If `verbose`=1 (the default), a list containing contains power and the
+#' If `verbose`=1 (the default), a list containing power and the
 #' parameters of the specific setting is returned.
-#' If requested (by verbose=2) this list also contains relevant matrices.#' @export
+#' If requested (by `verbose`=2) this list also contains relevant matrices.
+#'
 #' @export
 #'
 #' @examples
 #' ## See also vignette for more examples
 #' ##
 #' ##
-#' ## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
-#' ## cluster effect sd = 0.33, and 10 Individuals per cluster
+#' ## stepped wedge design with 5 Clusters in 5 sequences,
+#' ## residual standard deviation 2,
+#' ## cluster effect sd = 0.33, and 10 individuals per cluster.
+#' ## Further, let the mean under the null and alternative hypothesis 0 and 1,
+#' ## respectively.
 #' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 #' ##
 #' ##
-#' ## ... with auto-regressive cluster effect
+#' ## ... with auto-regressive cluster effect `tauAR=0.7`.
 #' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
 #' ##
 #' ##
@@ -117,8 +106,8 @@
 #'                           9,6, 8,7,11),5,6))
 #' ##
 #' ##
-#' ## ... with random treatment effect (with sd=0.2), which is correlated with
-#' ## the cluster effect with rho=0.25
+#' ## ... with random treatment effect (with standard deviation 0.2),
+#' ## which is correlated with the cluster effect with `rho`=0.25.
 #' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10)
 #' ##
 #' ##
@@ -131,17 +120,17 @@
 #'                                  1,1,1,1,1,
 #'                                  0,1,1,1,1,
 #'                                  0,0,1,1,1),5,6))
-#'##
+#'## -> the same.
 #'##
 #'## ... with two levels of clustering. This arises if the patients are
 #'## observed over the whole  study period
 #'## (often referred to as closed cohort design) or if subclusters exist
 #'## (such as wards within clinics). For
 #'mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
-#'                           sigma=2, tau=0.33, psi=.5,
+#'                           sigma=2, tau=0.33, psi=.25,
 #'                           N=10, incomplete=3, verbose=2)
 #'mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
-#'                           sigma=2, tau=0.33, psi=.5,
+#'                           sigma=2, tau=0.33, psi=.25,
 #'                           N=10, incomplete=3, verbose=2, INDIV_LVL=TRUE)
 #'mod_aggr
 #'mod_indiv
@@ -149,7 +138,7 @@
 #'mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
 #'##
 #'##
-#'## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
+#'## stepped wedge design with 5 Clusters in 5 sequences, residual sd = 2,
 #'## cluster effect sd = 0.33. How many Individuals are needed to achieve a
 #'## power of 80% ?
 #' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
@@ -178,7 +167,7 @@
 #'##
 #'##
 #'##
-#'## stepped wedge design with 32 Individuals in 8 waves, binomial outcome,
+#'## stepped wedge design with 32 Individuals in 8 sequences, binomial outcome,
 #'## 50% incidence under control, 25% incidence under interventional treatment.
 #'## cluster effect sd = 0.5 (ICC of 1/3 under control),
 #'## every individual is its own cluster.
@@ -376,7 +365,7 @@ wlsPower <- function(Cl            =NULL,
   EffSize <- mu1-mu0
   if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
 
-  ## calculate samplesize (if needed) #####
+  ## calculate samplesize (if needed, i.e. if power is not NULL ) #####
   if(!is.null(Power)){
     if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(
@@ -404,23 +393,6 @@ wlsPower <- function(Cl            =NULL,
     N <- N_opt
   }
   ## calculate Power #####
-  out <- compute_wlsPower(DesMat    =DesMat,
-                          EffSize   =EffSize,
-                          sigma     =sigma,
-                          tau       =tau,
-                          eta       =eta,
-                          tauAR     =tauAR,
-                          rho       =rho,
-                          gamma     =gamma,
-                          psi       =psi,
-                          N         =N,
-                          dfAdjust  =dfAdjust,
-                          sig.level =sig.level,
-                          CovMat    =CovMat,
-                          INDIV_LVL =INDIV_LVL,
-                          verbose   =verbose)
-  if(!is.null(Power)) out$N_opt <- N_opt
-
   out <- compute_wlsPower(DesMat    =DesMat,
                           EffSize   =EffSize,
                           sigma     =sigma,
@@ -582,7 +554,7 @@ print.wlsPower <- function(x, ...){
 #'
 plot.wlsPower <- function(x,...){
   if(!"ProjMatrix" %in% names(x))
-    stop("Please rerun wlsPower() with `verbose=TRUE` ")
+    stop("Please rerun wlsPower() with `verbose=2` ")
   wgt <- x$ProjMatrix
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]

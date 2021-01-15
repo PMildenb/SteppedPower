@@ -22,6 +22,10 @@ construct_CovSubMat(
 \arguments{
 \item{N}{Number of individuals per cluster}
 
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1.
+Defaults to 1 for parallel designs.}
+
 \item{sigma}{numeric (vector of length `timepoints`),
 residual error}
 
@@ -48,7 +52,8 @@ the function `construct_trtMat`, indicating the cluster-periods that receive
 interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 `SumCl` and `timepoints` are ignored (!).}
 
-\item{psi}{random individuum effect. Leads to a closed cohort setting}
+\item{psi}{numeric (scalar), random subject specific intercept.
+Leads to a closed cohort setting}
 
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}

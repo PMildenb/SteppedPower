@@ -223,7 +223,6 @@ construct_trtMat <- function(Cl,
 #'
 #' @inheritParams construct_DesMat
 #'
-#' @return
 #' @export
 
 construct_timeadjust <- function(Cl,

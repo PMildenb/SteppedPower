@@ -106,6 +106,9 @@ construct_CovSubMat <- function(N,
 #' (or `construct_CovSubMat` in case of two levels of clustering) for each block.
 #'
 #' @inheritParams compute_wlsPower
+#' @param timepoints numeric (scalar or vector), number of timepoints (periods).
+#' If design is swd, timepoints defaults to length(Cl)+1.
+#' Defaults to 1 for parallel designs.
 #' @param SumCl total number of clusters
 #' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
 #' the function `construct_trtMat`, indicating the cluster-periods that receive
@@ -182,8 +185,8 @@ construct_CovMat <- function(SumCl      =NULL,
       if(length(N) %in% c(1,SumCl,SumCl*timepoints)) {
         NMat <- matrix(N, nrow=SumCl, ncol=timepoints)
       }else stop(paste('length of cluster size vector N is ', N,
-                       '. This does not fit to given number of clusters,"
-                       " which is ',SumCl))
+                       '. This does not fit to given number of clusters, which is ',
+                       SumCl,"\n"))
 
       ## N into sigma (aggregate on cluster means)##
       sigmaMat <- sigmaMat / sqrt(NMat)

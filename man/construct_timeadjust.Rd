@@ -29,9 +29,6 @@ Defaults to "factor".}
 \item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
 Is repeated for every cluster.}
 }
-\value{
-
-}
 \description{
 construct_timeadjust
 }

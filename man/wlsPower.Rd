@@ -85,15 +85,16 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently
 
 \item{gamma}{numeric (scalar), random time effect}
 
-\item{psi}{random individuum effect. Leads to a closed cohort setting}
+\item{psi}{numeric (scalar), random subject specific intercept.
+Leads to a closed cohort setting}
 
 \item{alpha_0_1_2}{numeric vector of length 3, that consists of alpha_0, alpha_1
 and alpha_2. This is an alternative way to define the correlation structure,
 following Li et al. (2018).}
 
-\item{CovMat}{numeric, a positive-semidefinite matrix of dimension
-(#Clusters \eqn{\cdot} timepoints) *#Cluster* \eqn{\cdot} *timepoints*
-rows/columns. If `CovMat` is given, `sigma`, `tau`, `eta` and `rho` are ignored.}
+\item{CovMat}{numeric, a positive-semidefinite matrix with
+(#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
+`sigma`, `tau`, `eta`, `rho` and `psi` are ignored.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
@@ -113,47 +114,39 @@ Defaults to "gaussian"}
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}
 
-\item{verbose}{interger, how much information should the function return?}
+\item{verbose}{integer, how much information should the function return?}
 }
 \value{
 The return depends on the `verbose` parameter.
 If `verbose`=0, only the power is returned
-If `verbose`=1 (the default), a list containing contains power and the
+If `verbose`=1 (the default), a list containing power and the
 parameters of the specific setting is returned.
-If requested (by verbose=2) this list also contains relevant matrices.#' @export
+If requested (by `verbose`=2) this list also contains relevant matrices.
 }
 \description{
 This is the main function of the SteppedPower package.
 It calls the constructor functions for the design matrix \eqn{X} and
 covariance matrix \eqn{\Omega}, and then calculates the variance of the
-intervention effect \eqn{Var(\theta)}
+intervention effect estimator \eqn{Var(\hat\theta)}
 }
 \details{
-\eqn{y_{ijk}= g( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk})}
-
-with
-
-\eqn{\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)}
-
-
-\eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right)}
-
-
-where \eqn{\text{Var}(\hat \theta)} is the diagonal element of \eqn{\Omega}
-that corresponds to \eqn{\hat\theta}.
-
-see vignette 'Getting Started'
+Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
+The variance of the treatment effect estimate \eqn{\Var{\hat\theta}}
+see also vignette 'Getting Started'
 }
 \examples{
 ## See also vignette for more examples
 ##
 ##
-## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
-## cluster effect sd = 0.33, and 10 Individuals per cluster
+## stepped wedge design with 5 Clusters in 5 sequences,
+## residual standard deviation 2,
+## cluster effect sd = 0.33, and 10 individuals per cluster.
+## Further, let the mean under the null and alternative hypothesis 0 and 1,
+## respectively.
 wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 ##
 ##
-## ... with auto-regressive cluster effect
+## ... with auto-regressive cluster effect `tauAR=0.7`.
 wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
 ##
 ##
@@ -168,8 +161,8 @@ wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33,
                           9,6, 8,7,11),5,6))
 ##
 ##
-## ... with random treatment effect (with sd=0.2), which is correlated with
-## the cluster effect with rho=0.25
+## ... with random treatment effect (with standard deviation 0.2),
+## which is correlated with the cluster effect with `rho`=0.25.
 wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, eta=.2, rho=.25, N=10)
 ##
 ##
@@ -182,17 +175,17 @@ wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10,
                                  1,1,1,1,1,
                                  0,1,1,1,1,
                                  0,0,1,1,1),5,6))
-##
+## -> the same.
 ##
 ## ... with two levels of clustering. This arises if the patients are
 ## observed over the whole  study period
 ## (often referred to as closed cohort design) or if subclusters exist
 ## (such as wards within clinics). For
 mod_aggr  <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
-                          sigma=2, tau=0.33, psi=.5,
+                          sigma=2, tau=0.33, psi=.25,
                           N=10, incomplete=3, verbose=2)
 mod_indiv <- wlsPower(mu0=0, mu1=1, Cl=rep(1,5),
-                          sigma=2, tau=0.33, psi=.5,
+                          sigma=2, tau=0.33, psi=.25,
                           N=10, incomplete=3, verbose=2, INDIV_LVL=TRUE)
 mod_aggr
 mod_indiv
@@ -200,7 +193,7 @@ mod_indiv
 mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
 ##
 ##
-## stepped wedge design with 5 Clusters in 5 waves, residual sd = 2,
+## stepped wedge design with 5 Clusters in 5 sequences, residual sd = 2,
 ## cluster effect sd = 0.33. How many Individuals are needed to achieve a
 ## power of 80\% ?
 wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
@@ -229,7 +222,7 @@ wlsPower(mu0=0, mu1=1, Cl=c(3,3), sigma=2, tau=0.33, N=10,
 ##
 ##
 ##
-## stepped wedge design with 32 Individuals in 8 waves, binomial outcome,
+## stepped wedge design with 32 Individuals in 8 sequences, binomial outcome,
 ## 50\% incidence under control, 25\% incidence under interventional treatment.
 ## cluster effect sd = 0.5 (ICC of 1/3 under control),
 ## every individual is its own cluster.

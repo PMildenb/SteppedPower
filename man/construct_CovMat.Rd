@@ -24,6 +24,10 @@ construct_CovMat(
 \arguments{
 \item{SumCl}{total number of clusters}
 
+\item{timepoints}{numeric (scalar or vector), number of timepoints (periods).
+If design is swd, timepoints defaults to length(Cl)+1.
+Defaults to 1 for parallel designs.}
+
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
 \item{tau}{numeric, standard deviation of random intercepts}
@@ -53,7 +57,8 @@ Defaults to 'rep(1,sum(Cl))' if not passed.}
 
 \item{CovBlk}{a matrix of dimension *timepoints* x *timepoints*.}
 
-\item{psi}{random individuum effect. Leads to a closed cohort setting}
+\item{psi}{numeric (scalar), random subject specific intercept.
+Leads to a closed cohort setting}
 
 \item{INDIV_LVL}{logical, should the computation be conducted on an individual
 level? This leads to longer run time and is mainly for diagnostic purposes.}

@@ -1,5 +1,5 @@
 ---
-title: "GettingStarted"
+title: "Getting Started"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -26,7 +26,7 @@ library(Matrix)
 The package `SteppedPower` aims at providing tools for power calculation 
 and design diagnostics in interventional study designs,
 with a special focus on stepped wedge designs. Other implemented study design types are 
-parallel, parallel with baseline period(s) and crossover designs. Further designs can be 
+parallel, parallel with baseline period(s) and crossover designs. Further design types can be 
 easily defined by the user.  
 
 Currently, normal outcomes and binomial outcomes with logit link are implemented.  
@@ -36,20 +36,21 @@ Random cluster effect, autocorrelated cluster effect, random treatment effect,
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
-package makes computation of large designs feasible. [@hussey2007design]
+package makes computation of large designs feasible. 
+<!-- [@hussey2007design] -->
 
 ## Methods and Notation
 
 A common approach to model the correlation in longitudinal studies are random effects.
-such a model has the form
+Such a model has the form
 
 
-$$y_{ijk}= \mu + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
+$$y_{ijk}= \mu_0 + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
 with
 
   * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
-  * $\mu$ a overall mean (under control)
-  * $\alpha_i$ is the time trend at time $i$
+  * $\mu_0$ a overall mean (under control)
+  * $\alpha_i$ the time trend at time $i$
   * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
   * $\theta$ the treatment effect 
   * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
@@ -77,6 +78,7 @@ $$ \text{Var}(\hat\beta) =  {(X'\Omega^{-1}X)^{-1}}$$
 We can then calculate the power of a z-test 
 
 $$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
+<!-- \eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) } -->
 
 
 where $\text{Var}(\hat \theta)$ is the diagonal element of $\Omega$ 
@@ -85,16 +87,18 @@ that corresponds to $\hat\theta$.
 
   
   
-Extensions to the above formula implemented in this package are 
+Extensions to the above formula implemented in this package are  
+
   * random treatment effect
   * autoregressive cluster effect
   * binomial outcomes with logit-link
   
 
 $$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
-with 
+with  
+
   * $g(\cdot)$ a link function
-  * $c_j$ a (random) treatment effect
+  * $c_j$ a random treatment effect
   * $b_j$ and $c_j$ jointly distributed with 
   $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
 
@@ -112,8 +116,8 @@ helpful to design non-standard userdefined settings.
 `construct_DesMat` builds the design matrix which consists of the treatment 
 status, usually built by`construct_trtMat` and the time adjustment, usually
 built by `construct_timeadjust`. 
-There is also the option to pass a userdefined definition of the treatment 
-status to `construct_DesMat`, this is done by 
+There is also the option to pass a user defined definition of the treatment 
+status to `construct_DesMat`.
 If not specified, the number of timepoints is guessed as 
 the fewest number of periods (timepoints) possible with the given design, 
 i.e. two for cross-over designs or the number of waves plus one
@@ -121,13 +125,18 @@ for stepped wedge designs.
 
 
 `construct_CovMat` builds the covariance matrix (explicitly). It uses 
-`construct_CovBlk` to 
+`construct_CovBlk` to construct the blocks for each cluster which are then combined
+to a block diagonal matrix.
 
 ```{r}
-CovMat <- construct_CovMat(CovBlk = diag(3) + (2:4 %o% 2:4)/10,SumCl=4)
-a <- wlsPower(mu0=0,mu1=1,Cl=c(2,2),CovMat = CovMat, verbose = TRUE)
-a <- wlsPower(mu0=0,mu1=1,Cl=c(2,2),tau=.5,verbose=TRUE)
-a$CovarianceMatrix
+CovBlk <- construct_CovBlk(sigma=c(1,1), tau=c(.5,.5))
+all.equal(CovBlk,diag(2) + c(.5,.5) %o% c(.5,.5))
+
+CovMat1 <- construct_CovMat(CovBlk = CovBlk, SumCl=2)
+CovMat2 <- construct_CovMat(SumCl=2,timepoints=2,sigma=1,tau=.5)
+
+CovMat1
+all.equal(CovMat1,CovMat2)
 ```
 
 
@@ -154,7 +163,7 @@ is also shown.
 $\hat\theta$, but not for $\text{Var}(\hat\theta)$ !
 
 ```{r}
-wlsPwr <- wlsPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=TRUE)
+wlsPwr <- wlsPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=2)
 plot(wlsPwr)
 ```
 
@@ -164,7 +173,7 @@ When the argument `Power` is passed to `wlsPower`,
 the sample size needed is calculated, under the assumption of equally sized 
 clusters and periods. 
 ```{r}
-wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, Power=.8)
+wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
 ```
 
 
@@ -179,13 +188,12 @@ We want to compare the mean in two groups. Lets say we have two groups of 10 obs
 The Z-test can be expressed as follows:
 
 ```{r}
-wlsPower(Cl=c(10,10), sigma=1, mu0=0,mu1=.6, N=1, 
+wlsPower(Cl=c(10,10), mu0=0,mu1=.6,sigma=1, tau=0, N=1, 
               dsntype="parallel", timepoints=1)
 
 ## the same:
-wlsPower(Cl=c(1,1), sigma=1, mu0=0,mu1=.6, N=10, tau=0,
-              dsntype="parallel", timepoints=1, INDIV_LVL = TRUE)
-debugonce(construct_CovMat)
+wlsPower(Cl=c(1,1), mu0=0,mu1=.6, sigma=1, tau=0, N=10,
+              dsntype="parallel", timepoints=1)
 ```
 
 
@@ -195,9 +203,11 @@ pwr::pwr.norm.test(.3,n=20)$power
 
 >A quick Note on t-tests: It is much more challenging to use `SteppedPower` to reproduce settings in 
 which the variance is assumed to be unknown, most prominently the well known t-test.
-In this package, you find implemented some heuristics for guessing the denominator 
-degrees of freedom, but they yield rather scaled Wald test than t tests.
-The main difference is that the distribution under the alternative is assumed to be symmetric,
+In this package, you find implemented some (experimental) heuristics 
+for guessing the denominator degrees of freedom, but they yield rather 
+scaled Wald tests than t tests. 
+The main difference is that the distribution under 
+the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
 
@@ -209,58 +219,58 @@ wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,dsntype="parallel")
 wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,dsntype="parallel")
 ```
 
-### Comparison of designs
+<!-- ### Comparison of designs -->
 
-See Hemming, Haines 2014
+<!-- See Hemming, Haines 2014 -->
 
-$$ icc = \frac{tau^2}{sigma^2+tau^2}$$ 
+<!-- $$ icc = \frac{tau^2}{sigma^2+tau^2}$$  -->
 
-$$  \frac{1}{icc} = \frac{sigma^2+tau^2}{tau^2} = \frac{sigma^2}{tau^2} + 1  $$ 
+<!-- $$  \frac{1}{icc} = \frac{sigma^2+tau^2}{tau^2} = \frac{sigma^2}{tau^2} + 1  $$  -->
 
-$$  \frac{1-icc}{icc} = \frac{sigma^2}{tau^2}  $$ 
+<!-- $$  \frac{1-icc}{icc} = \frac{sigma^2}{tau^2}  $$  -->
 
-$$ \tau^2 = \sigma^2 \frac{icc}{1-icc}$$ 
+<!-- $$ \tau^2 = \sigma^2 \frac{icc}{1-icc}$$  -->
 
-```{r, eval=FALSE}
-library(swCRTdesign)
+<!-- ```{r, eval=FALSE} -->
+<!-- library(swCRTdesign) -->
 
-# icc <- 0.1
-# tau001 <- sqrt(icc/(1-icc))
-# tau01 <- sqrt(icc/(1-icc))
+<!-- # icc <- 0.1 -->
+<!-- # tau001 <- sqrt(icc/(1-icc)) -->
+<!-- # tau01 <- sqrt(icc/(1-icc)) -->
 
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=0, eta=0, rho=0, gamma=0, retDATA = TRUE)
-wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=0)
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=0, eta=0, rho=0, gamma=0, retDATA = TRUE) -->
+<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=0) -->
 
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau001, 
-      eta=0, rho=0, gamma=0, retDATA = TRUE)
-wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001)
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.01, cac=1)
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau001,  -->
+<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
+<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001) -->
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.01, cac=1) -->
 
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau01, 
-      eta=0, rho=0, gamma=0, retDATA = TRUE)
-wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01)
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1)
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau01,  -->
+<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
+<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01) -->
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1) -->
 
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=100, 
-      eta=0, rho=0, gamma=0, retDATA = TRUE)
-wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=100)
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=.1, cac=0)
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=100,  -->
+<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
+<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=100) -->
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=.1, cac=0) -->
 
 
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel")
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel_baseline")
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel") -->
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel_baseline") -->
 
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel")
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel_baseline")
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel") -->
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel_baseline") -->
 
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel")
-wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel_baseline")
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel") -->
+<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel_baseline") -->
 
-swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1, retDATA=TRUE)
-wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), N=1, tau=0)
+<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1, retDATA=TRUE) -->
+<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), N=1, tau=0) -->
 
-View(swPwr)
-```
+<!-- View(swPwr) -->
+<!-- ``` -->
 
 
 
@@ -274,22 +284,22 @@ mod3 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1)
 mod4 <- wlsPower(Cl=c(4,4,4),   sigma=2, eta=1, mu0=0,mu1=1, timepoints=5)
 
 mod1 <- wlsPower(Cl=c(0,4,4,4), sigma=2, eta=1, mu0=0,mu1=1)
-mod2 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1, trtDelay=0, verbose=TRUE)
+mod2 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1, trtDelay=0)
 ```
 
-### Autocorrelated cluster effect
+### Autocorrelated cluster effects
 
 In longitudinal studies, it can be sensible to assume that correlation within 
 clusters decreases with increasing time lag.
 The argument `tauAR` enables the user to specify a AR-1 correlation. `tauAR`
-must be any value between 0 and 1, the former corresponds to i.i.d. observations, 
+must be any value between `0` and `1`. The former corresponds to i.i.d. observations, 
 the latter to the usual compound symmetry covariance type.  
 
 An example of a stepped wedge design with 8 clusters in 4 waves, once with 
 medium autocorrelation (`tauAR=0.6`) and once with high autocorrelation (`tauAR=0.9`):
 ```{r}
-a <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.6, verbose=TRUE)
-b <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.9, verbose=TRUE)
+a <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.6, verbose=2)
+b <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.9, verbose=2)
 plot(a)
 plot(b)
 ```
@@ -308,15 +318,16 @@ suppressWarnings(knitr::kable(as.matrix(b$CovarianceMatrix[1:5,1:5])))
 ### Unequal cluster sizes
 
 The argument `N` defines the cluster size. `N` can be 
-   * a scalar, if all clusters have the same assumed size, which is also constant 
-   over time
-   * a vector, if the size differs between clusters but is assumed to be constant
-   over time
-   * a matrix where each row corresponds to either a wave or a cluster and each
+   * a scalar, if all clusters have the same assumed size, 
+   which is also constant over time
+   * a vector, if the size differs between clusters but 
+   is assumed to be constant over time
+   * a matrix where each row corresponds to either 
+   a cluster or a wave of clusters and each
    column corresponds to a timepoint
 
 ```{r}
-a <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=TRUE)
+a <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=2)
 plot(a)
 ```
 
@@ -324,7 +335,7 @@ plot(a)
 ### Incomplete Stepped Wedge Designs
 
 Suppose you do not plan to observe all clusters over the whole study period.
-Rather, clusters that switch early to the intervention are not obeserved until the end.
+Rather, clusters that switch early to the intervention are not observed until the end.
 Analogous, observation starts later in clusters that switch towards the end of the study.
 This is sometimes called 'incomplete SWD'.  
 
@@ -337,7 +348,7 @@ and we observe two timepoints before and after the switch, then we receive
 
 ```{r}
 incompletePwr <- wlsPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0,mu1=.5, N=80, 
-                             incomplete=2, verbose=TRUE)
+                             incomplete=2, verbose=2)
 incompletePwr
 ```
 
@@ -353,7 +364,7 @@ incompleteMat1 <- cbind(TM[,1:2],rep(1,4),TM[,3:4])
 incompleteMat2 <- incompleteMat1[rep(1:4,each=2),]
 ```
 
-A matrix  a wave of clusters
+A matrix which each row representing a wave of clusters
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(incompleteMat1))
 ```
@@ -366,9 +377,9 @@ suppressWarnings(knitr::kable(incompleteMat2))
 Now all that's left to do is to plug that into the main function:
 ```{r}
 incompletePwr1 <- wlsPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0, mu1=.5, N=80, 
-                        incomplete=incompleteMat1, verbose=TRUE)
+                        incomplete=incompleteMat1, verbose=2)
 incompletePwr2 <- wlsPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0, mu1=.5, N=80, 
-                        incomplete=incompleteMat2, verbose=TRUE)
+                        incomplete=incompleteMat2, verbose=2)
 
 all.equal(incompletePwr,incompletePwr1)
 all.equal(incompletePwr,incompletePwr2)
@@ -398,30 +409,30 @@ construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="periodic")
 
 wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="periodic")
 wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="none")
-a <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="linear", verbose=TRUE)
-b <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="factor", verbose=TRUE)
+a <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="linear", verbose=2)
+b <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="factor", verbose=2)
 
 a$DesignMatrix
 b$DesignMatrix
 ```
 
 
-In some scenarios, different modelling of the time trend can be favoured. 
+<!-- In some scenarios, different modelling of the time trend can be favoured.  -->
 
-```{r}
-timeMat <- matrix(c(1,1,1,1,1,1,1,1,1,1,1,1,
-                    0,1,0,0,0,1,0,0,0,1,0,0,
-                    0,0,1,0,0,0,1,0,0,0,1,0,
-                    0,0,0,1,0,0,0,1,0,0,0,1,
-                    # 0,0,0,0,1,1,1,1,0,0,0,0,
-                    0,0,0,0,0,0,0,0,1,1,1,1),12)
-DesMat  <- construct_DesMat(rep(1,11), timeBlk = timeMat)
+<!-- ```{r} -->
+<!-- timeMat <- matrix(c(1,1,1,1,1,1,1,1,1,1,1,1, -->
+<!--                     0,1,0,0,0,1,0,0,0,1,0,0, -->
+<!--                     0,0,1,0,0,0,1,0,0,0,1,0, -->
+<!--                     0,0,0,1,0,0,0,1,0,0,0,1, -->
+<!--                     # 0,0,0,0,1,1,1,1,0,0,0,0, -->
+<!--                     0,0,0,0,0,0,0,0,1,1,1,1),12) -->
+<!-- DesMat  <- construct_DesMat(rep(1,11), timeBlk = timeMat) -->
 
-wlsPower1 <- wlsPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
-plot(wlsPower1)
-wlsPower2 <- wlsPower(Cl=rep(1,11), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=TRUE)
-plot(wlsPower2)
-```
+<!-- wlsPower1 <- wlsPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=2) -->
+<!-- plot(wlsPower1) -->
+<!-- wlsPower2 <- wlsPower(Cl=rep(1,11), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=2) -->
+<!-- plot(wlsPower2) -->
+<!-- ``` -->
 
 
 
@@ -429,7 +440,8 @@ plot(wlsPower2)
 
 Closed cohort the patients are observed over the whole study period or 
 if subclusters exist (such as wards within clinics). 
-The argument `psi` denotes the standard deviation of a random subcluster effect.
+The argument `psi` denotes the standard deviation of a 
+random subject (or subcluster) specific intercept.
 
 ```{r}
 mod1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
@@ -438,7 +450,7 @@ mod1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
 
 ```{r}
 mod2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
-                      N=3, verbose=TRUE, INDIV_LVL = TRUE)
+                      N=3, verbose=2, INDIV_LVL = TRUE)
 plot(mod2)
 ```
 
@@ -450,19 +462,19 @@ mod2$CovarianceMatrix[1:12,1:12]
 
 
 
-> runtime is O(timepoints^2 nInd^2) , but O(sum(Cl)) 
+<!-- > runtime is O(timepoints^2 nInd^2) , but O(sum(Cl))  -->
 
 
-### Binomial Outcomes
+<!-- ### Binomial Outcomes -->
 
-Example as in Hussey, Hughes 2007 3.7:
+<!-- Example as in Hussey, Hughes 2007 3.7: -->
 
-```{r}
+<!-- ```{r} -->
 
-wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, family="binomial", N=100)
-wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, sigma=sqrt(.0425*(1-.0425)), N=100)
+<!-- wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, family="binomial", N=100) -->
+<!-- wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, sigma=sqrt(.0425*(1-.0425)), N=100) -->
 
-```
+<!-- ``` -->
 
 
 
