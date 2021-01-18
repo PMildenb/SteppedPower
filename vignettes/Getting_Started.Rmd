@@ -1,11 +1,17 @@
 ---
-title: "Getting Started"
+title: "Getting Started with `SteppedPower`"
 author: "Philipp Mildenberger"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+    number_sections: true
+    theme: lumen
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{GettingStarted}
+  %\VignetteIndexEntry{GettingStartedWithSteppedPower}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
