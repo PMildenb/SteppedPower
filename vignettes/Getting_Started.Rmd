@@ -476,17 +476,9 @@ mod2$CovarianceMatrix[1:12,1:12]
 
 <!-- ``` -->
 
+# Session Info {-}
 
-
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+sessionInfo()
+```
 
