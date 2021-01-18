@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{compute_wlsPower}
 \alias{compute_wlsPower}
-\title{Compute Power via weighted least Squares}
+\title{Compute Power via weighted least squares}
 \usage{
 compute_wlsPower(
   DesMat,
@@ -69,5 +69,8 @@ level? This leads to longer run time and is mainly for diagnostic purposes.}
 \item{verbose}{integer, how much information should the function return?}
 }
 \description{
-
+This function calls `construct_DesMat` and `construct_CovMat` to
+construct the design and covariance matrix, repectively. These matrices are
+used to calculate the variance of the treatment effect estimator which is
+then used to calculate the power to detect the assumed treatment effect.
 }
