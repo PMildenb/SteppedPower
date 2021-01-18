@@ -12,5 +12,6 @@
 \item{...}{Arguments to be passed to methods}
 }
 \description{
-plot an object of class `wlsPower`
+Plot a matrix that visualises the influence of each cluster for
+each timepoint
 }
