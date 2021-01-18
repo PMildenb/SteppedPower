@@ -2,8 +2,9 @@ Package: SteppedPower
 Type: Package
 Title: sample size calculation in longitudinal settings with focus on stepped wedge designs
 Version: 0.1.0
-Author: Philipp Mildenberger
-Maintainer: Philipp Mildenberger <pmildenb@uni-mainz.de>
+Authors@R: c(
+    person("Philipp", "Mildenberger", role = c("aut", "cre"), email = "pmildenb@uni-mainz.de", comment = c(ORCID = "0000-0002-7367-1708")),
+    person("Federico", "Marini", role = "ctb", email = "marinif@uni-mainz.de", comment = c(ORCID = "0000-0003-3252-7758")))
 Description: SteppedPower offers options for power calculation as well 
     as sample size calculation (by the use of uniroot() ) for 
     longitudinal mixed model settings with up to two levels of clustering.
