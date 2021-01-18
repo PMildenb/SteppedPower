@@ -102,15 +102,15 @@ dsn_out <- switch (x$dsntype,
                   "userdefined"       = "userdefined")
 
 
-  cat("Timepoints                         = ", x$timepoints,"\n")
-  cat("Number of Clusters per wave        = ", x$Cl,"\n")
+  message("Timepoints                         = ", x$timepoints,"\n",
+          "Number of clusters per seqence     = ", x$Cl)
   if(!is.null(x$N)){
-  cat("Number of Subclusters per cluster  = ", x$N,"\n")
+  message("Number of subclusters per cluster  = ", x$N)
   }
-  cat("Design type                        = ", dsn_out,"\n")
-  cat("Time adjustment                    = ", x$timeAdjust, "\n")
-  cat("Dimension of design matrix         = ", dim(x$dsnmatrix),"\n")
-  cat("\nTreatment status (clusters x timepoints):\n")
+  message("Design type                        = ", dsn_out,"\n",
+          "Time adjustment                    = ", x$timeAdjust, "\n",
+          "Dimension of design matrix         = ", dim(x$dsnmatrix),"\n",
+          "\nTreatment status (clusters x timepoints):")
   print(x$trtMat)
 }
 

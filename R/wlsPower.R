@@ -537,22 +537,21 @@ compute_wlsPower <- function(DesMat,
 #'
 #'
 print.wlsPower <- function(x, ...){
-  cat("Power                                = ", x$Power,    "\n")
+  message("Power                                = ", round(x$Power,4))
   if(x$Params$dfAdjust!="none"){
-  cat("ddf adjustment                       = ", x$Params$dfAdjust,"\n")
-  cat("Denominator degrees of freedom       = ", x$Params$denomDF,  "\n")
+    message("ddf adjustment                       = ", x$Params$dfAdjust,"\n",
+            "Denominator degrees of freedom       = ", x$Params$denomDF)
   }
-  cat("Significance level (two sided)       = ", x$Params$sig.level,"\n")
-
+  message("Significance level (two sided)       = ", x$Params$sig.level)
   if("N_opt" %in% names(x))
-  cat("Needed N per cluster per period      = ", x$N_opt,"\n" )
+  message("Needed N per cluster per period      = ", x$N_opt,"\n")
 }
 
 
 
 #' @title plot an object of class `wlsPower`
 #'
-#' @description Plot a matrix that visualizes the influence of each cluster for
+#' @description Plot a matrix that visualises the influence of each cluster for
 #' each timepoint
 #'
 #' @param x object of class wlsPower
