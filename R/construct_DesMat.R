@@ -1,8 +1,15 @@
-#'  construct_DesMat
+#' @title Construct the Design Matrix
 #'
-#' constructs the design matrix.
+#' Constructs the design matrix with one column for every (fixed) parameter to be
+#' estimated and one row for every cluster for every timepoint.
+#' This function calls `construct_trtMat` to construct a matrix with
+#' `#cluster` columns and `#timepoints` rows, indicating treatment status
+#' fore each cluster at each timepoint. This is then transformed into the first
+#' column of the design matrix. `construct_CovMat` further calls
+#' `construct_timeajust` to get the fixed effect(s) of the timepoints.
 #'
-#' Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
+#' Note: Unlike the usual notation, the treatment effect is in the first column
+#' (for easier access by higher level functions).
 #'
 #' @inheritParams wlsPower
 #' @param trtmatrix an optional user defined matrix to define treatment allocation
@@ -16,16 +23,16 @@
 #' construct_DesMat(Cl=c(2,0,1))
 #' construct_DesMat(Cl=c(2,0,1), N=c(1,3,2))
 #'
-construct_DesMat <- function(Cl          =NULL,
-                             trtDelay    =NULL,
-                             dsntype     ="SWD",
-                             timepoints  =NULL,
-                             timeAdjust  ="factor",
-                             period      =NULL,
-                             trtmatrix   =NULL,
-                             timeBlk     =NULL,
-                             N           =NULL,
-                             INDIV_LVL   =FALSE){
+construct_DesMat <- function(Cl          = NULL,
+                             trtDelay    = NULL,
+                             dsntype     = "SWD",
+                             timepoints  = NULL,
+                             timeAdjust  = "factor",
+                             period      = NULL,
+                             trtmatrix   = NULL,
+                             timeBlk     = NULL,
+                             N           = NULL,
+                             INDIV_LVL   = FALSE){
   if(INDIV_LVL){
     if(length(N)==1){
       N <- rep(N,sum(Cl))
@@ -130,7 +137,11 @@ plot.DesMat <- function(x, ...){
 
 
 
-#' construct_trtMat
+#' @title Construct Treatment Matrix
+#'
+#' @description
+#' Constructs a matrix of `#cluster` rows and `#timepoint` columns, indicating
+#' treatment status in each cluster at each timepoint.
 #'
 #' @inheritParams construct_DesMat
 #'
@@ -219,7 +230,8 @@ construct_trtMat <- function(Cl,
 }
 
 
-#' construct_timeadjust
+#' @title Construct the time period adjustment in the design matrix
+#'
 #'
 #' @inheritParams construct_DesMat
 #'
@@ -227,9 +239,9 @@ construct_trtMat <- function(Cl,
 
 construct_timeadjust <- function(Cl,
                                  timepoints,
-                                 timeAdjust ="factor",
-                                 period     =NULL,
-                                 timeBlk    =NULL){
+                                 timeAdjust = "factor",
+                                 period     = NULL,
+                                 timeBlk    = NULL){
 
   SumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {

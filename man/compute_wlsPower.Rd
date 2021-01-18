@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{compute_wlsPower}
 \alias{compute_wlsPower}
-\title{compute_wlsPower}
+\title{Compute Power via weighted least Squares}
 \usage{
 compute_wlsPower(
   DesMat,
@@ -69,5 +69,5 @@ level? This leads to longer run time and is mainly for diagnostic purposes.}
 \item{verbose}{integer, how much information should the function return?}
 }
 \description{
-compute_wlsPower
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovBlk}
 \alias{construct_CovBlk}
-\title{construct_CovBlk}
+\title{Construct a Block of the Covariance Matrix}
 \usage{
 construct_CovBlk(
   sigma,
@@ -37,7 +37,8 @@ a block of a covariance matrix,
 corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
-constructs the covariance matrix for multiple measurements of one cluster.
+Constructs the covariance matrix
+for multiple measurements of the same cluster.
 This function is not designed to be used directly.
 }
 \examples{

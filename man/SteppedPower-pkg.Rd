@@ -5,9 +5,9 @@
 \alias{SteppedPower-pkg}
 \title{SteppedPower}
 \description{
-SteppedPower offers options for power calculation as well
-as sample size calculation (by the use of uniroot() ) for
-longitudinal mixed model settings with up to two levels of clustering.
+The package `SteppedPower` aims at providing tools for power - and sample
+size - calculation and design diagnostics in interventional study designs,
+with a special focus on stepped wedge designs.
 All calculations are oracle estimates i.e. assume random effect variances
 to be known (or guessed) in advance.
 }

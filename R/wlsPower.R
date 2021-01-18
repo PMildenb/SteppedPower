@@ -1,5 +1,7 @@
-#' wlsPower
+#'@title
+#'Compute power
 #'
+#' @description
 #' This is the main function of the SteppedPower package.
 #' It calls the constructor functions for the design matrix and
 #' covariance matrix, and then calculates the variance of the
@@ -420,7 +422,12 @@ wlsPower <- function(Cl            =NULL,
   return(out)
 }
 
-#' compute_wlsPower
+#' @title Compute Power via weighted least squares
+#'
+#' @description This function calls `construct_DesMat` and `construct_CovMat` to
+#' construct the design and covariance matrix, repectively. These matrices are
+#' used to calculate the variance of the treatment effect estimator which is
+#' then used to calculate the power to detect the assumed treatment effect.
 #'
 #' @inheritParams wlsPower
 #' @param DesMat  list, containing a matrix, the design matrix,
@@ -519,7 +526,7 @@ compute_wlsPower <- function(DesMat,
   return(out)
 }
 
-#' print.wlsPower
+#' @title print.wlsPower
 #'
 #' @param x object of class wlsPower
 #' @param ... Arguments to be passed to methods
@@ -543,7 +550,10 @@ print.wlsPower <- function(x, ...){
 
 
 
-#' plot.wlsPower
+#' @title plot an object of class `wlsPower`
+#'
+#' @description Plot a matrix that visualizes the influence of each cluster for
+#' each timepoint
 #'
 #' @param x object of class wlsPower
 #' @param ... Arguments to be passed to methods

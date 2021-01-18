@@ -1,7 +1,8 @@
 
-#' construct_CovBlk
+#' @title Construct a Block of the Covariance Matrix
 #'
-#' constructs the covariance matrix for multiple measurements of one cluster.
+#' @description Constructs the covariance matrix
+#' for multiple measurements of the same cluster.
 #' This function is not designed to be used directly.
 #'
 #' @inheritParams construct_CovSubMat
@@ -17,10 +18,10 @@
 
 construct_CovBlk <- function(sigma,
                              tau,
-                             eta   =NULL,
-                             tauAR =NULL,
-                             etaAR =NULL,
-                             rho   =NULL){
+                             eta   = NULL,
+                             tauAR = NULL,
+                             etaAR = NULL,
+                             rho   = NULL){
   if(!(length(sigma)==length(tau)))
     stop ("In construct_CovBlk: sigma and tau must be of same length.")
   if(!is.null(eta) & !length(tau)==length(eta))
@@ -46,7 +47,12 @@ construct_CovBlk <- function(sigma,
 
 
 
-#' construct_CovSubMat
+#' @title Construct a Block of the Covariance Matrix
+#'
+#' @description Constructs the covariance matrix
+#' for multiple measurements of the same cluster
+#' if the same individuals are observed at all time periods.
+#' This function is not designed to be used directly.
 #'
 #' @inheritParams construct_CovMat
 #' @param N Number of individuals per cluster
@@ -67,14 +73,14 @@ construct_CovSubMat <- function(N,
                                 timepoints,
                                 sigma,
                                 tau,
-                                eta       =NULL,
-                                tauAR     =NULL,
-                                etaAR     =NULL,
-                                rho       =NULL,
-                                gamma     =0,
-                                trtMat    =NULL,
-                                psi       =NULL,
-                                INDIV_LVL =FALSE){
+                                eta       = NULL,
+                                tauAR     = NULL,
+                                etaAR     = NULL,
+                                rho       = NULL,
+                                gamma     = 0,
+                                trtMat    = NULL,
+                                psi       = NULL,
+                                INDIV_LVL = FALSE){
 
   ClBlk  <- construct_CovBlk(sigma = gamma,
                              tau   = tau,
@@ -100,10 +106,12 @@ construct_CovSubMat <- function(N,
 
 
 
-#' construct_CovMat
+#' @title Construct a Covariance Matrix
 #'
-#' constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
-#' (or `construct_CovSubMat` in case of two levels of clustering) for each block.
+#' constructs a (block diagonal) covariance matrix.
+#' This function calls `construct_CovBlk`
+#' (or `construct_CovSubMat` in case of repeated observations of the same individuals)
+#' for each block.
 #'
 #' @inheritParams compute_wlsPower
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
@@ -140,20 +148,20 @@ construct_CovSubMat <- function(N,
 
 
 
-construct_CovMat <- function(SumCl      =NULL,
-                             timepoints =NULL,
+construct_CovMat <- function(SumCl      = NULL,
+                             timepoints = NULL,
                              sigma,
                              tau,
-                             eta        =NULL,
-                             tauAR      =NULL,
-                             etaAR      =NULL,
-                             rho        =NULL,
-                             gamma      =NULL,
-                             trtMat     =NULL,
-                             N          =NULL,
-                             CovBlk     =NULL,
-                             psi        =NULL,
-                             INDIV_LVL  =FALSE){
+                             eta        = NULL,
+                             tauAR      = NULL,
+                             etaAR      = NULL,
+                             rho        = NULL,
+                             gamma      = NULL,
+                             trtMat     = NULL,
+                             N          = NULL,
+                             CovBlk     = NULL,
+                             psi        = NULL,
+                             INDIV_LVL  = FALSE){
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
   } else {
@@ -254,8 +262,8 @@ construct_CovMat <- function(SumCl      =NULL,
                         psi   = psiLst,
                         tauAR =tauAR,
                         etaAR =etaAR,
-                        MoreArgs = list(timepoints =timepoints,
-                                        INDIV_LVL  =INDIV_LVL),
+                        MoreArgs = list(timepoints = timepoints,
+                                        INDIV_LVL  = INDIV_LVL),
                         SIMPLIFY = FALSE)
     }
   }

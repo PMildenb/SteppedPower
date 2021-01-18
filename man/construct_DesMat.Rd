@@ -2,7 +2,18 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_DesMat}
 \alias{construct_DesMat}
-\title{construct_DesMat}
+\title{Construct the Design Matrix
+
+Constructs the design matrix with one column for every (fixed) parameter to be
+estimated and one row for every cluster for every timepoint.
+This function calls `construct_trtMat` to construct a matrix with
+`#cluster` columns and `#timepoints` rows, indicating treatment status
+fore each cluster at each timepoint. This is then transformed into the first
+column of the design matrix. `construct_CovMat` further calls
+`construct_timeajust` to get the fixed effect(s) of the timepoints.
+
+Note: Unlike the usual notation, the treatment effect is in the first column
+(for easier access by higher level functions).}
 \usage{
 construct_DesMat(
   Cl = NULL,
@@ -53,10 +64,18 @@ level? This leads to longer run time and is mainly for diagnostic purposes.}
 an object of class DesMat
 }
 \description{
-constructs the design matrix.
-}
-\details{
-Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
+Construct the Design Matrix
+
+Constructs the design matrix with one column for every (fixed) parameter to be
+estimated and one row for every cluster for every timepoint.
+This function calls `construct_trtMat` to construct a matrix with
+`#cluster` columns and `#timepoints` rows, indicating treatment status
+fore each cluster at each timepoint. This is then transformed into the first
+column of the design matrix. `construct_CovMat` further calls
+`construct_timeajust` to get the fixed effect(s) of the timepoints.
+
+Note: Unlike the usual notation, the treatment effect is in the first column
+(for easier access by higher level functions).
 }
 \examples{
 construct_DesMat(Cl=c(2,0,1))
