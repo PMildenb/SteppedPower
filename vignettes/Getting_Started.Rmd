@@ -27,7 +27,7 @@ library(SteppedPower)
 library(Matrix)
 ```
 
-## About `SteppedPower`
+# About `SteppedPower`
 
 The package `SteppedPower` aims at providing tools for power calculation 
 and design diagnostics in interventional study designs,
@@ -45,22 +45,23 @@ At the same time, the use of sparse matrix classes of the wonderful `matrix`
 package makes computation of large designs feasible. 
 <!-- [@hussey2007design] -->
 
-## Methods and Notation
+# Methods and Notation
 
 A common approach to model the correlation in longitudinal studies are random effects.
 Such a model has the form
 
 
 $$y_{ijk}= \mu_0 + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
+
 with
 
-  * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
-  * $\mu_0$ a overall mean (under control)
-  * $\alpha_i$ the time trend at time $i$
-  * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
-  * $\theta$ the treatment effect 
-  * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
-  * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
+* $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
+* $\mu_0$ a overall mean (under control)
+* $\alpha_i$ the time trend at time $i$
+* $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
+* $\theta$ the treatment effect 
+* $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
+* $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
 
 
 For power calculation, the standard deviation of random effects is assumed to be known.
@@ -109,7 +110,7 @@ with
   $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
 
 
-## A quick tour
+# A quick tour
 
 For most users, the probably most important function is `wlsPower`. 
 It calls several auxiliary functions which will be shortly discussed here.
@@ -147,9 +148,9 @@ all.equal(CovMat1,CovMat2)
 
 
 
-## Features 
+# Features 
 
-### Plot Method
+## Plot Method
 <!-- TODO: NAMING THINGS!! how to call the influence matrix??? -->
 In the weighted least squares setting, the estimator $\hat \beta$ is a linear function of the data $y$
 $$\hat\beta = \underbrace{(X'\Omega^{-1}X)^{-1}(X'\Omega^{-1})}_{=:\text{M}}\cdot y$$
@@ -173,7 +174,7 @@ wlsPwr <- wlsPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=2)
 plot(wlsPwr)
 ```
 
-### Find Sample Size for given Power
+## Find Sample Size for given Power
 
 When the argument `Power` is passed to `wlsPower`, 
 the sample size needed is calculated, under the assumption of equally sized 
@@ -184,9 +185,9 @@ wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
 
 
 
-## Use cases and examples
+# Use cases and examples
 
-### Comparison of two groups -- Z-Test
+## Comparison of two groups -- Z-Test
 
 This might be a proof of concept rather than an example with practical relevance. 
 We want to compare the mean in two groups. Lets say we have two groups of 10 observations
@@ -217,7 +218,7 @@ the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
 
-### Longitudinal study -- parallel groups
+## Longitudinal study -- parallel groups
 
 
 ```{r}
@@ -280,7 +281,7 @@ wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,dsntype="paralle
 
 
 
-### Stepped Wedge designs with empty sequences (i.e. waves)
+## Stepped Wedge designs with empty sequences (i.e. waves)
 
 Periods in which no cluster switches to the intervention are specified by inserting zeros into 
 the `Cl` argument, i.e. `Cl=c(4,4,4,0)`.
@@ -293,7 +294,7 @@ mod1 <- wlsPower(Cl=c(0,4,4,4), sigma=2, eta=1, mu0=0,mu1=1)
 mod2 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1, trtDelay=0)
 ```
 
-### Autocorrelated cluster effects
+## Autocorrelated cluster effects
 
 In longitudinal studies, it can be sensible to assume that correlation within 
 clusters decreases with increasing time lag.
@@ -321,7 +322,7 @@ suppressWarnings(knitr::kable(as.matrix(b$CovarianceMatrix[1:5,1:5])))
 ```
 
 
-### Unequal cluster sizes
+## Unequal cluster sizes
 
 The argument `N` defines the cluster size. `N` can be 
    * a scalar, if all clusters have the same assumed size, 
@@ -338,7 +339,7 @@ plot(a)
 ```
 
 
-### Incomplete Stepped Wedge Designs
+## Incomplete Stepped Wedge Designs
 
 Suppose you do not plan to observe all clusters over the whole study period.
 Rather, clusters that switch early to the intervention are not observed until the end.
@@ -400,11 +401,11 @@ plot(incompletePwr)
 > The argument `incomplete` with matrix input works also for other design types, 
 but makes (supposedly) most sense in the context of stepped wedge designs
 
-### Adjusting for temporal effects
+## Adjusting for temporal effects
 
 The by far most usual method for the modelling of potential secular trends is
 to take time period as a factor into the analysis model. This is also proposed 
-by @Hussey2007Design, Hemming2015? ...
+by [@hussey2007design, @hemming2015].
 
 For diagnostic purposes (or for bold users), some other adjustment options are 
 implemented.
@@ -442,7 +443,7 @@ b$DesignMatrix
 
 
 
-### Closed cohort SWD
+## Closed cohort SWD
 
 Closed cohort the patients are observed over the whole study period or 
 if subclusters exist (such as wards within clinics). 
@@ -488,3 +489,4 @@ mod2$CovarianceMatrix[1:12,1:12]
 sessionInfo()
 ```
 
+# References {-}
