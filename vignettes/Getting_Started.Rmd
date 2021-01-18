@@ -38,7 +38,6 @@ easily defined by the user.
 Currently, normal outcomes and binomial outcomes with logit link are implemented.  
 Random cluster effect, autocorrelated cluster effect, random treatment effect, 
 
-
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
@@ -49,7 +48,6 @@ package makes computation of large designs feasible.
 
 A common approach to model the correlation in longitudinal studies are random effects.
 Such a model has the form
-
 
 $$y_{ijk}= \mu_0 + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
 
@@ -62,7 +60,6 @@ with
 * $\theta$ the treatment effect 
 * $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
 * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
-
 
 For power calculation, the standard deviation of random effects is assumed to be known.
 Lets define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
@@ -79,36 +76,28 @@ where $\Omega$ is a compound-symmetry (syn. exchangeable) variance matrix define
 by $\tau$ and $\sigma$. We are thus in a weighted least squares setting, 
 so the variance of $\beta$ is
 
-$$ \text{Var}(\hat\beta) =  {(X'\Omega^{-1}X)^{-1}}$$ 
-
+$$ \text{Var}(\hat\beta) =  {(X'\Omega^{-1}X)^{-1}}$$
 
 We can then calculate the power of a z-test 
 
-$$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$ 
-<!-- \eqn{\text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) } -->
-
+$$ \text{power} = \Phi\left(\frac{\theta_A-\theta_0}{\sqrt{\text{Var}(\hat \theta)}}- Z_{1-\frac{\alpha}{2}}\right) $$
 
 where $\text{Var}(\hat \theta)$ is the diagonal element of $\Omega$ 
 that corresponds to $\hat\theta$.
- 
 
-  
-  
 Extensions to the above formula implemented in this package are  
 
-  * random treatment effect
-  * autoregressive cluster effect
-  * binomial outcomes with logit-link
+* random treatment effect
+* autoregressive cluster effect
+* binomial outcomes with logit-link
   
 
 $$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
 with  
 
-  * $g(\cdot)$ a link function
-  * $c_j$ a random treatment effect
-  * $b_j$ and $c_j$ jointly distributed with 
-  $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
-
+* $g(\cdot)$ a link function
+* $c_j$ a random treatment effect
+* $b_j$ and $c_j$ jointly distributed with $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
 
 # A quick tour
 
@@ -130,7 +119,6 @@ the fewest number of periods (timepoints) possible with the given design,
 i.e. two for cross-over designs or the number of waves plus one
 for stepped wedge designs. 
 
-
 `construct_CovMat` builds the covariance matrix (explicitly). It uses 
 `construct_CovBlk` to construct the blocks for each cluster which are then combined
 to a block diagonal matrix.
@@ -146,14 +134,14 @@ CovMat1
 all.equal(CovMat1,CovMat2)
 ```
 
-
-
 # Features 
 
 ## Plot Method
 <!-- TODO: NAMING THINGS!! how to call the influence matrix??? -->
 In the weighted least squares setting, the estimator $\hat \beta$ is a linear function of the data $y$
+
 $$\hat\beta = \underbrace{(X'\Omega^{-1}X)^{-1}(X'\Omega^{-1})}_{=:\text{M}}\cdot y$$
+
 with $X$ the design matrix and $\Omega$ the covariance matrix as above.
 The matrix $M$ gives an impression of the importance of clusters and 
 time periods with regard to the estimated coefficients $\hat\beta$. 
@@ -179,11 +167,10 @@ plot(wlsPwr)
 When the argument `Power` is passed to `wlsPower`, 
 the sample size needed is calculated, under the assumption of equally sized 
 clusters and periods. 
+
 ```{r}
 wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
 ```
-
-
 
 # Use cases and examples
 
@@ -203,7 +190,6 @@ wlsPower(Cl=c(1,1), mu0=0,mu1=.6, sigma=1, tau=0, N=10,
               dsntype="parallel", timepoints=1)
 ```
 
-
 ```{r}
 pwr::pwr.norm.test(.3,n=20)$power
 ```
@@ -217,9 +203,7 @@ The main difference is that the distribution under
 the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
 
-
 ## Longitudinal study -- parallel groups
-
 
 ```{r}
 wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,dsntype="parallel")
@@ -279,8 +263,6 @@ wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,dsntype="paralle
 <!-- View(swPwr) -->
 <!-- ``` -->
 
-
-
 ## Stepped Wedge designs with empty sequences (i.e. waves)
 
 Periods in which no cluster switches to the intervention are specified by inserting zeros into 
@@ -304,6 +286,7 @@ the latter to the usual compound symmetry covariance type.
 
 An example of a stepped wedge design with 8 clusters in 4 waves, once with 
 medium autocorrelation (`tauAR=0.6`) and once with high autocorrelation (`tauAR=0.9`):
+
 ```{r}
 a <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.6, verbose=2)
 b <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, sigma=1, N=100, tau=1, tauAR=.9, verbose=2)
@@ -312,32 +295,31 @@ plot(b)
 ```
 
 For `tauAR=0.6`, the covariance matrix within one cluster then looks like this:
+
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(as.matrix(a$CovarianceMatrix[1:5,1:5])))
 ```
 
 For `tauAR=0.9` it takes the following shape
+
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(as.matrix(b$CovarianceMatrix[1:5,1:5])))
 ```
 
-
 ## Unequal cluster sizes
 
 The argument `N` defines the cluster size. `N` can be 
-   * a scalar, if all clusters have the same assumed size, 
-   which is also constant over time
-   * a vector, if the size differs between clusters but 
-   is assumed to be constant over time
-   * a matrix where each row corresponds to either 
-   a cluster or a wave of clusters and each
-   column corresponds to a timepoint
+* a scalar, if all clusters have the same assumed size, 
+  which is also constant over time
+* a vector, if the size differs between clusters but 
+  is assumed to be constant over time
+* a matrix where each row corresponds to either 
+  a cluster or a wave of clusters and each column corresponds to a timepoint
 
 ```{r}
 a <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=2)
 plot(a)
 ```
-
 
 ## Incomplete Stepped Wedge Designs
 
@@ -365,6 +347,7 @@ and each column corresponds to a timepoint.
 If a cluster is not observed at a specific timepoint, 
 set the value in the corresponding cell to `0`. 
 For the example above, such a matrix would look like this:
+
 ```{r}
 TM  <- toeplitz(c(1,1,0,0))
 incompleteMat1 <- cbind(TM[,1:2],rep(1,4),TM[,3:4])
@@ -372,16 +355,19 @@ incompleteMat2 <- incompleteMat1[rep(1:4,each=2),]
 ```
 
 A matrix which each row representing a wave of clusters
+
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(incompleteMat1))
 ```
 
 or each row represents a cluster
+
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(incompleteMat2))
 ```
 
 Now all that's left to do is to plug that into the main function:
+
 ```{r}
 incompletePwr1 <- wlsPower(Cl=rep(2,4), sigma=2, tau=.6, mu0=0, mu1=.5, N=80, 
                         incomplete=incompleteMat1, verbose=2)
@@ -394,6 +380,7 @@ all.equal(incompletePwr,incompletePwr2)
 
 We can also have a quick look at the projection matrix where we see that the 
 clusters have a weight of exactly zero at the timepoints where they are not observed
+
 ```{r}
 plot(incompletePwr)
 ```
@@ -409,6 +396,7 @@ by [@hussey2007design, @hemming2015].
 
 For diagnostic purposes (or for bold users), some other adjustment options are 
 implemented.
+
 ```{r}
 construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="none")
 construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="linear")
@@ -441,8 +429,6 @@ b$DesignMatrix
 <!-- plot(wlsPower2) -->
 <!-- ``` -->
 
-
-
 ## Closed cohort SWD
 
 Closed cohort the patients are observed over the whole study period or 
@@ -466,11 +452,7 @@ mod1$CovarianceMatrix[1:4,1:4]
 mod2$CovarianceMatrix[1:12,1:12]
 ```
 
-
-
-
 <!-- > runtime is O(timepoints^2 nInd^2) , but O(sum(Cl))  -->
-
 
 <!-- ### Binomial Outcomes -->
 
