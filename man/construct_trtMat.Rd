@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_trtMat}
 \alias{construct_trtMat}
-\title{construct_trtMat}
+\title{Construct Treatment Matrix}
 \usage{
 construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 }
@@ -25,7 +25,8 @@ a matrix trtMat, where rows and columns correspond to cluster
 and timepoints, respectively
 }
 \description{
-construct_trtMat
+Constructs a matrix of `#cluster` rows and `#timepoint` columns, indicating
+treatment status in each cluster at each timepoint.
 }
 \examples{
 construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")

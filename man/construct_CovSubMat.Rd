@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovSubMat}
 \alias{construct_CovSubMat}
-\title{construct_CovSubMat}
+\title{Construct a Block of the Covariance Matrix}
 \usage{
 construct_CovSubMat(
   N,
@@ -63,5 +63,8 @@ a block of a covariance matrix with two levels of clustering,
 corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
-construct_CovSubMat
+Constructs the covariance matrix
+for multiple measurements of the same cluster
+if the same individuals are observed at all time periods.
+This function is not designed to be used directly.
 }

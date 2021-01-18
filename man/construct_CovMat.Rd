@@ -2,7 +2,12 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovMat}
 \alias{construct_CovMat}
-\title{construct_CovMat}
+\title{Construct a Covariance Matrix
+
+constructs a (block diagonal) covariance matrix.
+This function calls `construct_CovBlk`
+(or `construct_CovSubMat` in case of repeated observations of the same individuals)
+for each block.}
 \usage{
 construct_CovMat(
   SumCl = NULL,
@@ -67,8 +72,12 @@ level? This leads to longer run time and is mainly for diagnostic purposes.}
 a covariance matrix
 }
 \description{
-constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
-(or `construct_CovSubMat` in case of two levels of clustering) for each block.
+Construct a Covariance Matrix
+
+constructs a (block diagonal) covariance matrix.
+This function calls `construct_CovBlk`
+(or `construct_CovSubMat` in case of repeated observations of the same individuals)
+for each block.
 }
 \examples{
 

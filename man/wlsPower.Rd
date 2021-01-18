@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{wlsPower}
 \alias{wlsPower}
-\title{wlsPower}
+\title{Compute power}
 \usage{
 wlsPower(
   Cl = NULL,
@@ -125,14 +125,15 @@ If requested (by `verbose`=2) this list also contains relevant matrices.
 }
 \description{
 This is the main function of the SteppedPower package.
-It calls the constructor functions for the design matrix \eqn{X} and
-covariance matrix \eqn{\Omega}, and then calculates the variance of the
-intervention effect estimator \eqn{Var(\hat\theta)}
+It calls the constructor functions for the design matrix and
+covariance matrix, and then calculates the variance of the
+intervention effect estimator. The latter is then used
+to compute the power of a Wald test of a (given) intervention effect.
 }
 \details{
 Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
-The variance of the treatment effect estimate \eqn{\Var{\hat\theta}}
-see also vignette 'Getting Started'
+The variance of the treatment effect estimator \eqn{\hat\theta} can then be
+estimated via weighted least squares (see also vignette 'Getting Started').
 }
 \examples{
 ## See also vignette for more examples

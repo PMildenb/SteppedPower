@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_timeadjust}
 \alias{construct_timeadjust}
-\title{construct_timeadjust}
+\title{Construct the time period adjustment in the design matrix}
 \usage{
 construct_timeadjust(
   Cl,
@@ -30,5 +30,5 @@ Defaults to "factor".}
 Is repeated for every cluster.}
 }
 \description{
-construct_timeadjust
+Construct the time period adjustment in the design matrix
 }
