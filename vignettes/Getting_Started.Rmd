@@ -1,6 +1,10 @@
 ---
 title: "Getting Started with `SteppedPower`"
-author: "Philipp Mildenberger"
+author:
+- name: Philipp Mildenberger^[pmildenb@uni-mainz.de]
+  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
+- name: Federico Marini^[marinif@uni-mainz.de]
+  affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_document:
