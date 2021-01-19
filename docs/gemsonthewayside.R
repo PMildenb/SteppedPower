@@ -17,7 +17,7 @@ wlsPower(EffSize=0.001,Cl=rep(1,20),sigma=sigtmp,tau=01,
 ########################################################################################
 ## difference in binom setting (for high diff mu0-mu1)
 
-wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=F)
+wlsGlmmPower(Cl=rep(1,3),mu0=.7,mu1=.3,tau=0.4,N=20,verbose=FALSE)
 swCRTdesign::swPwr(swCRTdesign::swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,rho=0,n=20,distn="binomial")
 ## in extremen Situationen gibt es einige % Unterschied. swPwr-Methode ist konservativ.
 
@@ -26,8 +26,8 @@ swCRTdesign::swPwr(swCRTdesign::swDsn(cl=rep(1,3)),mu0=.7,mu1=.3,tau=0.4,eta=0,r
 
 devtools::install_github("PMildenb/SteppedPower")
 library(SteppedPower)
-wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=F)
-wlsGlmmPower(Cl=c(2,2,2,1,1,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=F)
+wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=FALSE)
+wlsGlmmPower(Cl=c(2,2,2,1,1,2,2),mu0=0.03, mu1=0.02, trt_delay=.5, tau=0.00254,N=180,verbose=FALSE)
 
 
 swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
@@ -37,18 +37,18 @@ swPwr(swDsn(c(2,2,2,2,2,2),extra.time=1), distn="binomial",
 
 tauKid <- 0.0044
 wlsGlmmPower(Cl=c(6,6),timepoints=7,trt_delay=NULL,design="parallel", time_adjust="factor",
-             mu0=0.03, mu1=0.02, tau=tauKid,N=250,verbose=F)
+             mu0=0.03, mu1=0.02, tau=tauKid,N=250,verbose=FALSE)
 wlsGlmmPower(Cl=c(6,6),timepoints=1,trt_delay=NULL,design="parallel", time_adjust="factor",
-             mu0=0.03, mu1=0.02, tau=tauKid,N=1750,verbose=F)
+             mu0=0.03, mu1=0.02, tau=tauKid,N=1750,verbose=FALSE)
 
-wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
-wlsGlmmPower(Cl=c(3,3,0,0,3,3),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
-wlsGlmmPower(Cl=c(5,1,0,0,1,5),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
-wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=T)
+wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=FALSE)
+wlsGlmmPower(Cl=c(3,3,0,0,3,3),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=FALSE)
+wlsGlmmPower(Cl=c(5,1,0,0,1,5),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=FALSE)
+wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=TRUE)
 
-wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=0, tau=0.00262,N=250,verbose=F)
+wlsGlmmPower(Cl=c(6,0,0,0,0,6),mu0=0.03, mu1=0.02, trt_delay=0, tau=0.00262,N=250,verbose=FALSE)
 wlsGlmmPower(Cl=c(6,6),timepoints=c(7),design="parallel_baseline",
-             mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=F)
+             mu0=0.03, mu1=0.02, trt_delay=NULL, tau=0.00262,N=250,verbose=FALSE)
 
 
 sd <- sqrt( 0.00262^2 + 0.025*.975/250 )
@@ -59,9 +59,9 @@ pwr::pwr.t.test(d=0.01/sd,n=6)
 
 
 KidSafe     <- wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, time_adjust="factor",
-                        tau_lin = 1, trt_delay=.5, N=250,verbose=T)
+                        tau_lin = 1, trt_delay=.5, N=250,verbose=TRUE)
 KidSafe_lin <- wlsPower(Cl=c(2,2,2,2,2,2),EffSize=.01,sigma=sqrt(.025*.975), time_adjust="factor",
-                        tau=0.0254,trt_delay=.5, N=250,verbose=T)
+                        tau=0.0254,trt_delay=.5, N=250,verbose=TRUE)
 KidSafe[[1]]
 KidSafe_lin[[1]]
 
@@ -83,34 +83,34 @@ N_cl <- 80
 
 ## aktuelle FZP
 wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 ## hoehere Inzidenz (5% statt 3%)
 wlsGlmmPower(Cl=c(2,2,2,2,2,2),mu0=0.05, mu1=2/3*0.05,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 ## hoehere Inzidenz (5% statt 3%)  +  eine Periode mehr
 wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.05, mu1=2/3*.05,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 ## hoehere Inzidenz (5% statt 3%)  +  zwei Perioden mehr
 wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.05, mu1=2/3*.05,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 ## hoehere Inzidenz (5% statt 3%)  +  eine Periode mehr  +
 wlsGlmmPower(Cl=c(2,2,2,0,2,2,2),mu0=0.05, mu1=2/3*.05,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 
 swCRTdesign::swPwr(swDsn(c(2,2,1,1,1,1,2,2),tx.effect=.5), distn="binomial",
       n=N_cl, mu0=0.03, mu1=0.02, tau=0.00262, eta=0.0, rho=0, retDATA=FALSE)
 
 wlsGlmmPower(Cl=c(2,2,2,0,0,2,2,2),mu0=0.03, mu1=0.02,
-                            tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+                            tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 wlsGlmmPower(Cl=c(2,2,1,1,1,1,2,2),mu0=0.03, mu1=0.02,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 wlsGlmmPower(Cl=c(2,2,2,0,2,0,2,2),mu0=0.03, mu1=0.02,
-             tau=0.00262,trt_delay=.5, N=N_cl,verbose=F)
+             tau=0.00262,trt_delay=.5, N=N_cl,verbose=FALSE)
 
 
 ########################################################################################
@@ -186,7 +186,7 @@ N8*8*9
 N4_3 <- wlsPower(Cl=c(rep(1,4),0,0,0),EffSize=.2,sigma=1,tau=.1,Power=.9)$N
 N4*4*8
 
-wlsPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=T)
+wlsPower(Cl=rep(1,8),EffSize=.1,sigma=1,tau=.1,N=N8,verbose=TRUE)
 
 
 

@@ -120,7 +120,7 @@ system.time(
   pwrSWD <- wlsMixedPower(Cl=Cl_swd, design="SWD", EffSize=EffSize, sigma=sigma, tau=tau, verbose=TRUE))
 system.time(
   pwrPRL <- wlsMixedPower(Cl=Cl_prl, design="parallel", EffSize=EffSize, sigma=sigma, tau=tau,
-                          timepoints=timepoints, verbose=T))
+                          timepoints=timepoints, verbose=TRUE))
 dim(pwrPRL$DesignMatrix$dsnmatrix)
 dim(pwrSWD$DesignMatrix$dsnmatrix)
 
