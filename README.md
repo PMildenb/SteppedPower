@@ -1,6 +1,10 @@
 
 # `SteppedPower` - sample size calculation in mixed model settings with focus on stepped wedge designs
 
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/PMildenb/SteppedPower/workflows/R-CMD-check/badge.svg)](https://github.com/PMildenb/SteppedPower/actions)
+  <!-- badges: end -->
+
 `SteppedPower` offers options for power calculation as well as sample size calculation (by the use of uniroot() ) for
 longitudinal mixed model settings. All calculations are oracle estimates i.e. assume random effect variances to be known (or guessed) in advance.
 A stepped wedge design is thought as a mixed model:
