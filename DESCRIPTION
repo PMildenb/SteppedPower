@@ -1,6 +1,6 @@
 Package: SteppedPower
 Type: Package
-Title: sample size calculation in longitudinal settings with focus on stepped wedge designs
+Title: Sample Size Calculation in Longitudinal Settings with Focus on Stepped Wedge Designs
 Version: 0.1.0
 Authors@R: c(
     person("Philipp", "Mildenberger", role = c("aut", "cre"), email = "pmildenb@uni-mainz.de", comment = c(ORCID = "0000-0002-7367-1708")),
