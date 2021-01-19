@@ -46,7 +46,7 @@ This code is modularised in order to be flexible and easy to use
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the wonderful `matrix` 
 package makes computation of large designs feasible. 
-<!-- [@hussey2007design] -->
+[@hussey2007design]
 
 # Methods and Notation
 
@@ -214,59 +214,6 @@ wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,dsntype="parallel")
 wlsPower(Cl=c(10,10),timepoints=5,mu0=0,mu1=.25,sigma=.5,tau=.2,dsntype="parallel")
 ```
 
-<!-- ### Comparison of designs -->
-
-<!-- See Hemming, Haines 2014 -->
-
-<!-- $$ icc = \frac{tau^2}{sigma^2+tau^2}$$  -->
-
-<!-- $$  \frac{1}{icc} = \frac{sigma^2+tau^2}{tau^2} = \frac{sigma^2}{tau^2} + 1  $$  -->
-
-<!-- $$  \frac{1-icc}{icc} = \frac{sigma^2}{tau^2}  $$  -->
-
-<!-- $$ \tau^2 = \sigma^2 \frac{icc}{1-icc}$$  -->
-
-<!-- ```{r, eval=FALSE} -->
-<!-- library(swCRTdesign) -->
-
-<!-- # icc <- 0.1 -->
-<!-- # tau001 <- sqrt(icc/(1-icc)) -->
-<!-- # tau01 <- sqrt(icc/(1-icc)) -->
-
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=0, eta=0, rho=0, gamma=0, retDATA = TRUE) -->
-<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=0) -->
-
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau001,  -->
-<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
-<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001) -->
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.01, cac=1) -->
-
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=tau01,  -->
-<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
-<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01) -->
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1) -->
-
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, tau=100,  -->
-<!--       eta=0, rho=0, gamma=0, retDATA = TRUE) -->
-<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=1, N=50, tau=100) -->
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=.1, cac=0) -->
-
-
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel") -->
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), dsntype="parallel_baseline") -->
-
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel") -->
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau001, dsntype="parallel_baseline") -->
-
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel") -->
-<!-- wlsPower(Cl=c(10,10), mu0=0, mu1=0.3, sigma=1, N=50, tau=tau01, dsntype="parallel_baseline") -->
-
-<!-- swPwr(swDsn(c(5,5,5,5)), distn="gaussian", n=50, mu0=0, mu1=.3, sigma=1, icc=0.1, cac=1, retDATA=TRUE) -->
-<!-- wlsPower(Cl=c(5,5,5,5), mu0=0, mu1=0.3, sigma=sqrt(1/9+.02), N=1, tau=0) -->
-
-<!-- View(swPwr) -->
-<!-- ``` -->
-
 ## Stepped Wedge designs with empty sequences (i.e. waves)
 
 Periods in which no cluster switches to the intervention are specified by inserting zeros into 
@@ -396,7 +343,7 @@ but makes (supposedly) most sense in the context of stepped wedge designs
 
 The by far most usual method for the modelling of potential secular trends is
 to take time period as a factor into the analysis model. This is also proposed 
-by [@hussey2007design, @hemming2015].
+by [@hussey2007design, @hemming2015stepped].
 
 For diagnostic purposes (or for bold users), some other adjustment options are 
 implemented.
@@ -415,23 +362,6 @@ a$DesignMatrix
 b$DesignMatrix
 ```
 
-
-<!-- In some scenarios, different modelling of the time trend can be favoured.  -->
-
-<!-- ```{r} -->
-<!-- timeMat <- matrix(c(1,1,1,1,1,1,1,1,1,1,1,1, -->
-<!--                     0,1,0,0,0,1,0,0,0,1,0,0, -->
-<!--                     0,0,1,0,0,0,1,0,0,0,1,0, -->
-<!--                     0,0,0,1,0,0,0,1,0,0,0,1, -->
-<!--                     # 0,0,0,0,1,1,1,1,0,0,0,0, -->
-<!--                     0,0,0,0,0,0,0,0,1,1,1,1),12) -->
-<!-- DesMat  <- construct_DesMat(rep(1,11), timeBlk = timeMat) -->
-
-<!-- wlsPower1 <- wlsPower(DesMat=DesMat, mu0=0,mu1=.8, sigma=1, tau=.2, verbose=2) -->
-<!-- plot(wlsPower1) -->
-<!-- wlsPower2 <- wlsPower(Cl=rep(1,11), mu0=0,mu1=.8, sigma=1, tau=.2, verbose=2) -->
-<!-- plot(wlsPower2) -->
-<!-- ``` -->
 
 ## Closed cohort SWD
 
@@ -456,18 +386,6 @@ mod1$CovarianceMatrix[1:4,1:4]
 mod2$CovarianceMatrix[1:12,1:12]
 ```
 
-<!-- > runtime is O(timepoints^2 nInd^2) , but O(sum(Cl))  -->
-
-<!-- ### Binomial Outcomes -->
-
-<!-- Example as in Hussey, Hughes 2007 3.7: -->
-
-<!-- ```{r} -->
-
-<!-- wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, family="binomial", N=100) -->
-<!-- wlsPower(Cl=rep(6,4), mu0=0.05, mu1=0.035, sigma=sqrt(.0425*(1-.0425)), N=100) -->
-
-<!-- ``` -->
 
 # Session Info {-}
 
