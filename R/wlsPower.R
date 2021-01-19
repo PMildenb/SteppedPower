@@ -318,7 +318,7 @@ wlsPower <- function(Cl            =NULL,
       IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
       IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
 
-      IM <- IM[rep(1:lenCl,DesMat$Cl),]
+      IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
 
     }else if(is.matrix(incomplete)){
       if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
@@ -328,7 +328,7 @@ wlsPower <- function(Cl            =NULL,
              paste(dim(unique(DesMat$trtMat)),collapse="x"))
       IM <- incomplete
       IM[which(IM==0)] <- Inf
-      if(nrow(incomplete)==lenCl) IM <- IM[rep(1:lenCl,DesMat$Cl),]
+      if(nrow(incomplete)==lenCl) IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
     }
     sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
@@ -569,21 +569,21 @@ plot.wlsPower <- function(x,...){
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
   subp <- suppressWarnings(subplot(
-    plot_ly(data=data.frame(time=1:dim(wgt)[2], weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
+    plot_ly(data=data.frame(time=seq_len(dim(wgt)[2]), weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
       layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
              xaxis=list(title="", showticklabels=FALSE))
     ,
     plotly_empty(type="scatter",mode="marker")
     ,
-    plot_ly(x=1:timep,y=1:sumCl,z=wgt,type="heatmap",
+    plot_ly(x=seq_len(timep),y=seq_len(sumCl),z=wgt,type="heatmap",
             colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
             xgap=.3,ygap=.3) %>%
       colorbar(len=1,limits=c(-mx,mx)) %>%
       layout(xaxis=list(title="time"),
              yaxis=list(title="cluster", autorange="reversed"))
     ,
-    plot_ly(data=data.frame(cluster=1:dim(wgt)[1], weight=rowSums(abs(wgt))),
+    plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]), weight=rowSums(abs(wgt))),
             type="bar", orientation="h",
             y=~cluster, x=~weight, color=I("grey")) %>%
       layout(xaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
