@@ -130,7 +130,7 @@ construct_CovSubMat <- function(N,
 #' @examples
 #'
 #' ## Two clusters, three timepoints,
-#' residual standard error sd=3, random slope sd=1.
+#' ## residual standard error sd=3, random slope sd=1.
 #' construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1)
 #' ##
 #' ##

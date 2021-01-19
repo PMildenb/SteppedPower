@@ -24,7 +24,8 @@ standard deviation of random intercepts}
 standard deviation of random slope}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.

@@ -63,7 +63,7 @@ muCond_to_muMarg <- function(muCond,tauLin){
 
 ### Transform icc and cac to random effects
 
-icc_to_RandEffs <- function(icc, cac=1, sigSq){
+icc_to_RandEffs <- function(icc, cac=1, sigSq, N){
   if(is.null(N) | N==1)
     warning("Cannot interpret icc and cac when sigma refers to cluster means.")
   if(any(c(icc,cac)<0,c(icc,cac)>1))

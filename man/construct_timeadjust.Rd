@@ -26,7 +26,8 @@ Defaults to "factor".}
 
 \item{period}{numeric (scalar)}
 
-\item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
+\item{timeBlk}{an optional user defined matrix that defines
+the time adjustment in one cluster.
 Is repeated for every cluster.}
 }
 \description{

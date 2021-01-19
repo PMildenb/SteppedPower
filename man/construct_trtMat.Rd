@@ -10,7 +10,8 @@ construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 \item{Cl}{integer (vector), number of clusters per sequence group (in SWD),
 or number in control and intervention (in parallel designs)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+\item{trtDelay}{numeric (possibly vector), value(s)
+between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
 
 \item{dsntype}{character, defines the type of design. Options are "SWD",

@@ -15,7 +15,7 @@ output:
     theme: lumen
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{GettingStartedWithSteppedPower}
+  %\VignetteIndexEntry{Getting Started with `SteppedPower`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -35,12 +35,17 @@ library(Matrix)
 
 The package `SteppedPower` aims at providing tools for power calculation 
 and design diagnostics in interventional study designs,
-with a special focus on stepped wedge designs. Other implemented study design types are 
-parallel, parallel with baseline period(s) and crossover designs. Further design types can be 
+with a special focus on stepped wedge designs. Other implemented 
+study design types are parallel, parallel with baseline period(s) and 
+crossover designs. Further design types can be 
 easily defined by the user.  
 
-Currently, normal outcomes and binomial outcomes with logit link are implemented.  
-Random cluster effect, autocorrelated cluster effect, random treatment effect, 
+Currently, normal outcomes and binomial outcomes with 
+logit link are implemented. 
+The following random effects can be specified:
+random cluster intercept, random treatment effect, 
+random subject specific intercept and random time effect.
+The covariance structure can be compound symmetry or autoregressive.
 
 This code is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 

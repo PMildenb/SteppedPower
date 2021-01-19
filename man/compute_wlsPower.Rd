@@ -38,7 +38,8 @@ mean under intervention}
 If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
@@ -59,12 +60,14 @@ Defaults to 'rep(1,sum(Cl))' if not passed.}
 (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
 `sigma`, `tau`, `eta`, `rho` and `psi` are ignored.}
 
-\item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
+\item{dfAdjust}{character, one of the following: "none","between-within",
+"containment", "residual".}
 
 \item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
-\item{INDIV_LVL}{logical, should the computation be conducted on an individual
-level? This leads to longer run time and is mainly for diagnostic purposes.}
+\item{INDIV_LVL}{logical, should the computation be conducted on an
+individual level? This leads to longer run time and is
+mainly for diagnostic purposes.}
 
 \item{verbose}{integer, how much information should the function return?}
 }
