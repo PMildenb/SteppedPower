@@ -15,8 +15,10 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat matrix of dimension ... , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.
-#' @param trtDelay numeric (possibly vector), value(s) between 0 and 1 specifying
+#' @param DesMat matrix of dimension ... , if supplied,
+#' `timepoints`,`Cl`,`trtDelay` are ignored.
+#' @param trtDelay numeric (possibly vector), value(s)
+#' between 0 and 1 specifying
 #' the intervention effect in the first (second ... ) intervention phase
 #' @param incomplete integer, either a vector (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
@@ -32,36 +34,42 @@
 #' @param marginal_mu logical. Only relevant for non-gaussian outcome.
 #' Indicates whether mu0 and mu1 are to be interpreted as marginal prevalence
 #' under control  and under treatment, respectively, or whether they denote
-#' the prevalence conditional on random effects being 0 (It defaults to the latter).
+#' the prevalence conditional on random effects being 0
+#' (It defaults to the latter).
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric (scalar or matrix), standard deviation of random slopes.
 #' If `eta` is given as scalar, `trtMat` is needed as well.
 #' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*
+#' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+#' *Currently not compatible with `rho`!=0 !*
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
 #' Leads to a closed cohort setting
-#' @param alpha_0_1_2 numeric vector of length 3, that consists of alpha_0, alpha_1
-#' and alpha_2. This is an alternative way to define the correlation structure,
-#' following Li et al. (2018).
+#' @param alpha_0_1_2 numeric vector of length 3, that consists of
+#' alpha_0, alpha_1 and alpha_2. This is an alternative way to define
+#' the correlation structure, following Li et al. (2018).
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
 #' @param family character, distribution family. One of "gaussian", "binomial".
 #' Defaults to "gaussian"
-#' @param Power numeric, a specified target power. If supplied, the minimal `N` is returned.
-#' @param N_range numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.
+#' @param Power numeric, a specified target power.
+#' If supplied, the minimal `N` is returned.
+#' @param N_range numeric, vector specifying the lower and upper bound for `N`,
+#' ignored if `Power` is NULL.
 #' @param sig.level numeric (scalar), significance level, defaults to 0.05
-#' @param dfAdjust character, one of the following: "none","between-within", "containment", "residual".
+#' @param dfAdjust character, one of the following: "none","between-within",
+#' "containment", "residual".
 #' @param verbose integer, how much information should the function return?
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix with
 #' (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
 #' `sigma`, `tau`, `eta`, `rho` and `psi` are ignored.
-#' @param INDIV_LVL logical, should the computation be conducted on an individual
-#' level? This leads to longer run time and is mainly for diagnostic purposes.
+#' @param INDIV_LVL logical, should the computation be conducted on an
+#' individual level? This leads to longer run time and is
+#' mainly for diagnostic purposes.
 #'
 #' @details
 #' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
@@ -196,7 +204,7 @@ wlsPower <- function(Cl            =NULL,
                           mu0,
                           mu1,
                           marginal_mu   =FALSE,
-                          sigma         =1, ## default needed for CovMat input, still experimental
+                          sigma         =1,
                           tau           =NULL,
                           eta           =NULL,
                           tauAR         =NULL,
@@ -226,8 +234,8 @@ wlsPower <- function(Cl            =NULL,
     }
     if(!is.null(rho)){
       if(is.null(eta) | is.null(tau))
-        stop("If the correlation rho between random intercept and slope is not 0,",
-             "a random slope must be provided.")
+        stop("If the correlation rho between random intercept and",
+             " slope is not 0, a random slope must be provided.")
       if( (-1)>rho | rho>1 )
         stop("Correlation rho must be between -1 and 1")
     }
@@ -272,7 +280,8 @@ wlsPower <- function(Cl            =NULL,
   if(is.null(DesMat)){
     if(!is.null(timepoints) & !is.null(trtDelay)) {
       if(length(trtDelay)>max(timepoints)) {
-        stop("The length of vector trtDelay must be less or equal to timepoints.")
+        stop("The length of vector trtDelay must be",
+             "less or equal to timepoints.")
     }}
     DesMat    <- construct_DesMat(Cl         =Cl,
                                   trtDelay   =trtDelay,
@@ -336,17 +345,6 @@ wlsPower <- function(Cl            =NULL,
 
   if(family =="binomial"){
 
-    # MISSING_CONTROL_VARIABLE <- FALSE
-    # if(MISSING_CONTROL_VARIABLE){
-    #   ## TODO: Decide whether needed or not
-    #   ## TODO: Adjust eta, rho
-    #   ## TODO: tau output is matrix, next if-clause "marginal_mu" demands scalar
-    #
-    #   tau0 <- tau_to_tauLin(tau,mu0)
-    #   tau1 <- tau_to_tauLin(tau,mu1)
-    #   tau  <- matrix(tau0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (tau1-tau0)
-    # }
-
     if(marginal_mu){
 
       mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
@@ -358,7 +356,9 @@ wlsPower <- function(Cl            =NULL,
     sig0  <- sqrt(mu0*(1-mu0))
     sig1  <- sqrt(mu1*(1-mu1))
     ## for delayed trt effect only approximate sigma
-    sigma <- matrix(sig0, nrow=SumCl, ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
+    sigma <- matrix(sig0,
+                    nrow=SumCl,
+                    ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
 
     OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
@@ -371,21 +371,21 @@ wlsPower <- function(Cl            =NULL,
   if(!is.null(Power)){
     if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(
-              uniroot(function(N){Power - compute_wlsPower(DesMat    =DesMat,
-                                                           EffSize   =EffSize,
-                                                           sigma     =sigma,
-                                                           tau       =tau,
-                                                           eta       =eta,
-                                                           tauAR     =tauAR,
-                                                           rho       =rho,
-                                                           gamma     =gamma,
-                                                           psi       =psi,
-                                                           N         =N,
-                                                           dfAdjust  =dfAdjust,
-                                                           sig.level =sig.level,
-                                                           CovMat    =CovMat,
-                                                           INDIV_LVL =INDIV_LVL,
-                                                           verbose   =0)},
+              uniroot(function(N){Power - compute_wlsPower(DesMat    = DesMat,
+                                                           EffSize   = EffSize,
+                                                           sigma     = sigma,
+                                                           tau       = tau,
+                                                           eta       = eta,
+                                                           tauAR     = tauAR,
+                                                           rho       = rho,
+                                                           gamma     = gamma,
+                                                           psi       = psi,
+                                                           N         = N,
+                                                           dfAdjust  = dfAdjust,
+                                                           sig.level = sig.level,
+                                                           CovMat    = CovMat,
+                                                           INDIV_LVL = INDIV_LVL,
+                                                           verbose   = 0)},
                 interval=N_range)$root),
               error=function(cond){
                 message(paste0("Maximal N yields power below ",Power,
@@ -395,21 +395,21 @@ wlsPower <- function(Cl            =NULL,
     N <- N_opt
   }
   ## calculate Power #####
-  out <- compute_wlsPower(DesMat    =DesMat,
-                          EffSize   =EffSize,
-                          sigma     =sigma,
-                          tau       =tau,
-                          eta       =eta,
-                          tauAR     =tauAR,
-                          rho       =rho,
-                          gamma     =gamma,
-                          psi       =psi,
-                          N         =N,
-                          dfAdjust  =dfAdjust,
-                          sig.level =sig.level,
-                          CovMat    =CovMat,
-                          INDIV_LVL =INDIV_LVL,
-                          verbose   =verbose)
+  out <- compute_wlsPower(DesMat    = DesMat,
+                          EffSize   = EffSize,
+                          sigma     = sigma,
+                          tau       = tau,
+                          eta       = eta,
+                          tauAR     = tauAR,
+                          rho       = rho,
+                          gamma     = gamma,
+                          psi       = psi,
+                          N         = N,
+                          dfAdjust  = dfAdjust,
+                          sig.level = sig.level,
+                          CovMat    = CovMat,
+                          INDIV_LVL = INDIV_LVL,
+                          verbose   = verbose)
   if(!is.null(Power)) out$N_opt <- N_opt
 
   if(verbose>0) {
@@ -463,7 +463,8 @@ compute_wlsPower <- function(DesMat,
   trtMat     <- DesMat$trtMat
 
   ## Checks ####
-  if(!is.null(CovMat) & sum(sapply(c(sigma, tau, eta, rho, gamma, N),is.null))>0)
+  if(!is.null(CovMat) & sum(sapply(c(sigma, tau, eta, rho, gamma, N),
+                                   is.null)) > 0 )
     warning("If argument CovMat is provided, sigma, tau, eta, rho, gamma and N",
             "are ignored.")
 
@@ -506,7 +507,7 @@ compute_wlsPower <- function(DesMat,
   } else {
     out <- list(Power  =Pwr,
                 Params =list(N         =N,
-                             sigma     =sigma, ## NOT compatible with CovMat-Input (!)
+                             sigma     =sigma, ## NOT compatible with CovMat (!)
                              tau       =tau,
                              eta       =eta,
                              tauAR     =tauAR,
@@ -569,7 +570,8 @@ plot.wlsPower <- function(x,...){
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
   subp <- suppressWarnings(subplot(
-    plot_ly(data=data.frame(time=seq_len(dim(wgt)[2]), weight=colSums(abs(wgt))),  ## arithmetic or harmonic mean/sum ??
+    plot_ly(data=data.frame(time   =seq_len(dim(wgt)[2]),
+                            weight =colSums(abs(wgt))),
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
       layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
              xaxis=list(title="", showticklabels=FALSE))
@@ -583,7 +585,8 @@ plot.wlsPower <- function(x,...){
       layout(xaxis=list(title="time"),
              yaxis=list(title="cluster", autorange="reversed"))
     ,
-    plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]), weight=rowSums(abs(wgt))),
+    plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+                            weight=rowSums(abs(wgt))),
             type="bar", orientation="h",
             y=~cluster, x=~weight, color=I("grey")) %>%
       layout(xaxis=list(title=TeX('\\Sigma\\text{|weights|}')),

@@ -1,8 +1,9 @@
 
 #' @title Compute Power of a Wald Test
 #'
-#' computes the power of a scaled Wald test given a standard error, an effect size,
-#' the degrees of freedom of the t-distribution and a significance level.
+#' computes the power of a scaled Wald test given a standard error,
+#' an effect size, the degrees of freedom of the t-distribution and
+#' a significance level.
 #' Computes the exact power, see second example
 #'
 #' @param d numeric, raw effect
@@ -22,7 +23,8 @@ tTestPwr <- function(d,se,df,sig.level=0.05){
   return(Pwr)
 }
 
-# tTestPwr uses a central t-distribution. As applied sometimes in the literature,
+# tTestPwr uses a central t-distribution.
+# As applied sometimes in the literature,
 # e.g. Li, Turner, Preisser 2018 | Li, Redden 2015
 # This is NOT the same as a t-Test, which uses a non-central t-distribution !!
 # Hence the name of the above function should be changed to 'scaledWaldPwr'
@@ -38,7 +40,7 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
 
 
 
-## aux functions for binomial
+## auxiliary functions for binomial outcome
 tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
 logit.deriv   <- function(x) 1/(x-x^2)
 
@@ -59,11 +61,11 @@ muCond_to_muMarg <- function(muCond,tauLin){
 }
 
 
-## icc and cac to random effects
+### Transform icc and cac to random effects
 
-icc_to_RandEffs <- function(icc,cac=1,sigSq){
-  # if(is.null(N) | N==1)
-  #   warning("Cannot interpret icc and cac when sigma refers to cluster means. ")
+icc_to_RandEffs <- function(icc, cac=1, sigSq){
+  if(is.null(N) | N==1)
+    warning("Cannot interpret icc and cac when sigma refers to cluster means.")
   if(any(c(icc,cac)<0,c(icc,cac)>1))
 
   gamma <- sqrt(icc * sigSq * (1 - cac)/(1 - icc))
