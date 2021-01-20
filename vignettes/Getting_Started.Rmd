@@ -33,10 +33,11 @@ library(Matrix)
 
 # About `SteppedPower`
 
-The package `SteppedPower` aims at providing tools for power calculation 
-and design diagnostics in interventional study designs,
-with a special focus on stepped wedge designs. Other implemented 
-study design types are parallel, parallel with baseline period(s) and 
+SteppedPower offers tools for power and sample size 
+calculation as well as design diagnostics for 
+longitudinal mixed model settings, with a focus on stepped wedge designs.
+Other implemented study design types are parallel, 
+parallel with baseline period(s) and 
 crossover designs. Further design types can be 
 easily defined by the user.  
 

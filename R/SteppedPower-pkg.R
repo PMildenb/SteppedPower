@@ -1,8 +1,8 @@
 #' SteppedPower
 #'
-#' The package `SteppedPower` aims at providing tools for power - and sample
-#' size - calculation and design diagnostics in interventional study designs,
-#' with a special focus on stepped wedge designs.
+#' SteppedPower offers tools for power and sample size
+#' calculation as well as design diagnostics for
+#' longitudinal mixed model settings, with a focus on stepped wedge designs.
 #' All calculations are oracle estimates i.e. assume random effect variances
 #' to be known (or guessed) in advance.
 #'
