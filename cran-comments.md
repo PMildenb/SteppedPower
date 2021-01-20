@@ -3,8 +3,10 @@
 
 ## Test environments
 
-* local R installation (Windows10), R 4.0.3
-* local R installation (ubuntu 18.04.5), R 3.6.3-2
+* local R installation, R 4.0.3
+* Mac OS 10.15.7 (on GitHub Actions), R 4.0.3
+* ubuntu 18.04.5 (on GitHub Actions), R 4.0.3
+* Windows Server 2019 10.0.17763 (on GitHub Actions), R 4.0.3
 
 ## R CMD check results
 
