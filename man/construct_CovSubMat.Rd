@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovSubMat}
 \alias{construct_CovSubMat}
-\title{construct_CovSubMat}
+\title{Construct a Block of the Covariance Matrix}
 \usage{
 construct_CovSubMat(
   N,
@@ -36,7 +36,8 @@ standard deviation of random intercepts}
 standard deviation of random slope}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
@@ -55,13 +56,17 @@ interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}
 
-\item{INDIV_LVL}{logical, should the computation be conducted on an individual
-level? This leads to longer run time and is mainly for diagnostic purposes.}
+\item{INDIV_LVL}{logical, should the computation be conducted on an
+individual level? This leads to longer run time and is
+mainly for diagnostic purposes.}
 }
 \value{
 a block of a covariance matrix with two levels of clustering,
 corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
-construct_CovSubMat
+Constructs the covariance matrix
+for multiple measurements of the same cluster
+if the same individuals are observed at all time periods.
+This function is not designed to be used directly.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovBlk}
 \alias{construct_CovBlk}
-\title{construct_CovBlk}
+\title{Construct a Block of the Covariance Matrix}
 \usage{
 construct_CovBlk(
   sigma,
@@ -24,7 +24,8 @@ standard deviation of random intercepts}
 standard deviation of random slope}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
@@ -37,7 +38,8 @@ a block of a covariance matrix,
 corresponding to intra-cluster covariance over time for one cluster
 }
 \description{
-constructs the covariance matrix for multiple measurements of one cluster.
+Constructs the covariance matrix
+for multiple measurements of the same cluster.
 This function is not designed to be used directly.
 }
 \examples{

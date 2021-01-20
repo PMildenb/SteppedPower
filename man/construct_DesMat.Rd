@@ -2,7 +2,18 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_DesMat}
 \alias{construct_DesMat}
-\title{construct_DesMat}
+\title{Construct the Design Matrix
+
+Constructs the design matrix with one column for every (fixed)
+parameter to be estimated and one row for every cluster for every timepoint.
+This function calls `construct_trtMat` to construct a matrix with
+`#cluster` columns and `#timepoints` rows, indicating treatment status
+fore each cluster at each timepoint. This is then transformed into the first
+column of the design matrix. `construct_CovMat` further calls
+`construct_timeajust` to get the fixed effect(s) of the timepoints.
+
+Note: Unlike the usual notation, the treatment effect is in the first column
+(for easier access by higher level functions).}
 \usage{
 construct_DesMat(
   Cl = NULL,
@@ -21,7 +32,8 @@ construct_DesMat(
 \item{Cl}{integer (vector), number of clusters per sequence group (in SWD),
 or number in control and intervention (in parallel designs)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+\item{trtDelay}{numeric (possibly vector), value(s)
+between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
 
 \item{dsntype}{character, defines the type of design. Options are "SWD",
@@ -37,26 +49,37 @@ Defaults to "factor".}
 
 \item{period}{numeric (scalar)}
 
-\item{trtmatrix}{an optional user defined matrix to define treatment allocation}
+\item{trtmatrix}{an optional user defined matrix
+to define treatment allocation}
 
-\item{timeBlk}{an optional user defined matrix that defines the time adjustment in one cluster.
+\item{timeBlk}{an optional user defined matrix that defines
+the time adjustment in one cluster.
 Is repeated for every cluster.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
 Defaults to 'rep(1,sum(Cl))' if not passed.}
 
-\item{INDIV_LVL}{logical, should the computation be conducted on an individual
-level? This leads to longer run time and is mainly for diagnostic purposes.}
+\item{INDIV_LVL}{logical, should the computation be conducted on an
+individual level? This leads to longer run time and is
+mainly for diagnostic purposes.}
 }
 \value{
 an object of class DesMat
 }
 \description{
-constructs the design matrix.
-}
-\details{
-Note: Unlike the usual notation, the treatment is in the first column (for easier access by higher level functions).
+Construct the Design Matrix
+
+Constructs the design matrix with one column for every (fixed)
+parameter to be estimated and one row for every cluster for every timepoint.
+This function calls `construct_trtMat` to construct a matrix with
+`#cluster` columns and `#timepoints` rows, indicating treatment status
+fore each cluster at each timepoint. This is then transformed into the first
+column of the design matrix. `construct_CovMat` further calls
+`construct_timeajust` to get the fixed effect(s) of the timepoints.
+
+Note: Unlike the usual notation, the treatment effect is in the first column
+(for easier access by higher level functions).
 }
 \examples{
 construct_DesMat(Cl=c(2,0,1))

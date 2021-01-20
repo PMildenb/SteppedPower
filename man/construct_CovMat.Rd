@@ -2,7 +2,12 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovMat}
 \alias{construct_CovMat}
-\title{construct_CovMat}
+\title{Construct a Covariance Matrix
+
+constructs a (block diagonal) covariance matrix.
+This function calls `construct_CovBlk`
+(or `construct_CovSubMat` in case of repeated
+observations of the same individuals) for each block.}
 \usage{
 construct_CovMat(
   SumCl = NULL,
@@ -36,7 +41,8 @@ Defaults to 1 for parallel designs.}
 If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{etaAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
 If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
@@ -60,19 +66,25 @@ Defaults to 'rep(1,sum(Cl))' if not passed.}
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}
 
-\item{INDIV_LVL}{logical, should the computation be conducted on an individual
-level? This leads to longer run time and is mainly for diagnostic purposes.}
+\item{INDIV_LVL}{logical, should the computation be conducted on an
+individual level? This leads to longer run time and is
+mainly for diagnostic purposes.}
 }
 \value{
 a covariance matrix
 }
 \description{
-constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
-(or `construct_CovSubMat` in case of two levels of clustering) for each block.
+Construct a Covariance Matrix
+
+constructs a (block diagonal) covariance matrix.
+This function calls `construct_CovBlk`
+(or `construct_CovSubMat` in case of repeated
+observations of the same individuals) for each block.
 }
 \examples{
 
-## Two clusters, three timepoints, residual standard error sd=3, random slope sd=1.
+## Two clusters, three timepoints,
+## residual standard error sd=3, random slope sd=1.
 construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1)
 ##
 ##

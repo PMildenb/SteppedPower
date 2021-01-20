@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{plot.wlsPower}
 \alias{plot.wlsPower}
-\title{plot.wlsPower}
+\title{plot an object of class `wlsPower`}
 \usage{
 \method{plot}{wlsPower}(x, ...)
 }
@@ -12,5 +12,6 @@
 \item{...}{Arguments to be passed to methods}
 }
 \description{
-plot.wlsPower
+Plot a matrix that visualises the influence of each cluster for
+each timepoint
 }

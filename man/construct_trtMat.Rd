@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_trtMat}
 \alias{construct_trtMat}
-\title{construct_trtMat}
+\title{Construct Treatment Matrix}
 \usage{
 construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 }
@@ -10,7 +10,8 @@ construct_trtMat(Cl, trtDelay, dsntype, timepoints = NULL)
 \item{Cl}{integer (vector), number of clusters per sequence group (in SWD),
 or number in control and intervention (in parallel designs)}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+\item{trtDelay}{numeric (possibly vector), value(s)
+between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
 
 \item{dsntype}{character, defines the type of design. Options are "SWD",
@@ -25,7 +26,8 @@ a matrix trtMat, where rows and columns correspond to cluster
 and timepoints, respectively
 }
 \description{
-construct_trtMat
+Constructs a matrix of `#cluster` rows and `#timepoint` columns, indicating
+treatment status in each cluster at each timepoint.
 }
 \examples{
 construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")

@@ -2,7 +2,12 @@
 % Please edit documentation in R/helper_functions.R
 \name{tTestPwr}
 \alias{tTestPwr}
-\title{tTestPwr}
+\title{Compute Power of a Wald Test
+
+computes the power of a scaled Wald test given a standard error,
+an effect size, the degrees of freedom of the t-distribution and
+a significance level.
+Computes the exact power, see second example}
 \usage{
 tTestPwr(d, se, df, sig.level = 0.05)
 }
@@ -19,8 +24,11 @@ tTestPwr(d, se, df, sig.level = 0.05)
 a scalar
 }
 \description{
-computes the power of a t-test given a standard error, an effect size,
-the degrees of freedom of the t-distribution and a significance level.
+Compute Power of a Wald Test
+
+computes the power of a scaled Wald test given a standard error,
+an effect size, the degrees of freedom of the t-distribution and
+a significance level.
 Computes the exact power, see second example
 }
 \examples{

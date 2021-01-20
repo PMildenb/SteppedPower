@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{wlsPower}
 \alias{wlsPower}
-\title{wlsPower}
+\title{Compute power}
 \usage{
 wlsPower(
   Cl = NULL,
@@ -43,9 +43,11 @@ or number in control and intervention (in parallel designs)}
 If design is swd, timepoints defaults to length(Cl)+1.
 Defaults to 1 for parallel designs.}
 
-\item{DesMat}{matrix of dimension ... , if supplied, `timepoints`,`Cl`,`trtDelay` are ignored.}
+\item{DesMat}{matrix of dimension ... , if supplied,
+`timepoints`,`Cl`,`trtDelay` are ignored.}
 
-\item{trtDelay}{numeric (possibly vector), value(s) between 0 and 1 specifying
+\item{trtDelay}{numeric (possibly vector), value(s)
+between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
 
 \item{incomplete}{integer, either a vector (only for SWD) or a matrix.
@@ -69,7 +71,8 @@ Defaults to "factor".}
 \item{marginal_mu}{logical. Only relevant for non-gaussian outcome.
 Indicates whether mu0 and mu1 are to be interpreted as marginal prevalence
 under control  and under treatment, respectively, or whether they denote
-the prevalence conditional on random effects being 0 (It defaults to the latter).}
+the prevalence conditional on random effects being 0
+(It defaults to the latter).}
 
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 
@@ -79,7 +82,8 @@ the prevalence conditional on random effects being 0 (It defaults to the latter)
 If `eta` is given as scalar, `trtMat` is needed as well.}
 
 \item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently not compatible with `rho`!=0 !*}
+If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+*Currently not compatible with `rho`!=0 !*}
 
 \item{rho}{numeric (scalar), correlation of `tau` and `eta`}
 
@@ -88,9 +92,9 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated. *Currently
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}
 
-\item{alpha_0_1_2}{numeric vector of length 3, that consists of alpha_0, alpha_1
-and alpha_2. This is an alternative way to define the correlation structure,
-following Li et al. (2018).}
+\item{alpha_0_1_2}{numeric vector of length 3, that consists of
+alpha_0, alpha_1 and alpha_2. This is an alternative way to define
+the correlation structure, following Li et al. (2018).}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix with
 (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
@@ -100,19 +104,23 @@ following Li et al. (2018).}
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
 Defaults to 'rep(1,sum(Cl))' if not passed.}
 
-\item{Power}{numeric, a specified target power. If supplied, the minimal `N` is returned.}
+\item{Power}{numeric, a specified target power.
+If supplied, the minimal `N` is returned.}
 
 \item{family}{character, distribution family. One of "gaussian", "binomial".
 Defaults to "gaussian"}
 
-\item{N_range}{numeric, vector specifying the lower and upper bound for `N`, ignored if `Power` is NULL.}
+\item{N_range}{numeric, vector specifying the lower and upper bound for `N`,
+ignored if `Power` is NULL.}
 
 \item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
-\item{dfAdjust}{character, one of the following: "none","between-within", "containment", "residual".}
+\item{dfAdjust}{character, one of the following: "none","between-within",
+"containment", "residual".}
 
-\item{INDIV_LVL}{logical, should the computation be conducted on an individual
-level? This leads to longer run time and is mainly for diagnostic purposes.}
+\item{INDIV_LVL}{logical, should the computation be conducted on an
+individual level? This leads to longer run time and is
+mainly for diagnostic purposes.}
 
 \item{verbose}{integer, how much information should the function return?}
 }
@@ -125,14 +133,15 @@ If requested (by `verbose`=2) this list also contains relevant matrices.
 }
 \description{
 This is the main function of the SteppedPower package.
-It calls the constructor functions for the design matrix \eqn{X} and
-covariance matrix \eqn{\Omega}, and then calculates the variance of the
-intervention effect estimator \eqn{Var(\hat\theta)}
+It calls the constructor functions for the design matrix and
+covariance matrix, and then calculates the variance of the
+intervention effect estimator. The latter is then used
+to compute the power of a Wald test of a (given) intervention effect.
 }
 \details{
 Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
-The variance of the treatment effect estimate \eqn{\Var{\hat\theta}}
-see also vignette 'Getting Started'
+The variance of the treatment effect estimator \eqn{\hat\theta} can then be
+estimated via weighted least squares (see also vignette 'Getting Started').
 }
 \examples{
 ## See also vignette for more examples

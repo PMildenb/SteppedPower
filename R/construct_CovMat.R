@@ -1,7 +1,8 @@
 
-#' construct_CovBlk
+#' @title Construct a Block of the Covariance Matrix
 #'
-#' constructs the covariance matrix for multiple measurements of one cluster.
+#' @description Constructs the covariance matrix
+#' for multiple measurements of the same cluster.
 #' This function is not designed to be used directly.
 #'
 #' @inheritParams construct_CovSubMat
@@ -17,10 +18,10 @@
 
 construct_CovBlk <- function(sigma,
                              tau,
-                             eta   =NULL,
-                             tauAR =NULL,
-                             etaAR =NULL,
-                             rho   =NULL){
+                             eta   = NULL,
+                             tauAR = NULL,
+                             etaAR = NULL,
+                             rho   = NULL){
   if(!(length(sigma)==length(tau)))
     stop ("In construct_CovBlk: sigma and tau must be of same length.")
   if(!is.null(eta) & !length(tau)==length(eta))
@@ -46,7 +47,12 @@ construct_CovBlk <- function(sigma,
 
 
 
-#' construct_CovSubMat
+#' @title Construct a Block of the Covariance Matrix
+#'
+#' @description Constructs the covariance matrix
+#' for multiple measurements of the same cluster
+#' if the same individuals are observed at all time periods.
+#' This function is not designed to be used directly.
 #'
 #' @inheritParams construct_CovMat
 #' @param N Number of individuals per cluster
@@ -67,14 +73,14 @@ construct_CovSubMat <- function(N,
                                 timepoints,
                                 sigma,
                                 tau,
-                                eta       =NULL,
-                                tauAR     =NULL,
-                                etaAR     =NULL,
-                                rho       =NULL,
-                                gamma     =0,
-                                trtMat    =NULL,
-                                psi       =NULL,
-                                INDIV_LVL =FALSE){
+                                eta       = NULL,
+                                tauAR     = NULL,
+                                etaAR     = NULL,
+                                rho       = NULL,
+                                gamma     = 0,
+                                trtMat    = NULL,
+                                psi       = NULL,
+                                INDIV_LVL = FALSE){
 
   ClBlk  <- construct_CovBlk(sigma = gamma,
                              tau   = tau,
@@ -100,10 +106,12 @@ construct_CovSubMat <- function(N,
 
 
 
-#' construct_CovMat
+#' @title Construct a Covariance Matrix
 #'
-#' constructs a (block diagonal) covariance matrix. Calls `construct_CovBlk`
-#' (or `construct_CovSubMat` in case of two levels of clustering) for each block.
+#' constructs a (block diagonal) covariance matrix.
+#' This function calls `construct_CovBlk`
+#' (or `construct_CovSubMat` in case of repeated
+#' observations of the same individuals) for each block.
 #'
 #' @inheritParams compute_wlsPower
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
@@ -121,7 +129,8 @@ construct_CovSubMat <- function(N,
 #'
 #' @examples
 #'
-#' ## Two clusters, three timepoints, residual standard error sd=3, random slope sd=1.
+#' ## Two clusters, three timepoints,
+#' ## residual standard error sd=3, random slope sd=1.
 #' construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1)
 #' ##
 #' ##
@@ -140,29 +149,30 @@ construct_CovSubMat <- function(N,
 
 
 
-construct_CovMat <- function(SumCl      =NULL,
-                             timepoints =NULL,
+construct_CovMat <- function(SumCl      = NULL,
+                             timepoints = NULL,
                              sigma,
                              tau,
-                             eta        =NULL,
-                             tauAR      =NULL,
-                             etaAR      =NULL,
-                             rho        =NULL,
-                             gamma      =NULL,
-                             trtMat     =NULL,
-                             N          =NULL,
-                             CovBlk     =NULL,
-                             psi        =NULL,
-                             INDIV_LVL  =FALSE){
+                             eta        = NULL,
+                             tauAR      = NULL,
+                             etaAR      = NULL,
+                             rho        = NULL,
+                             gamma      = NULL,
+                             trtMat     = NULL,
+                             N          = NULL,
+                             CovBlk     = NULL,
+                             psi        = NULL,
+                             INDIV_LVL  = FALSE){
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
   } else {
     ## Checks ##
     if(is.null(SumCl)      & !is.null(trtMat)) SumCl      <- nrow(trtMat)
     if(is.null(timepoints) & !is.null(trtMat)) timepoints <- ncol(trtMat)
-    timepoints  <- sum(timepoints)  ## dirty hack to fix potential vector input for parll+baseline
+    timepoints  <- sum(timepoints)
 
-    if(!is.null(rho) & is.null(eta))    stop("In construct_CovMat: eta is needed if rho is not NULL")
+    if(!is.null(rho) & is.null(eta))
+      stop("In construct_CovMat: eta is needed if rho is not NULL")
 
 
     ## sigma ##
@@ -172,34 +182,35 @@ construct_CovMat <- function(SumCl      =NULL,
     }else if(lenS==timepoints){
       matrix(sigma, nrow=SumCl, ncol=timepoints, byrow=TRUE)
     }else stop(paste('length of sigma is ', N,
-                     '. This does not fit to given number of timepoints, which is ',timepoints,
+                     '. This does not fit to given number of timepoints, ',
+                     'which is ',timepoints,
                      ' or to the given number of clusters, which is ', SumCl))
     if(timepoints==SumCl & lenS==SumCl)
       warning("sigma is assumed to change between clusters. If you wanted sigma
               to change over time, please provide as matrix of dimension
               #Cluster x timepoints")
 
-    ## N (if psi==NULL on cluster means, if psi!=NULL on individual level##
+    ## N (if psi==NULL on cluster means, if psi!=NULL on individual level ##
     if(is.null(psi) & !INDIV_LVL){
       if(is.null(N)) N <- 1
       if(length(N) %in% c(1,SumCl,SumCl*timepoints)) {
         NMat <- matrix(N, nrow=SumCl, ncol=timepoints)
       }else stop(paste('length of cluster size vector N is ', N,
-                       '. This does not fit to given number of clusters, which is ',
-                       SumCl,"\n"))
+                       '. This does not fit to given number of clusters, ',
+                       'which is ', SumCl,"\n"))
 
-      ## N into sigma (aggregate on cluster means)##
+      ## N into sigma (aggregate on cluster means) ##
       sigmaMat <- sigmaMat / sqrt(NMat)
     }
 
-    ## sigma to list ##
+    ## sigma transformed to list ##
     sigmaLst <- split(sigmaMat,row(sigmaMat))
 
-    ## tau ##
-    tauMat <- matrix(tau, nrow=SumCl, ncol=timepoints) ## tau can be scalar, vector or matrix
+    ## tau (input can be scalar, vector or matrix) ##
+    tauMat <- matrix(tau, nrow=SumCl, ncol=timepoints)
     tauLst <- split(tauMat, row(tauMat))
 
-    ## eta ##
+    ## eta (input can be scalar or matrix, is passed as list of vectors) ##
     if(!is.null(eta)) {
       if(is.matrix(eta)){
         if(nrow(eta)==SumCl & ncol(eta)==timepoints)
@@ -208,17 +219,18 @@ construct_CovMat <- function(SumCl      =NULL,
                   paste(dim(eta),collapse="x"), " but must be ",
                   SumCl,"x",timepoints)
       }else if(!is.null(trtMat) & length(eta)==1){
-        etaMat <- trtMat * eta                         ## eta input can be scalar or matrix
-      }else stop("If argument eta is a scalar, argument trtMat needs to be provided")
-      etaLst <- split(etaMat, row(etaMat))             ## eta is passed as vector of length SumCl
+        etaMat <- trtMat * eta
+      }else stop("If argument eta is a scalar, ",
+                 "argument trtMat needs to be provided")
+      etaLst <- split(etaMat, row(etaMat))
     }else
       etaLst <- vector("list", length=SumCl)
 
-    ## rho ##
+    ## rho (input must be scalar, is passed as scalar) ##
     if(!is.null(rho)) {
-      rhoLst <- as.list(rep(rho,SumCl))                ## rho input must be a scalar
+      rhoLst <- as.list(rep(rho,SumCl))
     }else
-      rhoLst <- vector("list", length=SumCl)      ## rho is passed as scalar
+      rhoLst <- vector("list", length=SumCl)
 
     if(is.null(tauAR)) tauAR <- vector("list", length=SumCl)
     if(is.null(etaAR)) etaAR <- vector("list", length=SumCl)
@@ -233,7 +245,7 @@ construct_CovMat <- function(SumCl      =NULL,
                         rho   = rhoLst,
                         SIMPLIFY = FALSE)
     }else{
-      NMat <- matrix(N, nrow=SumCl, ncol=1)  ## number of Individuals constant over time
+      NMat <- matrix(N, nrow=SumCl, ncol=1)
       NLst <- split(NMat, row(NMat))
 
       ## gamma ##
@@ -254,8 +266,8 @@ construct_CovMat <- function(SumCl      =NULL,
                         psi   = psiLst,
                         tauAR =tauAR,
                         etaAR =etaAR,
-                        MoreArgs = list(timepoints =timepoints,
-                                        INDIV_LVL  =INDIV_LVL),
+                        MoreArgs = list(timepoints = timepoints,
+                                        INDIV_LVL  = INDIV_LVL),
                         SIMPLIFY = FALSE)
     }
   }
