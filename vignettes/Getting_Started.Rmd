@@ -7,12 +7,9 @@ author:
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page.html?L=1))
 date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_document:
+  rmarkdown::html_vignette:
     toc: true
-    toc_float: true
-    code_folding: show
     number_sections: true
-    theme: lumen
 bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Getting Started with `SteppedPower`}
@@ -24,7 +21,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7
+  fig.width = 7,
+  warning = FALSE
 )
 library(knitr)
 library(SteppedPower)
@@ -223,12 +221,11 @@ Periods in which no cluster switches to the intervention
 are specified by inserting zeros into 
 the `Cl` argument, i.e. `Cl=c(4,4,4,0)`.
 
-```{r}
-mod3 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1)
-mod4 <- wlsPower(Cl=c(4,4,4),   sigma=2, eta=1, mu0=0,mu1=1, timepoints=5)
+```{r, warning=FALSE}
+mod1 <- wlsPower(Cl=c(1,1,1,0), mu0=0, mu1=1, 
+                 sigma=0.4, tau=0, verbose=2)
 
-mod1 <- wlsPower(Cl=c(0,4,4,4), sigma=2, eta=1, mu0=0,mu1=1)
-mod2 <- wlsPower(Cl=c(4,4,4,0), sigma=2, eta=1, mu0=0,mu1=1, trtDelay=0)
+knitr::kable(mod1$DesignMatrix$trtMat)
 ```
 
 ## Autocorrelated cluster effects
@@ -242,28 +239,28 @@ the latter to the usual compound symmetry covariance type.
 
 An example of a stepped wedge design with 8 clusters in 4 waves, 
 once with medium autocorrelation (`tauAR=0.6`) and 
-once with high autocorrelation (`tauAR=0.9`):
+once with high autocorrelation (`tauAR=0.95`):
 
 ```{r}
-a <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
+mod2 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
               sigma=1, N=100, tau=1, tauAR=.6, verbose=2)
 
-b <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
-              sigma=1, N=100, tau=1, tauAR=.9, verbose=2)
-plot(a)
-plot(b)
+mod3 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
+              sigma=1, N=100, tau=1, tauAR=.95, verbose=2)
+plot(mod2)
+plot(mod3)
 ```
 
 For `tauAR=0.6`, the covariance matrix within one cluster then looks like this:
 
 ```{r, echo=FALSE}
-suppressWarnings(knitr::kable(as.matrix(a$CovarianceMatrix[1:5,1:5])))
+suppressWarnings(knitr::kable(as.matrix(mod2$CovarianceMatrix[1:5,1:5])))
 ```
 
-For `tauAR=0.9` it takes the following shape
+For `tauAR=0.95` it takes the following shape
 
 ```{r, echo=FALSE}
-suppressWarnings(knitr::kable(as.matrix(b$CovarianceMatrix[1:5,1:5])))
+suppressWarnings(knitr::kable(as.matrix(mod3$CovarianceMatrix[1:5,1:5])))
 ```
 
 ## Unequal cluster sizes
@@ -277,8 +274,8 @@ The argument `N` defines the cluster size. `N` can be
   a cluster or a wave of clusters and each column corresponds to a timepoint
 
 ```{r}
-a <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=2)
-plot(a)
+mod4 <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=2)
+plot(mod4)
 ```
 
 ## Incomplete Stepped Wedge Designs
@@ -342,7 +339,8 @@ all.equal(incompletePwr,incompletePwr2)
 ```
 
 We can also have a quick look at the projection matrix where we see that the 
-clusters have a weight of exactly zero at the timepoints where they are not observed
+clusters have a weight of exactly zero at the timepoints 
+where they are not observed
 
 ```{r}
 plot(incompletePwr)
@@ -355,47 +353,53 @@ but makes (supposedly) most sense in the context of stepped wedge designs
 
 The most usual method for the modelling of potential secular trends is
 to take time period as a factor into the analysis model
-[@hussey2007design, @hemming2015stepped, @hemming2020reflection]. 
+[@hussey2007design; @hemming2015stepped; @hemming2020reflection]. 
 
 For diagnostic purposes (or for bold users), some other adjustment options are 
 implemented.
 
 ```{r}
-construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="none")
-construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="linear")
-construct_DesMat(Cl=rep(1,4), timepoints=5, timeAdjust="periodic")
+TimeAdj1 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, tau=0, 
+                     timeAdjust="linear", verbose=2)
 
-wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="periodic")
-wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="none")
-a <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="linear", verbose=2)
-b <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, timeAdjust="factor", verbose=2)
+TimeAdj2 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, tau=0, 
+                     timeAdjust="factor", verbose=2)
+```
 
-a$DesignMatrix
-b$DesignMatrix
+Design matrix of the first cluster with linear adjustment for secular trend:
+```{r}
+knitr::kable(head(TimeAdj1$DesignMatrix$dsnmatrix, 5))
+```
+
+Design matrix of the first cluster with categorical adjustment for secular trend:
+```{r}
+knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 ```
 
 
 ## Closed cohort SWD
 
-In a closed cohort the patients are observed over the whole study period or 
+In a closed cohort the patients are observed over the whole study period. 
+The same correlation structure arises in cross sectional stepped wedge designs 
 if subclusters exist (such as wards within clinics). 
 The argument `psi` denotes the standard deviation of a 
 random subject (or subcluster) specific intercept.
-
+  
+The power is calculated on aggregated cluster means:
 ```{r}
-mod1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
-                      N=3, verbose=TRUE)
+Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
+                      N=3, verbose=2)
+plot(Closed1)
 ```
 
+With`INIDV_LVL=TRUE`, the calculation is done on the individual level. 
+This yields the same results but is far more comutationally expensive and is 
+mainly intended for diagnostic purposes.
+
 ```{r}
-mod2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
+Closed2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
                       N=3, verbose=2, INDIV_LVL = TRUE)
-plot(mod2)
-```
-
-```{r}
-mod1$CovarianceMatrix[1:4,1:4]
-mod2$CovarianceMatrix[1:12,1:12]
+plot(Closed2)
 ```
 
 
