@@ -570,11 +570,12 @@ plot.wlsPower <- function(x,...){
   mx <- max(abs(wgt))
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
+
   subp <- suppressWarnings(subplot(
     plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
                             weight = colSums(abs(wgt))),
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
-      layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
+      layout(yaxis=list(title="Sum|weights|"),
              xaxis=list(title="", showticklabels=FALSE))
     ,
     plotly_empty(type="scatter",mode="marker")
@@ -590,11 +591,12 @@ plot.wlsPower <- function(x,...){
                             weight=rowSums(abs(wgt))),
             type="bar", orientation="h",
             y=~cluster, x=~weight, color=I("grey")) %>%
-      layout(xaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
+      layout(xaxis=list(title="Sum|weights|"),
              yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
     ,
     nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-  ) %>% layout(showlegend=FALSE) %>% config(mathjax = 'cdn'))
+  ) %>% layout(showlegend=FALSE)
+  )
   return(subp)
 }
 
