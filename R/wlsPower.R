@@ -193,34 +193,34 @@
 
 
 
-wlsPower <- function(Cl            =NULL,
-                          timepoints    =NULL,
-                          DesMat        =NULL,
-                          trtDelay      =NULL,
-                          incomplete    =NULL,
-                          timeAdjust    ="factor",
-                          period        =NULL,
-                          dsntype       ="SWD",
-                          mu0,
-                          mu1,
-                          marginal_mu   =FALSE,
-                          sigma         =1,
-                          tau           =NULL,
-                          eta           =NULL,
-                          tauAR         =NULL,
-                          rho           =NULL,
-                          gamma         =NULL,
-                          psi           =NULL,
-                          alpha_0_1_2   =NULL,
-                          CovMat        =NULL,
-                          N             =NULL,
-                          Power         =NULL,
-                          family        ="gaussian",
-                          N_range       =c(1,1000),
-                          sig.level     =0.05,
-                          dfAdjust      ="none",
-                          INDIV_LVL     =FALSE,
-                          verbose       =1){
+wlsPower <- function( Cl            = NULL,
+                      timepoints    = NULL,
+                      DesMat        = NULL,
+                      trtDelay      = NULL,
+                      incomplete    = NULL,
+                      timeAdjust    = "factor",
+                      period        = NULL,
+                      dsntype       = "SWD",
+                      mu0,
+                      mu1,
+                      marginal_mu   = FALSE,
+                      sigma         = 1,
+                      tau           = NULL,
+                      eta           = NULL,
+                      tauAR         = NULL,
+                      rho           = NULL,
+                      gamma         = NULL,
+                      psi           = NULL,
+                      alpha_0_1_2   = NULL,
+                      CovMat        = NULL,
+                      N             = NULL,
+                      Power         = NULL,
+                      family        = "gaussian",
+                      N_range       = c(1,1000),
+                      sig.level     = 0.05,
+                      dfAdjust      = "none",
+                      INDIV_LVL     = FALSE,
+                      verbose       = 1){
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
@@ -265,9 +265,9 @@ wlsPower <- function(Cl            =NULL,
   dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
   tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,
                                                    dsntypeOptions,
-                                                   costs=c(insertions    =1,
-                                                           deletions     =100,
-                                                           substitutions =100),
+                                                   costs=c(insertions    = 1,
+                                                           deletions     = 100,
+                                                           substitutions = 100),
                                                    ignore.case=TRUE))]
   if(dsntype != tmpdsntype) {
     message("Assumes ", tmpdsntype, " design")
@@ -283,15 +283,14 @@ wlsPower <- function(Cl            =NULL,
         stop("The length of vector trtDelay must be",
              "less or equal to timepoints.")
     }}
-    DesMat    <- construct_DesMat(Cl         =Cl,
-                                  trtDelay   =trtDelay,
-                                  dsntype    =dsntype,
-                                  timepoints =timepoints,
-                                  timeAdjust =timeAdjust,
-                                  period     =period,
-                                  # timeBlk    =timeBlk,
-                                  N          =if(INDIV_LVL) N,
-                                  INDIV_LVL  =INDIV_LVL )
+    DesMat    <- construct_DesMat(Cl         = Cl,
+                                  trtDelay   = trtDelay,
+                                  dsntype    = dsntype,
+                                  timepoints = timepoints,
+                                  timeAdjust = timeAdjust,
+                                  period     = period,
+                                  N          = if(INDIV_LVL) N,
+                                  INDIV_LVL  = INDIV_LVL )
   }else{
     if(!all(sapply(list(Cl, timepoints, trtDelay, period),is.null)))
       warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
@@ -443,19 +442,19 @@ wlsPower <- function(Cl            =NULL,
 compute_wlsPower <- function(DesMat,
                              EffSize,
                              sigma,
-                             tau        =0,
-                             eta        =NULL,
-                             tauAR      =NULL,
-                             etaAR      =NULL,
-                             rho        =NULL,
-                             gamma      =NULL,
-                             psi        =NULL,
-                             N          =NULL,
-                             CovMat     =NULL,
-                             dfAdjust   ="none",
-                             sig.level  =.05,
-                             INDIV_LVL  =FALSE,
-                             verbose    =1){
+                             tau        = 0,
+                             eta        = NULL,
+                             tauAR      = NULL,
+                             etaAR      = NULL,
+                             rho        = NULL,
+                             gamma      = NULL,
+                             psi        = NULL,
+                             N          = NULL,
+                             CovMat     = NULL,
+                             dfAdjust   = "none",
+                             sig.level  = .05,
+                             INDIV_LVL  = FALSE,
+                             verbose    = 1){
   dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
   SumCl      <- sum(DesMat$Cl)
@@ -470,19 +469,19 @@ compute_wlsPower <- function(DesMat,
 
   ## get covariance matrix #####
   if(is.null(CovMat))
-    CovMat   <- construct_CovMat(SumCl      =SumCl,
-                                 timepoints =timepoints,
-                                 sigma      =sigma,
-                                 tau        =tau,
-                                 eta        =eta,
-                                 tauAR      =tauAR,
-                                 etaAR      =etaAR,
-                                 rho        =rho,
-                                 gamma      =gamma,
-                                 psi        =psi,
-                                 trtMat     =trtMat,
-                                 N          =N,
-                                 INDIV_LVL  =INDIV_LVL)
+    CovMat   <- construct_CovMat(SumCl      = SumCl,
+                                 timepoints = timepoints,
+                                 sigma      = sigma,
+                                 tau        = tau,
+                                 eta        = eta,
+                                 tauAR      = tauAR,
+                                 etaAR      = etaAR,
+                                 rho        = rho,
+                                 gamma      = gamma,
+                                 psi        = psi,
+                                 trtMat     = trtMat,
+                                 N          = N,
+                                 INDIV_LVL  = INDIV_LVL)
 
   ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
@@ -506,24 +505,24 @@ compute_wlsPower <- function(DesMat,
     out <- c(Pwr)
   } else {
     out <- list(Power  =Pwr,
-                Params =list(N         =N,
-                             sigma     =sigma, ## NOT compatible with CovMat (!)
-                             tau       =tau,
-                             eta       =eta,
-                             tauAR     =tauAR,
-                             etaAR     =etaAR,
-                             rho       =rho,
-                             gamma     =gamma,
-                             psi       =psi,
-                             denomDF   =df,
-                             dfAdjust  =dfAdjust,
-                             sig.level =sig.level))
+                Params =list(N         = N,
+                             sigma     = sigma,
+                             tau       = tau,
+                             eta       = eta,
+                             tauAR     = tauAR,
+                             etaAR     = etaAR,
+                             rho       = rho,
+                             gamma     = gamma,
+                             psi       = psi,
+                             denomDF   = df,
+                             dfAdjust  = dfAdjust,
+                             sig.level = sig.level))
   }
   if(verbose==2)
     out <- append(out,
-                  list(ProjMatrix       =ProjMat,
-                       DesignMatrix     =DesMat,
-                       CovarianceMatrix =CovMat))
+                  list(ProjMatrix       = ProjMat,
+                       DesignMatrix     = DesMat,
+                       CovarianceMatrix = CovMat))
   return(out)
 }
 
@@ -572,8 +571,8 @@ plot.wlsPower <- function(x,...){
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
   subp <- suppressWarnings(subplot(
-    plot_ly(data=data.frame(time   =seq_len(dim(wgt)[2]),
-                            weight =colSums(abs(wgt))),
+    plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+                            weight = colSums(abs(wgt))),
             type="bar", x=~time, y=~weight, color=I("grey")) %>%
       layout(yaxis=list(title=TeX('\\Sigma\\text{|weights|}')),
              xaxis=list(title="", showticklabels=FALSE))
