@@ -154,6 +154,8 @@ plot.DesMat <- function(x, ...){
 #' and timepoints, respectively
 #' @export
 #'
+#' @return a plotly html widget
+#'
 #' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 #'
 #'

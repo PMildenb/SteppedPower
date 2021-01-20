@@ -560,6 +560,8 @@ print.wlsPower <- function(x, ...){
 #'
 #' @method plot wlsPower
 #'
+#' @return a plotly html widget
+#'
 #' @export
 #'
 plot.wlsPower <- function(x,...){
