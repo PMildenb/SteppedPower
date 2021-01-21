@@ -247,8 +247,6 @@ mod2 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1,
 
 mod3 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
               sigma=1, N=100, tau=1, tauAR=.95, verbose=2)
-plot(mod2)
-plot(mod3)
 ```
 
 For `tauAR=0.6`, the covariance matrix within one cluster then looks like this:
@@ -261,6 +259,7 @@ For `tauAR=0.95` it takes the following shape
 
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(as.matrix(mod3$CovarianceMatrix[1:5,1:5])))
+rm(mod1,mod2,mod3)
 ```
 
 ## Unequal cluster sizes
@@ -274,8 +273,12 @@ The argument `N` defines the cluster size. `N` can be
   a cluster or a wave of clusters and each column corresponds to a timepoint
 
 ```{r}
-mod4 <- wlsPower(Cl=c(1,1,1),mu0=0,mu1=1, N=c(1,3,10), tau=.5, verbose=2)
+mod4 <- wlsPower(Cl=c(1,1,1), mu0=0, mu1=1, N=c(1,3,10), tau=.5, verbose=2)
 plot(mod4)
+```
+
+```{r, echo=FALSE}
+rm(mod4)
 ```
 
 ## Incomplete Stepped Wedge Designs
@@ -314,7 +317,7 @@ incompleteMat1 <- cbind(TM[,1:2],rep(1,4),TM[,3:4])
 incompleteMat2 <- incompleteMat1[rep(1:4,each=2),]
 ```
 
-A matrix which each row representing a wave of clusters
+A matrix where each row represents a wave of clusters
 
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(incompleteMat1))
@@ -344,6 +347,11 @@ where they are not observed
 
 ```{r}
 plot(incompletePwr)
+```
+
+
+```{r, echo=FALSE}
+rm(incompletePwr,incompletePwr1,incompletePwr2,incompleteMat1,incompleteMat2)
 ```
 
 > The argument `incomplete` with matrix input works also for other design types, 
@@ -389,7 +397,7 @@ The power is calculated on aggregated cluster means:
 ```{r}
 Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
                       N=3, verbose=2)
-plot(Closed1)
+a <- plot(Closed1$DesignMatrix)
 ```
 
 With`INIDV_LVL=TRUE`, the calculation is done on the individual level. 
