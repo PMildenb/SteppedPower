@@ -1,5 +1,5 @@
 
-# `SteppedPower` - sample size calculation in mixed model settings with focus on stepped wedge designs
+# `SteppedPower` - Sample Size Calculation in Mixed Model Settings with Focus on Stepped Wedge Designs
 
 <!-- badges: start -->
   [![R-CMD-check](https://github.com/PMildenb/SteppedPower/workflows/R-CMD-check/badge.svg)](https://github.com/PMildenb/SteppedPower/actions)
