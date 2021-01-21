@@ -11,6 +11,9 @@
 
 \item{...}{Arguments to be passed to methods}
 }
+\value{
+a plotly html widget
+}
 \description{
 Plot a matrix that visualises the influence of each cluster for
 each timepoint

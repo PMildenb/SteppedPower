@@ -24,6 +24,8 @@ Defaults to 1 for parallel designs.}
 \value{
 a matrix trtMat, where rows and columns correspond to cluster
 and timepoints, respectively
+
+a plotly html widget
 }
 \description{
 Constructs a matrix of `#cluster` rows and `#timepoint` columns, indicating
