@@ -11,6 +11,9 @@
 
 \item{...}{Arguments to be passed to methods}
 }
+\value{
+Messages with information about the design.
+}
 \description{
 print.DesMat
 }

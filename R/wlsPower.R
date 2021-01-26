@@ -437,6 +437,13 @@ wlsPower <- function( Cl            = NULL,
 #' If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
 #' *Currently not compatible with `rho`!=0 !*
 #'
+#' @return
+#' The return depends on the `verbose` parameter.
+#' If `verbose`=0, only the power is returned
+#' If `verbose`=1 (the default), a list containing power and the
+#' parameters of the specific setting is returned.
+#' If requested (by `verbose`=2) this list also contains relevant matrices.
+#'
 #' @export
 
 compute_wlsPower <- function(DesMat,
@@ -532,6 +539,9 @@ compute_wlsPower <- function(DesMat,
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print wlsPower
+#'
+#' @return Messages, containing information about (at least) power and
+#' significance level
 #'
 #' @export
 #'
