@@ -590,9 +590,10 @@ plot.wlsPower <- function(x,...){
     ,
     plotly_empty(type="scatter",mode="marker")
     ,
-    plot_ly(x=seq_len(timep),y=seq_len(sumCl),z=wgt,type="heatmap",
+    plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
             colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-            xgap=.3,ygap=.3) %>%
+            xgap=.3, ygap=.3, name=" ",
+            hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
       colorbar(len=1,limits=c(-mx,mx)) %>%
       layout(xaxis=list(title="time"),
              yaxis=list(title="cluster", autorange="reversed"))

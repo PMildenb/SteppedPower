@@ -111,7 +111,7 @@ dsn_out <- switch (x$dsntype,
 
 
   message("Timepoints                         = ", x$timepoints,"\n",
-          "Number of clusters per seqence     = ", x$Cl)
+          "Number of clusters per seqence     = ", paste(x$Cl, collapse= ", "))
   if(!is.null(x$N)){
   message("Number of subclusters per cluster  = ", x$N)
   }
@@ -141,10 +141,11 @@ dsn_out <- switch (x$dsntype,
 plot.DesMat <- function(x, ...){
   trt <- x$trtMat
   plot_ly(type="heatmap", colors=c("lightblue","red"),
-          x=~seq_len(dim(trt)[1]),y=~seq_len(dim(trt)[2]),
-          z=~trt, xgap=5, ygap=5) %>% layout(xaxis = list(title="Timepoints"),
-                                             yaxis = list(title="Cluster",
-                                                          autorange="reversed"))
+          x=~(seq_len(dim(trt)[1])-.5), y=~seq_len(dim(trt)[2]),
+          z=~trt, xgap=5, ygap=5, name=" ",
+          hovertemplate="Time: %{x},   Cluster: %{y} \nTreatment Status: %{z}") %>%
+    layout(xaxis = list(title="time"),yaxis = list(title="cluster",
+                                                         autorange="reversed"))
 }
 
 
@@ -159,6 +160,7 @@ plot.DesMat <- function(x, ...){
 #'
 #' @return a matrix trtMat, where rows and columns correspond to cluster
 #' and timepoints, respectively
+#'
 #' @export
 #'
 #'
