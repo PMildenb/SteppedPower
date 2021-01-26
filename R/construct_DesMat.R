@@ -96,6 +96,9 @@ construct_DesMat <- function(Cl          = NULL,
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print DesMat
+#'
+#' @return Messages with information about the design.
+#'
 #' @export
 #'
 print.DesMat <- function(x, ...){
@@ -128,6 +131,9 @@ dsn_out <- switch (x$dsntype,
 #' @param ... Arguments to be passed to methods
 #'
 #' @method plot DesMat
+#'
+#' @return a plotly html widget, displaying the treatment status
+#'
 #' @export
 #'
 
@@ -155,7 +161,6 @@ plot.DesMat <- function(x, ...){
 #' and timepoints, respectively
 #' @export
 #'
-#' @return a plotly html widget
 #'
 #' @examples construct_trtMat(Cl=c(1,2,1), trtDelay=c(.2,.8), dsntype="SWD")
 #'
@@ -246,6 +251,9 @@ construct_trtMat <- function(Cl,
 #'
 #'
 #' @inheritParams construct_DesMat
+#'
+#' @return a matrix with one row for every cluster at every timepoint and columns
+#' depending of adjustment type.
 #'
 #' @export
 

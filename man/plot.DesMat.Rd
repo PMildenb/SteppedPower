@@ -11,6 +11,9 @@
 
 \item{...}{Arguments to be passed to methods}
 }
+\value{
+a plotly html widget, displaying the treatment status
+}
 \description{
 plot.DesMat
 }

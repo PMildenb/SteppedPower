@@ -11,6 +11,10 @@
 
 \item{...}{Arguments to be passed to methods}
 }
+\value{
+Messages, containing information about (at least) power and
+significance level
+}
 \description{
 print.wlsPower
 }

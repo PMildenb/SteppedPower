@@ -71,6 +71,13 @@ mainly for diagnostic purposes.}
 
 \item{verbose}{integer, how much information should the function return?}
 }
+\value{
+The return depends on the `verbose` parameter.
+If `verbose`=0, only the power is returned
+If `verbose`=1 (the default), a list containing power and the
+parameters of the specific setting is returned.
+If requested (by `verbose`=2) this list also contains relevant matrices.
+}
 \description{
 This function calls `construct_DesMat` and `construct_CovMat` to
 construct the design and covariance matrix, repectively. These matrices are
