@@ -54,7 +54,7 @@ package makes computation of large designs feasible.
 # Methods and Notation
 
 A common approach to model the correlation in 
-longitudinal studies are random effects.[@hussey2007design]
+longitudinal studies are random effects.[@hussey2007design; @li2020mixed]
 Such a model has the form
 
 $$y_{ijk}= \mu_0 + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
