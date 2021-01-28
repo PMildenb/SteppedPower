@@ -1,13 +1,18 @@
 
 ## Resubmission
 
-In this resubmission I have
+This is a resubmission.
 
-* changed title in desciption file
+Based on your feedback, I have
+
+* shortened the title in the desciption file
 * added return values to every exported function
-* references added to description file
-* added one reference to vignette 
-* changed labels in plot.wlsPower and plot.DesMat 
+* added references to the description file
+
+Additionally, I have
+
+* added one reference to the vignette 
+* changed the labels in plot.wlsPower and plot.DesMat to make them more informative
 
 
 ## Test environments
