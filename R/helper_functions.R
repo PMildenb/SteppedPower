@@ -61,16 +61,46 @@ muCond_to_muMarg <- function(muCond,tauLin){
 }
 
 
+################################################################################
+## Alternative input options for covariance structure
+
 ### Transform icc and cac to random effects
 
-icc_to_RandEffs <- function(icc, cac=1, sigSq, N){
-  if(is.null(N) | N==1)
-    warning("Cannot interpret icc and cac when sigma refers to cluster means.")
+icc_to_RandEff <- function(icc, cac=1, sigResid){
   if(any(c(icc,cac)<0,c(icc,cac)>1))
+    stop("ICC and CAC must be between 0 and 1.")
 
-  gamma <- sqrt(icc * sigSq * (1 - cac)/(1 - icc))
-  tau   <- sqrt(gamma^2 * cac/(1 - cac))
+  if (cac == 1) {
+    gamma <- 0
+    tau   <- sqrt(sigResid^2 * icc/(1-icc))
+  }
+  else {
+    gamma <- sqrt(icc * sigResid^2 * (1-cac)/(1-icc))
+    tau   <- sqrt(gamma^2 * cac / (1-cac))
+  }
   return(list(gamma =gamma,
               tau   =tau))
 }
 
+RandEff_to_icc <- function(sigResid, tau, gamma=0){
+  sigMarg <- sqrt(sigResid^2+tau^2+gamma^2)
+  cac     <- tau^2 / (tau^2 + gamma^2)
+  icc     <- (tau^2+gamma^2) / sigMarg^2
+  return(list(icc=icc,
+              cac=cac,
+              sigMarg=sigMarg))
+}
+
+# tau <- .1 ; gamma <- .1 ; sigResid <- .5
+# a <- RandEff_to_icc(sigResid=sigResid,
+#                tau=tau, gamma=gamma)
+# a
+# icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid)
+#
+#
+# tau      <- matrix(rep(.1,4),2)
+# gamma    <- matrix(rep(.1,4),2)
+# sigResid <- matrix(rep(.5,4),2)
+# a <- RandEff_to_icc(tau=tau, gamma=gamma, sigResid)
+# a
+# icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid=sigResid)

@@ -444,8 +444,6 @@ g;plot(g)
 wlsPower(Cl=rep(2,6),mu=0,mu1=.5,sigma=1,tau=1,eta=.5,gamma=.01, N=100, verbose=2)
 
 
-###
-
 Cl <- rep(20,20) ; tp <- length(Cl)+1
 nInd <- 500
 tau <- .2 ; sigma <- .3 ; psi <- .3 ; eta <- 0 ; gamma <- .1
@@ -459,7 +457,7 @@ system.time({
 })
 summaryRprof(lines="show")
 
-## other design types for closed cohorts
+## other design types for closed cohorts ####
 
 nCl <- 10 ; N <- 20
 microbenchmark::microbenchmark({
@@ -497,6 +495,11 @@ microbenchmark::microbenchmark( cat(" ") ,  cat(".") , cat("_") )
 
 
 
+## ICC and CAC ####
+
+wlsPower(Cl=c(2,2,2), mu0=0, mu1=1, icc=.1, cac=.05)
+icc_to_RandEff(.1,.05,1)
+wlsPower(Cl=c(2,2,2), mu0=0, mu1=1, tau=.0745, gamma=.325)
 
 
 ################################################################################

@@ -47,6 +47,10 @@
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
 #' Leads to a closed cohort setting
+#' @param icc numeric (scalar), intracluster correlation, can be used together
+#' with `cac` instead of random effects, see details.
+#' @param cac numeric (scalar), cluster autocorrelation, can be used together
+#' with `icc` instead of random effects, see details.
 #' @param alpha_0_1_2 numeric vector of length 3, that consists of
 #' alpha_0, alpha_1 and alpha_2. This is an alternative way to define
 #' the correlation structure, following Li et al. (2018).
@@ -211,6 +215,8 @@ wlsPower <- function( Cl            = NULL,
                       rho           = NULL,
                       gamma         = NULL,
                       psi           = NULL,
+                      icc           = NULL,
+                      cac           = NULL,
                       alpha_0_1_2   = NULL,
                       CovMat        = NULL,
                       N             = NULL,
@@ -225,7 +231,17 @@ wlsPower <- function( Cl            = NULL,
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL.")
 
-  if(!all(sapply(c(tau,eta,rho,gamma,tauAR),is.null))){
+  ## Check covariance information #####
+  UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,tauAR), is.null))
+  UseIccCac  <- !all(sapply(c(icc,cac),is.null))
+  Usealpha   <- !is.null(alpha_0_1_2)
+
+  if(UseRandEff & UseIccCac)
+    stop("Please specify EITHER \n - icc and cac   OR  \n - random effects:",
+         " tau, eta, rho, gamma, psi")
+
+
+  if(UseRandEff){
     if(any(c(tau,eta,gamma)<0))
       stop("tau, eta and gamma must be >=0")
     if(!is.null(tauAR)){
@@ -239,9 +255,11 @@ wlsPower <- function( Cl            = NULL,
       if( (-1)>rho | rho>1 )
         stop("Correlation rho must be between -1 and 1")
     }
-    if(is.null(tau)) tau <- 0 ## needed for computational reasons. Add warning?
-  }else if (FALSE) {
-    ## clause for alternative input options (icc & cac or alpha0-alpha2)
+    if(is.null(tau)) tau <- 0
+  }else if (UseIccCac) {
+    tmp <- icc_to_RandEff(icc=icc, cac=cac, sigResid=sigma)
+    tau   <- tmp$tau
+    gamma <- tmp$gamma
   }else{
     tau <- 0
     if(is.null(CovMat))
@@ -274,9 +292,7 @@ wlsPower <- function( Cl            = NULL,
     dsntype <- tmpdsntype
   }
 
-  ###
-
-  ## DesMat #####
+  ## construct DesMat #####
   if(is.null(DesMat)){
     if(!is.null(timepoints) & !is.null(trtDelay)) {
       if(length(trtDelay)>max(timepoints)) {
@@ -292,7 +308,7 @@ wlsPower <- function( Cl            = NULL,
                                   N          = if(INDIV_LVL) N,
                                   INDIV_LVL  = INDIV_LVL )
   }else{
-    if(!all(sapply(list(Cl, timepoints, trtDelay, period),is.null)))
+    if(!all(sapply(list(Cl, timepoints, trtDelay, period, timeAdjust),is.null)))
       warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
               "timeAdjust, period and dsntype are ignored.")
 
@@ -304,7 +320,7 @@ wlsPower <- function( Cl            = NULL,
     dsntype <- DesMat$dsntype
   }
 
-  ## temporary variables #####
+  ## declare temporary variables #####
   timepoints <- DesMat$timepoints
   lenCl      <- length(DesMat$Cl)
   SumCl      <- sum(DesMat$Cl)
