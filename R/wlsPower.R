@@ -229,21 +229,28 @@ wlsPower <- function( Cl            = NULL,
                       verbose       = 1){
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
-    stop("Both target power and individuals per cluster not NULL.")
+    stop("Both target power and individuals per cluster not NULL. ",
+         "Either N or Power must be NULL.")
 
   ## Check covariance information #####
   UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,tauAR), is.null))
   UseIccCac  <- !all(sapply(c(icc,cac),is.null))
   Usealpha   <- !is.null(alpha_0_1_2)
+  UseCovMat  <- !is.null(CovMat)
+  UsedOptions <- sum(UseRandEff, UseIccCac, Usealpha, UseCovMat)
+  # if (UsedOptions==0) UsedRandEff <- TRUE
 
-  if(UseRandEff & UseIccCac)
-    stop("Please specify EITHER \n - icc and cac   OR  \n - random effects:",
-         " tau, eta, rho, gamma, psi")
+  if (UsedOptions>=2)
+    stop("There are four different alternatives to specify the covaricance, ",
+         "structure, \nyou must use exactly one. Please specify EITHER \n",
+         "  - icc and cac                                 OR \n",
+         "  - random effects: tau, eta, rho, gamma, psi   OR \n",
+         "  - alpha_0_1_2                                 OR \n",
+         "  - CovMat")
 
-
-  if(UseRandEff){
-    if(any(c(tau,eta,gamma)<0))
-      stop("tau, eta and gamma must be >=0")
+  if (UseRandEff) {
+    if(any(c(tau,eta,gamma, psi)<0))
+      stop("tau, eta, gamma and psi must be >=0")
     if(!is.null(tauAR)){
       if(is.null(tau)) stop("If tauAR is supplied, tau is needed as well.")
       if(tauAR<0 | tauAR>1) stop("tauAR must be between 0 and 1.")
@@ -256,27 +263,58 @@ wlsPower <- function( Cl            = NULL,
         stop("Correlation rho must be between -1 and 1")
     }
     if(is.null(tau)) tau <- 0
+
+    if(!is.null(psi) & is.null(Power)){
+      if(is.null(N))
+        stop("If the standard deviation `psi` is not null, N is needed.")
+      if(is.matrix(N)){
+        N <- N[,1]
+        warning("If psi is not NULL, the number of individuals per cluster must",
+                "not change over time. Only the first column of N is considered.")
+      }
+    }
   }else if (UseIccCac) {
     tmp <- icc_to_RandEff(icc=icc, cac=cac, sigResid=sigma)
     tau   <- tmp$tau
     gamma <- tmp$gamma
+  }else if (Usealpha) {
+    tmp <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
+    tau   <- tmp$tau
+    gamma <- tmp$gamma
+    psi   <- tmp$psi
   }else{
     tau <- 0
-    if(is.null(CovMat))
-      warning("Random cluster effect tau and random treatment effect eta",
-              " are assumed to be 0, i.e. the observations across clusters are",
-              " assumed to be i.i.d. Declare tau=0 to supress this warning.")
+    warning("Random cluster effect tau and random treatment effect eta",
+            " are assumed to be 0, i.e. the observations across clusters are",
+            " assumed to be i.i.d. Declare tau=0 to supress this warning.")
   }
 
-  if(!is.null(psi) & is.null(Power)){
-    if(is.null(N))
-      stop("If the standard deviation `psi` is not null, N is needed.")
-    if(is.matrix(N)){
-      N <- N[,1]
-      warning("If psi is not NULL, the number of individuals per cluster must",
-              "not change over time. Only the first column of N is considered.")
+
+  ## distribution family ####
+  if(family =="binomial"){
+
+    if(marginal_mu){
+
+      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
+      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
+      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
+
     }
+
+    sig0  <- sqrt(mu0*(1-mu0))
+    sig1  <- sqrt(mu1*(1-mu1))
+    ## for delayed trt effect only approximate sigma
+    sigma <- matrix(sig0,
+                    nrow=SumCl,
+                    ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
+
+    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
   }
+
+  EffSize <- mu1-mu0
+  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
+
 
   ## Match string inputs ####
   ### dsntype
@@ -292,7 +330,7 @@ wlsPower <- function( Cl            = NULL,
     dsntype <- tmpdsntype
   }
 
-  ## construct DesMat #####
+  ## construct Design Matrix #####
   if(is.null(DesMat)){
     if(!is.null(timepoints) & !is.null(trtDelay)) {
       if(length(trtDelay)>max(timepoints)) {
@@ -308,13 +346,22 @@ wlsPower <- function( Cl            = NULL,
                                   N          = if(INDIV_LVL) N,
                                   INDIV_LVL  = INDIV_LVL )
   }else{
-    if(!all(sapply(list(Cl, timepoints, trtDelay, period, timeAdjust),is.null)))
-      warning("If argument DesMat is provided, Cl, timepoints, trtDelay,",
-              "timeAdjust, period and dsntype are ignored.")
-
-    if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
-      DesMat <- construct_DesMat(trtmatrix=DesMat)
-    }else if(!inherits(DesMat,"DesMat"))
+    if(inherits(DesMat, "DesMat")) {
+      if(!all(sapply(list(Cl, timepoints, trtDelay,
+                          period),     is.null)))      ## timeAdjust??
+        warning("If input to argument DesMat inherits class `DesMat`, \n",
+                "Cl, timepoints, trtDelay, ",
+                "timeAdjust, period and dsntype are ignored.")
+    } else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
+      DesMat <- construct_DesMat(trtmatrix  = DesMat,
+                                 timeAdjust = timeAdjust,
+                                 period     = period,
+                                 N          = if(INDIV_LVL) N,
+                                 INDIV_LVL  = INDIV_LVL)
+      if(!all(sapply(list(Cl, timepoints, trtDelay, dsntype), is.null)))
+        warning("If input to argument DesMat is of class `matrix`, \n",
+                "Cl, timepoints, trtDelay, dsntype are ignored.")
+    }else
       stop("In wlsPower: Cannot interpret input for DesMat. ",
            "It must be either an object of class DesMat or a matrix")
     dsntype <- DesMat$dsntype
@@ -357,30 +404,6 @@ wlsPower <- function( Cl            = NULL,
     sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
-
-  if(family =="binomial"){
-
-    if(marginal_mu){
-
-      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
-      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
-      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
-
-    }
-
-    sig0  <- sqrt(mu0*(1-mu0))
-    sig1  <- sqrt(mu1*(1-mu1))
-    ## for delayed trt effect only approximate sigma
-    sigma <- matrix(sig0,
-                    nrow=SumCl,
-                    ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
-
-    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
-    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
-  }
-
-  EffSize <- mu1-mu0
-  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
 
   ## calculate samplesize (if needed, i.e. if power is not NULL ) #####
   if(!is.null(Power)){

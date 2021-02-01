@@ -40,7 +40,8 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
 
 
 
-## auxiliary functions for binomial outcome
+################################################################################
+## auxiliary functions for binomial outcome ####
 tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
 logit.deriv   <- function(x) 1/(x-x^2)
 
@@ -62,7 +63,7 @@ muCond_to_muMarg <- function(muCond,tauLin){
 
 
 ################################################################################
-## Alternative input options for covariance structure
+## Alternative input options for covariance structure ####
 
 ### Transform icc and cac to random effects
 
@@ -104,3 +105,57 @@ RandEff_to_icc <- function(sigResid, tau, gamma=0){
 # a <- RandEff_to_icc(tau=tau, gamma=gamma, sigResid)
 # a
 # icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid=sigResid)
+
+
+RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
+  SigMargSq <- (tau^2 + gamma^2 +psi^2 + sigResid^2)
+
+  alpha0 <- (tau^2 + gamma^2) / SigMargSq
+  alpha1 <- (tau^2) / SigMargSq
+  alpha2 <- (tau^2 + psi^2)   / SigMargSq
+
+  return(list(alpha0 = alpha0,
+              alpha1 = alpha1,
+              alpha2 = alpha2,
+              SigMarg= sqrt(SigMargSq)))
+}
+
+
+alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
+
+  if(is.null(sigResid)==is.null(sigMarg))
+    stop("Either `sigResid` or `sigMarg` must be declared (But not both).")
+
+  a0 <- alpha012[[1]]
+  a1 <- alpha012[[2]]
+  a2 <- alpha012[[3]]
+
+  sigMargSq <- if(is.null(sigResid))  sigMarg^2 else ( sigResid^2/(1-a0-a2+a1) )
+
+
+  tau      <- sqrt(a1*sigMargSq)
+  gamma    <- sqrt((a0-a1)*sigMargSq)
+  psi      <- sqrt((a2-a1)*sigMargSq)
+  sigResid <- sqrt(sigMargSq*(1-(a0+a2-a1)))
+
+  return(list(tau      = tau,
+              gamma    = gamma,
+              psi      = psi,
+              sigresid = sigResid))
+}
+
+tmp <- RandEff_to_alpha012(1, .1, 0, 0)
+tmp
+alpha012_to_RandEff(alpha012 = tmp, sigResid = 1)
+alpha012_to_RandEff(alpha012 = tmp, sigMarg = tmp[[4]])
+
+tmp2 <- RandEff_to_alpha012(sigResid = 1,
+                    tau      = matrix(.1,2,2),
+                    gamma    = matrix(.2,2,2),
+                    psi      = matrix(.05,2,2))
+tmp2
+alpha012_to_RandEff(alpha012 = tmp2, sigResid = 1)
+alpha012_to_RandEff(alpha012 = tmp2, sigMarg = tmp2[[4]])
+
+alpha012_to_RandEff(c(.2,.1,.1), sigMarg=1)
+
