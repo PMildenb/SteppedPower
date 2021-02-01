@@ -20,7 +20,7 @@
 #' @param trtDelay numeric (possibly vector), value(s)
 #' between 0 and 1 specifying
 #' the intervention effect in the first (second ... ) intervention phase
-#' @param incomplete integer, either a vector (only for SWD) or a matrix.
+#' @param incomplete integer, either a scalar (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
 #' control to intervention that are observed. A matrix consists of 1's for
 #' observed clusterperiods and 0's for unobserved clusterperiods.
@@ -47,13 +47,12 @@
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
 #' Leads to a closed cohort setting
-#' @param icc numeric (scalar), intracluster correlation, can be used together
-#' with `cac` instead of random effects, see details.
-#' @param cac numeric (scalar), cluster autocorrelation, can be used together
-#' with `icc` instead of random effects, see details.
-#' @param alpha_0_1_2 numeric vector of length 3, that consists of
-#' alpha_0, alpha_1 and alpha_2. This is an alternative way to define
-#' the correlation structure, following Li et al. (2018).
+#' @param alpha_0_1_2 numeric vector or list of length 2 or 3, that consists of
+#' alpha_0, alpha_1 and alpha_2. Can be used instead of random effects to define
+#' the correlation structure, following Li et al. (2018). When omitting alpha_2,
+#' this describes a cross-sectional design, where alpha_0 and alpha_1 denote
+#' the intracluster correlation and cluster autocorrelation, respectively - as
+#' defined by Hooper et al. (2016).
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints.
 #' Defaults to 'rep(1,sum(Cl))' if not passed.
@@ -234,16 +233,14 @@ wlsPower <- function( Cl            = NULL,
 
   ## Check covariance information #####
   UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,tauAR), is.null))
-  UseIccCac  <- !all(sapply(c(icc,cac),is.null))
   Usealpha   <- !is.null(alpha_0_1_2)
   UseCovMat  <- !is.null(CovMat)
-  UsedOptions <- sum(UseRandEff, UseIccCac, Usealpha, UseCovMat)
-  # if (UsedOptions==0) UsedRandEff <- TRUE
+  UsedOptions <- sum(UseRandEff, Usealpha, UseCovMat)
 
+  if (UsedOptions==0) UsedRandEff <- TRUE
   if (UsedOptions>=2)
-    stop("There are four different alternatives to specify the covaricance, ",
-         "structure, \nyou must use exactly one. Please specify EITHER \n",
-         "  - icc and cac                                 OR \n",
+    stop("There are three different alternatives to specify the covaricance, ",
+         "structure, \nyou must use exactly one.\nPlease specify EITHER \n",
          "  - random effects: tau, eta, rho, gamma, psi   OR \n",
          "  - alpha_0_1_2                                 OR \n",
          "  - CovMat")
@@ -273,48 +270,18 @@ wlsPower <- function( Cl            = NULL,
                 "not change over time. Only the first column of N is considered.")
       }
     }
-  }else if (UseIccCac) {
-    tmp <- icc_to_RandEff(icc=icc, cac=cac, sigResid=sigma)
-    tau   <- tmp$tau
-    gamma <- tmp$gamma
   }else if (Usealpha) {
-    tmp <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
-    tau   <- tmp$tau
-    gamma <- tmp$gamma
-    psi   <- tmp$psi
-  }else{
-    tau <- 0
-    warning("Random cluster effect tau and random treatment effect eta",
-            " are assumed to be 0, i.e. the observations across clusters are",
-            " assumed to be i.i.d. Declare tau=0 to supress this warning.")
-  }
-
-
-  ## distribution family ####
-  if(family =="binomial"){
-
-    if(marginal_mu){
-
-      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
-      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
-      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
-
+    if(length(alpha_0_1_2)==2){
+      alpha_0_1_2 <- append(alpha_0_1_2, alpha_0_1_2[[2]])
+      message("Since length of alpha_0_1_2 is 2, a cross-sectional design is",
+              "assumed. Hence, alpha2 is set to alpha1.")
     }
-
-    sig0  <- sqrt(mu0*(1-mu0))
-    sig1  <- sqrt(mu1*(1-mu1))
-    ## for delayed trt effect only approximate sigma
-    sigma <- matrix(sig0,
-                    nrow=SumCl,
-                    ncol=timepoints) + DesMat$trtMat * (sig1-sig0)
-
-    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
-    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
+    if(alpha_0_1_2[[2]] >= alpha_0_1_2[[1]] + alpha_0_1_2[[3]])
+      stop("Correlation matrix defined by alpha_0_1_2 is not positve definite.",
+           "\nThe following must hold:   alpha1 < alpha0 + alpha2")
+  # }else if (UseCovMat){
+  #
   }
-
-  EffSize <- mu1-mu0
-  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
-
 
   ## Match string inputs ####
   ### dsntype
@@ -373,6 +340,42 @@ wlsPower <- function( Cl            = NULL,
   SumCl      <- sum(DesMat$Cl)
 
 
+  ## distribution family ####
+  if(family =="gaussian"){
+    if(Usealpha){
+      tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
+      tau   <- tmp$tau
+      gamma <- tmp$gamma
+      psi   <- tmp$psi
+    }
+  } else if(family =="binomial"){
+
+    if(marginal_mu){
+      if(!UsedRandEff)
+        stop("marginal_mu currently only implemented for random effects")
+      mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
+      mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
+      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
+    }
+
+    muMat <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
+    sigma <- muMat * (1-muMat)
+
+    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
+
+    if(Usealpha){
+      tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
+      tau   <- tmp$tau
+      gamma <- tmp$gamma
+      psi   <- tmp$psi
+    }
+  }
+
+  EffSize <- mu1-mu0
+  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
+
+
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
 
@@ -390,6 +393,7 @@ wlsPower <- function( Cl            = NULL,
       IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
 
       IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
+
 
     }else if(is.matrix(incomplete)){
       if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)

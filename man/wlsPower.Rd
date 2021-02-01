@@ -23,6 +23,8 @@ wlsPower(
   rho = NULL,
   gamma = NULL,
   psi = NULL,
+  icc = NULL,
+  cac = NULL,
   alpha_0_1_2 = NULL,
   CovMat = NULL,
   N = NULL,
@@ -50,7 +52,7 @@ Defaults to 1 for parallel designs.}
 between 0 and 1 specifying
 the intervention effect in the first (second ... ) intervention phase}
 
-\item{incomplete}{integer, either a vector (only for SWD) or a matrix.
+\item{incomplete}{integer, either a scalar (only for SWD) or a matrix.
 A vector defines the number of periods before and after the switch from
 control to intervention that are observed. A matrix consists of 1's for
 observed clusterperiods and 0's for unobserved clusterperiods.}
@@ -92,9 +94,18 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}
 
-\item{alpha_0_1_2}{numeric vector of length 3, that consists of
-alpha_0, alpha_1 and alpha_2. This is an alternative way to define
-the correlation structure, following Li et al. (2018).}
+\item{icc}{numeric (scalar), intracluster correlation, can be used together
+with `cac` instead of random effects, see details.}
+
+\item{cac}{numeric (scalar), cluster autocorrelation, can be used together
+with `icc` instead of random effects, see details.}
+
+\item{alpha_0_1_2}{numeric vector or list of length 2 or 3, that consists of
+alpha_0, alpha_1 and alpha_2. Can be used instead of random effects to define
+the correlation structure, following Li et al. (2018). When omitting alpha_2,
+this describes a cross-sectional design, where alpha_0 and alpha_1 denote
+the intracluster correlation and cluster autocorrelation, respectively - as
+defined by Hooper et al. (2016).}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix with
 (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,

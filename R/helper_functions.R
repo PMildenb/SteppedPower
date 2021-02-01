@@ -92,20 +92,6 @@ RandEff_to_icc <- function(sigResid, tau, gamma=0){
               sigMarg=sigMarg))
 }
 
-# tau <- .1 ; gamma <- .1 ; sigResid <- .5
-# a <- RandEff_to_icc(sigResid=sigResid,
-#                tau=tau, gamma=gamma)
-# a
-# icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid)
-#
-#
-# tau      <- matrix(rep(.1,4),2)
-# gamma    <- matrix(rep(.1,4),2)
-# sigResid <- matrix(rep(.5,4),2)
-# a <- RandEff_to_icc(tau=tau, gamma=gamma, sigResid)
-# a
-# icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid=sigResid)
-
 
 RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
   SigMargSq <- (tau^2 + gamma^2 +psi^2 + sigResid^2)
@@ -132,30 +118,13 @@ alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
 
   sigMargSq <- if(is.null(sigResid))  sigMarg^2 else ( sigResid^2/(1-a0-a2+a1) )
 
-
-  tau      <- sqrt(a1*sigMargSq)
-  gamma    <- sqrt((a0-a1)*sigMargSq)
-  psi      <- sqrt((a2-a1)*sigMargSq)
-  sigResid <- sqrt(sigMargSq*(1-(a0+a2-a1)))
+  tau      <- sqrt( sigMargSq * a1 )
+  gamma    <- sqrt( sigMargSq * (a0-a1) )
+  psi      <- sqrt( sigMargSq * (a2-a1) )
+  sigResid <- sqrt( sigMargSq * (1-a0-a2+a1) )
 
   return(list(tau      = tau,
               gamma    = gamma,
               psi      = psi,
               sigresid = sigResid))
 }
-
-tmp <- RandEff_to_alpha012(1, .1, 0, 0)
-tmp
-alpha012_to_RandEff(alpha012 = tmp, sigResid = 1)
-alpha012_to_RandEff(alpha012 = tmp, sigMarg = tmp[[4]])
-
-tmp2 <- RandEff_to_alpha012(sigResid = 1,
-                    tau      = matrix(.1,2,2),
-                    gamma    = matrix(.2,2,2),
-                    psi      = matrix(.05,2,2))
-tmp2
-alpha012_to_RandEff(alpha012 = tmp2, sigResid = 1)
-alpha012_to_RandEff(alpha012 = tmp2, sigMarg = tmp2[[4]])
-
-alpha012_to_RandEff(c(.2,.1,.1), sigMarg=1)
-

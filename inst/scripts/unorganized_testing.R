@@ -100,7 +100,8 @@ SteppedPower:::construct_CovSubMat(N          =3,
 
 
 ## CovMat #####
-construct_CovMat(SumCl=2,timepoints=3, sigma=0,tau=0.3)
+construct_CovMat(SumCl=2,timepoints=3, sigma=4, tau=0.5, N=2)
+construct_CovMat(SumCl=2,timepoints=3, sigma=4, tau=0.5, N=2, psi=0, gamma=0)
 
 construct_CovMat(SumCl=2,timepoints=3, sigma=matrix(c(1,1,2,1,2,2),nrow=2),tau=0.3)
 construct_CovMat(SumCl=2,timepoints=3, sigma=1,tau=0.3,eta=1,trtMat = upper.tri(matrix(1,nrow=2,ncol=3)))
@@ -351,6 +352,49 @@ mod6$Power
 mod7$Power
 mod8$Power
 
+## alpha_0_1_2 input ####
+
+debugonce(wlsPower)
+debugonce(compute_wlsPower)
+debugonce(construct_CovMat)
+
+SteppedPower:::RandEff_to_alpha012(sigResid=4, tau=1, gamma=2, psi=3)
+SteppedPower:::alpha012_to_RandEff(sigResid=4,
+                                   alpha012=c(1/6,1/30,1/3))
+
+alph <- wlsPower(rep(1,2), mu0=0, mu1=1, sigma=4, alpha_0_1_2=c(1/6,1/30,1/3),
+         family="gaussian", verbose=2, INDIV_LVL = TRUE, N=2)
+alph$CovarianceMatrix
+
+library(swCRTdesign)
+swPwr(swDsn(rep(6,2)), mu0=0, mu1=.2, sigma=.5, tau=.1, eta=0, rho=0, gamma=0,
+      distn="gaussian", n=24)
+wlsPower(Cl=rep(6,2), N=24, mu0=0, mu1=.2, sigma=.5, tau=.1, gamma=0,
+         family="gaussian")
+
+
+DM <- swDsn(c(6,6))
+DM$swDsn
+swCRTdesign::swPwr(design=DM,
+                   n=24, mu0=0, mu1=.2, distn="gaussian",
+                   sigma=.5, tau=.1, eta=0, gamma=0, rho=0)
+
+wlsPower(DesMat=DM$swDsn, N=24, mu0=0, mu1=.2, sigma=.5, tau=.1,
+         timeAdjust="factor")
+wlsPower(Cl=c(6,6), N=24, mu0=0, mu1=.2, sigma=.5, tau=.1,
+         timeAdjust="factor", family="gaussian")
+
+
+## binomial outcome ####
+
+SteppedPower:::RandEff_to_alpha012(sigResid=.25, tau=.1, gamma=0, psi=0)
+SteppedPower:::alpha012_to_RandEff(sigResid=, alpha012=c(.009,.009,.009))
+
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0.1, family="binomial",N=10)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = c(.1,.1,.1), family="binomial",N=10)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = c(.2,.2,.2), family="binomial",N=10)
+
+
 #### tauAR parallel ####
 cl <- c(10,10) ; si <- 2 ; tau <- 2 ; ES <- 1 ; tp <- 6
 
@@ -460,7 +504,7 @@ summaryRprof(lines="show")
 ## other design types for closed cohorts ####
 
 nCl <- 10 ; N <- 20
-microbenchmark::microbenchmark({
+# microbenchmark::microbenchmark({
 wlsPower(Cl=c(nCl,nCl), timepoints=3, dsntype="parallel", mu0=0, mu1=1,
               sigma=1, tau=2, N=N)
 # },{
@@ -493,13 +537,6 @@ wlsPower(Cl=c(nCl,nCl), timepoints=4, dsntype="parallel_baseline", mu0=0, mu1=1,
 
 microbenchmark::microbenchmark( cat(" ") ,  cat(".") , cat("_") )
 
-
-
-## ICC and CAC ####
-
-wlsPower(Cl=c(2,2,2), mu0=0, mu1=1, icc=.1, cac=.05)
-icc_to_RandEff(.1,.05,1)
-wlsPower(Cl=c(2,2,2), mu0=0, mu1=1, tau=.0745, gamma=.325)
 
 
 ################################################################################
@@ -729,12 +766,18 @@ compare_designs(mu0=0,mu1=1, sigma=1 ,tau=.7, Cl=c(2,2,2,2))
 compare_designs(mu0=0,mu1=1, sigma=1 ,tau=1 , Cl=c(2,2,2,2))
 
 
+
+
+
+################################################################################
+## AUXILIARY FUNCTIONS ####
+
 ## tTestPwr scaled Wald-test #####
 
 # tTestPwr <- function(d,se,df,sig.level=0.05){
-  dsz <- abs(d/se)
-  q   <- qt(sig.level/2, df=df, lower=FALSE)
-  Pwr <- pt(dsz + q, df=df) + pt(-dsz + q, df=df)
+dsz <- abs(d/se)
+q   <- qt(sig.level/2, df=df, lower=FALSE)
+Pwr <- pt(dsz + q, df=df) + pt(-dsz + q, df=df)
 #  return(Pwr)
 # }
 
@@ -750,35 +793,42 @@ View(pwr::pwr.t.test)
 View(tTestPwr)
 
 
+## ICC vs Random Effects ####
+tau <- .1 ; gamma <- .1 ; sigResid <- .5
+a <- RandEff_to_icc(sigResid=sigResid,
+               tau=tau, gamma=gamma)
+a
+icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid)
 
 
-################################################################################
-
-library(swCRTdesign)
-View(swPwr)
-dsn <- swDsn(c(2,2,0,2))
-dsn
-construct_DesMat(c(2,2,0,2))
-## convert swDsn to DesMat
+tau      <- matrix(rep(.1,4),2)
+gamma    <- matrix(rep(.1,4),2)
+sigResid <- matrix(rep(.5,4),2)
+a <- RandEff_to_icc(tau=tau, gamma=gamma, sigResid)
+a
+icc_to_RandEff(icc=a$icc, cac=a$cac, sigResid=sigResid)
 
 
-################################################################################
-## alpha0_1_2 to random effects
+## Alpha 0,1,2 vs Random Effects ####
 
-# alpha0 := within-period corr of different individuals
-# alpha1 := different indivs across periods
-# alpha2 := same individual across periods
+tmp <- RandEff_to_alpha012(1, .1, 0, 0)
+tmp
+alpha012_to_RandEff(alpha012 = tmp, sigResid = 1)
+alpha012_to_RandEff(alpha012 = tmp, sigMarg = tmp[[4]])
 
-sigSq <- 1
-tauSq <- 2
+tmp2 <- RandEff_to_alpha012(sigResid = 1,
+                            tau      = matrix(.1,2,2),
+                            gamma    = matrix(.2,2,2),
+                            psi      = matrix(.05,2,2))
+tmp2
+alpha012_to_RandEff(alpha012 = tmp2, sigResid = 1)
+alpha012_to_RandEff(alpha012 = tmp2, sigMarg = tmp2[[4]])
 
-alpha_0 <- 1/2
-alpha_1 <- 1/3
+alpha012_to_RandEff(c(.2,.1,.1), sigMarg=1)
 
-tauSq   <- (sigSq*alpha_1)/(1-alpha_1)
-gammaSq <-
 
-################################################################################
+
+##muMarg_to_muCond ####
 
 debugonce(muCond_to_muMarg)
 muMarg_to_muCond(.4,1)
@@ -788,7 +838,6 @@ muMarg_to_muCond(.0001,.42)
 muCond_to_muMarg(.001,.003)
 muCond_to_muMarg(.01,0.002)
 
-## PLOTS for muMarg_to_muCond ####
 
 
 mus  <- seq(1e-5,1-1e-5, 5e-4)
@@ -823,3 +872,6 @@ lines(mus,mus,col=2)
 plot(mus,(y1-mus),"l")
 
 plot(taus,y2/.25, "l")
+
+
+
