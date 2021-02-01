@@ -38,7 +38,13 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
   return(pwr)
 }
 
-
+choose_character_Input <- function(Options, Input){
+  Options[which.min(adist(Input, Options,
+                          costs=c(insertions    = 1,
+                                  deletions     = 100,
+                                  substitutions = 100),
+                          ignore.case=TRUE))]
+}
 
 ################################################################################
 ## auxiliary functions for binomial outcome ####

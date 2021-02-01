@@ -259,8 +259,12 @@ wlsPower <- function( Cl            = NULL,
       if( (-1)>rho | rho>1 )
         stop("Correlation rho must be between -1 and 1")
     }
-    if(is.null(tau)) tau <- 0
-
+    if(is.null(tau)){
+      tau <- 0
+      warning("Random cluster effect tau and random treatment effect eta",
+              " are assumed to be 0, i.e. the observations across clusters are",
+              " assumed to be i.i.d. Declare tau=0 to supress this warning.")
+    }
     if(!is.null(psi) & is.null(Power)){
       if(is.null(N))
         stop("If the standard deviation `psi` is not null, N is needed.")
@@ -276,7 +280,7 @@ wlsPower <- function( Cl            = NULL,
       message("Since length of alpha_0_1_2 is 2, a cross-sectional design is",
               "assumed. Hence, alpha2 is set to alpha1.")
     }
-    if(alpha_0_1_2[[2]] >= alpha_0_1_2[[1]] + alpha_0_1_2[[3]])
+    if(alpha_0_1_2[[2]] > alpha_0_1_2[[1]] + alpha_0_1_2[[3]])
       stop("Correlation matrix defined by alpha_0_1_2 is not positve definite.",
            "\nThe following must hold:   alpha1 < alpha0 + alpha2")
   # }else if (UseCovMat){
@@ -286,15 +290,17 @@ wlsPower <- function( Cl            = NULL,
   ## Match string inputs ####
   ### dsntype
   dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
-  tmpdsntype     <- dsntypeOptions[which.min(adist(dsntype,
-                                                   dsntypeOptions,
-                                                   costs=c(insertions    = 1,
-                                                           deletions     = 100,
-                                                           substitutions = 100),
-                                                   ignore.case=TRUE))]
+  tmpdsntype     <- choose_character_Input(dsntypeOptions, dsntype)
   if(dsntype != tmpdsntype) {
     message("Assumes ", tmpdsntype, " design")
     dsntype <- tmpdsntype
+  }
+  ### family
+  familyOptions <- c("gaussian", "binomial")
+  tmpfamily     <- choose_character_Input(familyOptions, family)
+  if(family != tmpfamily) {
+    message("Assumes ", tmpfamily, "distribution")
+    family <- tmpfamily
   }
 
   ## construct Design Matrix #####
@@ -379,7 +385,12 @@ wlsPower <- function( Cl            = NULL,
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
 
-    if(is.vector(incomplete) & dsntype=="SWD"){
+    if(is.vector(incomplete)){
+      if(dsntype !="SWD")
+        stop("scalar input for argument `incomplete` is only, ",
+             "applicable for dsntype = 'SWD'. ")
+      if(length(incomplete)!=1)
+        stop("incomplete cannot be a vector of length > 1.")
       if(incomplete>timepoints) {
         incomplete <- timepoints
         warning("Argument `incomplete` must be less or equal to the number of",
@@ -510,12 +521,6 @@ compute_wlsPower <- function(DesMat,
   SumCl      <- sum(DesMat$Cl)
   SumSubCl   <- sum(DesMat$N)
   trtMat     <- DesMat$trtMat
-
-  ## Checks ####
-  if(!is.null(CovMat) & sum(sapply(c(sigma, tau, eta, rho, gamma, N),
-                                   is.null)) > 0 )
-    warning("If argument CovMat is provided, sigma, tau, eta, rho, gamma and N",
-            "are ignored.")
 
   ## get covariance matrix #####
   if(is.null(CovMat))
