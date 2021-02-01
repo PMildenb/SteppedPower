@@ -163,6 +163,8 @@ construct_CovMat <- function(SumCl      = NULL,
                              CovBlk     = NULL,
                              psi        = NULL,
                              INDIV_LVL  = FALSE){
+  cross_sectional <- ifelse(is.null(psi), TRUE, ifelse(psi==0, TRUE, FALSE))
+
   if(!is.null(CovBlk)){
     CovBlks <- rep(list(CovBlk),SumCl)
   } else {
@@ -190,8 +192,7 @@ construct_CovMat <- function(SumCl      = NULL,
               to change over time, please provide as matrix of dimension
               #Cluster x timepoints")
 
-    ## N (if psi==NULL on cluster means, if psi!=NULL on individual level ##
-    if(is.null(psi) & !INDIV_LVL){
+    if( cross_sectional & !INDIV_LVL){
       if(is.null(N)) N <- 1
       if(length(N) %in% c(1,SumCl,SumCl*timepoints)) {
         NMat <- matrix(N, nrow=SumCl, ncol=timepoints)
@@ -235,7 +236,7 @@ construct_CovMat <- function(SumCl      = NULL,
     if(is.null(tauAR)) tauAR <- vector("list", length=SumCl)
     if(is.null(etaAR)) etaAR <- vector("list", length=SumCl)
 
-    if(is.null(psi) & !INDIV_LVL){
+    if(cross_sectional & !INDIV_LVL){
       CovBlks <- mapply(construct_CovBlk,
                         sigma = sigmaLst,
                         tau   = tauLst,
