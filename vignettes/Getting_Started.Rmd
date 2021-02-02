@@ -182,11 +182,11 @@ For two groups of 10 observations each, the power of a Z-test
 can be calculated as follows:
 
 ```{r}
-wlsPower(Cl=c(10,10), mu0=0,mu1=.6,sigma=1, tau=0, N=1, 
+wlsPower(Cl=c(10,10), mu0=0,mu1=1.2,sigma=1, tau=0, N=1, 
               dsntype="parallel", timepoints=1)
 
 ## the same:
-wlsPower(Cl=c(1,1), mu0=0,mu1=.6, sigma=1, tau=0, N=10,
+wlsPower(Cl=c(1,1), mu0=0,mu1=1.2, sigma=1, tau=0, N=10,
               dsntype="parallel", timepoints=1)
 ```
 
@@ -273,7 +273,8 @@ The argument `N` defines the cluster size. `N` can be
   a cluster or a wave of clusters and each column corresponds to a timepoint
 
 ```{r}
-mod4 <- wlsPower(Cl=c(1,1,1), mu0=0, mu1=1, N=c(1,3,10), tau=.5, verbose=2)
+mod4 <- wlsPower(Cl=c(1,1,1), mu0=0, mu1=1, N=c(1,3,10), 
+                 sigma=1, tau=.5, verbose=2)
 plot(mod4)
 ```
 
@@ -367,10 +368,10 @@ For diagnostic purposes (or for bold users), some other adjustment options are
 implemented.
 
 ```{r}
-TimeAdj1 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, tau=0, 
+TimeAdj1 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, sigma=1, tau=0, 
                      timeAdjust="linear", verbose=2)
 
-TimeAdj2 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, tau=0, 
+TimeAdj2 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, sigma=1, tau=0, 
                      timeAdjust="factor", verbose=2)
 ```
 

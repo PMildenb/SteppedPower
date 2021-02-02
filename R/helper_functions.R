@@ -38,9 +38,16 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
   return(pwr)
 }
 
+choose_character_Input <- function(Options, Input){
+  Options[which.min(adist(Input, Options,
+                          costs=c(insertions    = 1,
+                                  deletions     = 100,
+                                  substitutions = 100),
+                          ignore.case=TRUE))]
+}
 
-
-## auxiliary functions for binomial outcome
+################################################################################
+## auxiliary functions for binomial outcome ####
 tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
 logit.deriv   <- function(x) 1/(x-x^2)
 
@@ -61,16 +68,69 @@ muCond_to_muMarg <- function(muCond,tauLin){
 }
 
 
+################################################################################
+## Alternative input options for covariance structure ####
+
 ### Transform icc and cac to random effects
 
-icc_to_RandEffs <- function(icc, cac=1, sigSq, N){
-  if(is.null(N) | N==1)
-    warning("Cannot interpret icc and cac when sigma refers to cluster means.")
+icc_to_RandEff <- function(icc, cac=1, sigResid){
   if(any(c(icc,cac)<0,c(icc,cac)>1))
+    stop("ICC and CAC must be between 0 and 1.")
 
-  gamma <- sqrt(icc * sigSq * (1 - cac)/(1 - icc))
-  tau   <- sqrt(gamma^2 * cac/(1 - cac))
+  if (cac == 1) {
+    gamma <- 0
+    tau   <- sqrt(sigResid^2 * icc/(1-icc))
+  }
+  else {
+    gamma <- sqrt(icc * sigResid^2 * (1-cac)/(1-icc))
+    tau   <- sqrt(gamma^2 * cac / (1-cac))
+  }
   return(list(gamma =gamma,
               tau   =tau))
 }
 
+RandEff_to_icc <- function(sigResid, tau, gamma=0){
+  sigMarg <- sqrt(sigResid^2+tau^2+gamma^2)
+  cac     <- tau^2 / (tau^2 + gamma^2)
+  icc     <- (tau^2+gamma^2) / sigMarg^2
+  return(list(icc=icc,
+              cac=cac,
+              sigMarg=sigMarg))
+}
+
+
+RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
+  SigMargSq <- (tau^2 + gamma^2 +psi^2 + sigResid^2)
+
+  alpha0 <- (tau^2 + gamma^2) / SigMargSq
+  alpha1 <- (tau^2) / SigMargSq
+  alpha2 <- (tau^2 + psi^2)   / SigMargSq
+
+  return(list(alpha0 = alpha0,
+              alpha1 = alpha1,
+              alpha2 = alpha2,
+              SigMarg= sqrt(SigMargSq)))
+}
+
+
+alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
+
+  if(is.null(sigResid)==is.null(sigMarg))
+    stop("Either `sigResid` or `sigMarg` must be declared (But not both).")
+
+  a0 <- alpha012[[1]]
+  a1 <- alpha012[[2]]
+  a2 <- alpha012[[3]]
+
+  sigMargSq <- if(is.null(sigResid))  sigMarg^2 else ( sigResid^2/(1-a0-a2+a1) )
+
+  tau      <- sqrt( sigMargSq * a1 )
+  gamma    <- sqrt( sigMargSq * (a0-a1) )
+  psi      <- sqrt( sigMargSq * (a2-a1) )
+  sigResid <- sqrt( sigMargSq * (1-a0-a2+a1) )
+
+  return(list(tau      = tau,
+              gamma    = gamma,
+              psi      = psi,
+              sigresid = sigResid))
+}
