@@ -207,15 +207,13 @@ wlsPower <- function( Cl            = NULL,
                       mu0,
                       mu1,
                       marginal_mu   = FALSE,
-                      sigma         = 1,
+                      sigma         = NULL,
                       tau           = NULL,
                       eta           = NULL,
                       tauAR         = NULL,
                       rho           = NULL,
                       gamma         = NULL,
                       psi           = NULL,
-                      icc           = NULL,
-                      cac           = NULL,
                       alpha_0_1_2   = NULL,
                       CovMat        = NULL,
                       N             = NULL,
@@ -226,10 +224,32 @@ wlsPower <- function( Cl            = NULL,
                       dfAdjust      = "none",
                       INDIV_LVL     = FALSE,
                       verbose       = 1){
+  ## Match string inputs ####
+  ### dsntype
+  dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
+  tmpdsntype     <- choose_character_Input(dsntypeOptions, dsntype)
+  if(dsntype != tmpdsntype) {
+    message("Assumes ", tmpdsntype, " design")
+    dsntype <- tmpdsntype
+  }
+  ### family
+  familyOptions <- c("gaussian", "binomial")
+  tmpfamily     <- choose_character_Input(familyOptions, family)
+  if(family != tmpfamily) {
+    message("Assumes ", tmpfamily, "distribution")
+    family <- tmpfamily
+  }
+
   ## CHECKS #####
   if(!is.null(N) & !is.null(Power))
     stop("Both target power and individuals per cluster not NULL. ",
          "Either N or Power must be NULL.")
+
+  if(is.null(sigma) & family=="gaussian")
+    stop("For gaussian distribution, sigma must be provided.")
+
+  if(!is.null(sigma) & family=="binomial")
+    warning("Argument sigma is not used for binomial distribution.")
 
   ## Check covariance information #####
   UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,tauAR), is.null))
@@ -287,21 +307,6 @@ wlsPower <- function( Cl            = NULL,
   #
   }
 
-  ## Match string inputs ####
-  ### dsntype
-  dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
-  tmpdsntype     <- choose_character_Input(dsntypeOptions, dsntype)
-  if(dsntype != tmpdsntype) {
-    message("Assumes ", tmpdsntype, " design")
-    dsntype <- tmpdsntype
-  }
-  ### family
-  familyOptions <- c("gaussian", "binomial")
-  tmpfamily     <- choose_character_Input(familyOptions, family)
-  if(family != tmpfamily) {
-    message("Assumes ", tmpfamily, "distribution")
-    family <- tmpfamily
-  }
 
   ## construct Design Matrix #####
   if(is.null(DesMat)){
