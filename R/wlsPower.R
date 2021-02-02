@@ -364,8 +364,8 @@ wlsPower <- function( Cl            = NULL,
       print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
     }
 
-    muMat <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
-    sigma <- muMat * (1-muMat)
+    muMat   <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
+    sigma   <- sqrt(muMat * (1-muMat))
 
     OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
     print(paste("The assumed odds ratio is",round(OR,4))) ## user information
