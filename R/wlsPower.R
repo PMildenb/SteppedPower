@@ -257,7 +257,7 @@ wlsPower <- function( Cl            = NULL,
   UseCovMat  <- !is.null(CovMat)
   UsedOptions <- sum(UseRandEff, Usealpha, UseCovMat)
 
-  if (UsedOptions==0) UsedRandEff <- TRUE
+  if (UsedOptions==0) UseRandEff <- TRUE
   if (UsedOptions>=2)
     stop("There are three different alternatives to specify the covaricance, ",
          "structure, \nyou must use exactly one.\nPlease specify EITHER \n",
@@ -362,7 +362,7 @@ wlsPower <- function( Cl            = NULL,
   } else if(family =="binomial"){
 
     if(marginal_mu){
-      if(!UsedRandEff)
+      if(!UseRandEff)
         stop("marginal_mu currently only implemented for random effects")
       mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
       mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)

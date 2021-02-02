@@ -16,15 +16,13 @@ wlsPower(
   mu0,
   mu1,
   marginal_mu = FALSE,
-  sigma = 1,
+  sigma = NULL,
   tau = NULL,
   eta = NULL,
   tauAR = NULL,
   rho = NULL,
   gamma = NULL,
   psi = NULL,
-  icc = NULL,
-  cac = NULL,
   alpha_0_1_2 = NULL,
   CovMat = NULL,
   N = NULL,
@@ -93,12 +91,6 @@ If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
 
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}
-
-\item{icc}{numeric (scalar), intracluster correlation, can be used together
-with `cac` instead of random effects, see details.}
-
-\item{cac}{numeric (scalar), cluster autocorrelation, can be used together
-with `icc` instead of random effects, see details.}
 
 \item{alpha_0_1_2}{numeric vector or list of length 2 or 3, that consists of
 alpha_0, alpha_1 and alpha_2. Can be used instead of random effects to define
