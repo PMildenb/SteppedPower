@@ -387,12 +387,63 @@ wlsPower(Cl=c(6,6), N=24, mu0=0, mu1=.2, sigma=.5, tau=.1,
 
 ## binomial outcome ####
 
-SteppedPower:::RandEff_to_alpha012(sigResid=.25, tau=.1, gamma=0, psi=0)
-SteppedPower:::alpha012_to_RandEff(sigResid=, alpha012=c(.009,.009,.009))
+debugonce(wlsPower)
+debugonce(compute_wlsPower)
+debugonce(construct_CovMat)
 
-wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0.1, family="binomial",N=10)
-wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = c(.1,.1,.1), family="binomial",N=10)
-wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = c(.2,.2,.2), family="binomial",N=10)
+
+a <- wlsPower(Cl=c(1,1), mu0=.2, mu1=.3, tau=0, N=1, sigma=sqrt(.25*.75), verbose=2)
+b <- wlsPower(Cl=c(1,1), mu0=.2, mu1=.3, tau=0, N=1, family="binomial", verbose=2)
+c <- wlsPower(Cl=c(1,1), mu0=.2, mu1=.3, alpha_0_1_2=c(0,0,0) , N=1, family="binomial", verbose=2)
+a$CovarianceMatrix
+b$CovarianceMatrix
+c$CovarianceMatrix
+a$Power ; b$Power ; c$Power
+
+SteppedPower:::RandEff_to_alpha012(sigResid=sqrt(.2*.8), tau=.1, gamma=0, psi=0)
+SteppedPower:::RandEff_to_alpha012(sigResid=sqrt(.3*.7), tau=.1, gamma=0, psi=0)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0.1, N=2, sigma=sqrt(.25*.75))
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0.1, family="binomial", N=2)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = rep(45/990,3), family="binomial",N=2)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = rep(.059,3)  , family="binomial",N=2)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2 = rep(.052,3), family="binomial",N=2)
+
+library(swCRTdesign)
+swPwr(swDsn(c(2,2,2)), mu0=.2, mu1=.3, tau=0, gamma=0, eta=0, rho=0, distn="binomial", n=10)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0, family="binomial", N=10)
+
+swPwr(swDsn(c(2,2,2)), mu0=.2, mu1=.3, icc=.1, cac=1, distn="binomial", n=10)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, alpha_0_1_2=c(.1,.1), family="binomial", N=10)
+
+swPwr(swDsn(c(2,2,2)), mu0=.2, mu1=.3, sigma=.25*.75, tau=0, gamma=0, eta=0, rho=0, distn="gaussian", n=10)
+wlsPower(Cl=c(2,2,2), mu0=.2, mu1=.3, tau=0, sigma=.25*.75, family="gaussian", N=10)
+
+library(swdpwr)
+DM <- construct_DesMat(rep(2,3), timeAdjust="none")
+swdpower(10, design=DM$trtMat, family="binomial", model="conditional", link="logit",
+         meanresponse_start=.2, meanresponse_end1=.3,
+         alpha0=0, alpha1=0)
+
+wlsPower(DesMat=DM, mu0=.2, mu1=.3, alpha_0_1_2=rep(0,3), N=10, family="binomial")
+
+swdpower(10, design=DM$trtMat, family="binomial", model="conditional", link="logit",
+         meanresponse_start=.2, meanresponse_end1=.3,
+         alpha0=.1, alpha1=.1)
+swdpower(10, design=DM$trtMat, family="binomial", model="conditional",
+         meanresponse_start=.2, meanresponse_end1=.3,
+         alpha0=.1, alpha1=.1)
+wlsPower(DesMat=DM, mu0=.2, mu1=.3, alpha_0_1_2=c(.1,.1,.1), N=10, family="binomial")
+## SteppedPower has lower power. this is expected, since sigma is marginal in swdpwr
+## but conditional in steppedpower (At least I think that the reason)
+
+KidSafe     <- wlsPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02,
+                        tau=.0254, family="binomial",
+                        N=250,verbose=2)
+KidSafe_lin <- wlsPower(Cl=c(2,2,2,2,2,2),mu0=0.03, mu1=0.02, sigma=sqrt(.025*.975),
+                        tau=0.0254, N=250, verbose=2)
+KidSafe_lin
+swPwr(swDsn(rep(2,6)), mu0=.03, mu1=.02, sigma=sqrt(.025*.975),
+      tau=0.0254, gamma=0, eta=0, rho=0, n=250, distn="gaussian")
 
 
 #### tauAR parallel ####

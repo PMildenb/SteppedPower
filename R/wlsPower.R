@@ -189,7 +189,7 @@
 #'              family="binomial")
 #'##
 #'##
-#'## ... with  marginally defined incidences
+#'## ... with  marginally defined proportions
 #' wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 #'               family="binomial", marginal_mu=TRUE)
 #'
