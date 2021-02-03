@@ -72,7 +72,7 @@ Defaults to "factor".}
 Indicates whether mu0 and mu1 are to be interpreted as marginal prevalence
 under control  and under treatment, respectively, or whether they denote
 the prevalence conditional on random effects being 0
-(It defaults to the latter).}
+(It defaults to the latter). *(experimental!)*}
 
 \item{sigma}{numeric, residual error of cluster means if no N given.}
 

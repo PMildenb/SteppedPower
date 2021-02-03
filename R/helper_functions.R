@@ -99,6 +99,27 @@ RandEff_to_icc <- function(sigResid, tau, gamma=0){
 }
 
 
+#' Correlation structure: transform alpha to random effects
+#'
+#' @param sigResid Residual standard deviation on individual leve
+#' @param tau standard deviation of random cluster intercept
+#' @param gamma standard deviation of random time effect
+#' @param psi standard deviation of random subject specific intercept
+#'
+#' @return a list containing four named elements (possibly matrices):
+#' `alpha0`, `alpha1`, `alpha2` specify a correlation structure and SigMarg
+#' denotes the marginal standard deviation
+#' @export
+#'
+#' @examples
+#' RandEff_to_alpha012(sigResid=sqrt(11), tau=4, gamma=3, psi=2)
+#'
+#' ## The function is vectorised:
+#' RandEff_to_alpha012(sigResid = matrix(c(0,1,2,3,4,5), 2, 3),
+#'                     tau      = matrix(c(1,1,1,0,0,0), 2, 3),
+#'                     gamma    = matrix(c(0,0,1,0,0,1), 2, 3),
+#'                     psi      = matrix(c(0,1,1,0,0,1), 2, 3))
+
 RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
   SigMargSq <- (tau^2 + gamma^2 +psi^2 + sigResid^2)
 
@@ -113,6 +134,31 @@ RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
 }
 
 
+#' Correlation structure: transform alpha to random effects
+#'
+#' @param alpha012 A vector or a list of length 3. Each list element must have
+#' the same dimension.
+#' @param sigResid Residual standard deviation on individual level. Either
+#' residual sd or marginal sd needs to be specified.
+#' @param sigMarg Marginal standard deviation on individual level. Either
+#' residual sd or marginal sd needs to be specified.
+#'
+#' @return a list containing four named elements (possibly matrices):
+#' random cluster intercept `tau`, random time effect `gamma`, random subject
+#' intercept and residual standard deviation
+#'
+#' @export
+#'
+#' @examples
+#' alpha012_to_RandEff(alpha012=c(.1,.1,.1), sigMarg=1)
+#' alpha012_to_RandEff(alpha012=c(.1,.1,.1), sigResid=.9486833)
+#'
+#'## The function is vectorised:
+#' alpha012_to_RandEff(alpha012=list(matrix(c(0,.1,.1,.2), 2, 2),
+#'                                   matrix(c(0,0,.1,.2) , 2, 2),
+#'                                   matrix(c(0,0,.2,.2) , 2, 2)),
+#'                     sigMarg=1)
+#'
 alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
 
   if(is.null(sigResid)==is.null(sigMarg))
