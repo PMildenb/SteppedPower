@@ -35,7 +35,7 @@
 #' Indicates whether mu0 and mu1 are to be interpreted as marginal prevalence
 #' under control  and under treatment, respectively, or whether they denote
 #' the prevalence conditional on random effects being 0
-#' (It defaults to the latter).
+#' (It defaults to the latter). *(experimental!)*
 #' @param sigma numeric, residual error of cluster means if no N given.
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric (scalar or matrix), standard deviation of random slopes.
@@ -43,6 +43,8 @@
 #' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
 #' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
 #' *Currently not compatible with `rho`!=0 !*
+#' @param etaAR numeric (scalar), value between 0 and 1, defaults to `tauAR`.
+#' IF
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
@@ -211,6 +213,7 @@ wlsPower <- function( Cl            = NULL,
                       tau           = NULL,
                       eta           = NULL,
                       tauAR         = NULL,
+                      etaAR         = tauAR,
                       rho           = NULL,
                       gamma         = NULL,
                       psi           = NULL,
@@ -372,8 +375,10 @@ wlsPower <- function( Cl            = NULL,
     muMat   <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
     sigma   <- sqrt(muMat * (1-muMat))
 
-    OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
-    print(paste("The assumed odds ratio is",round(OR,4))) ## user information
+    if (verbose>0) {
+      OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
+      print(paste("The assumed odds ratio is",round(OR,4))) ## user information
+    }
 
     if(Usealpha){
       tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
@@ -435,6 +440,7 @@ wlsPower <- function( Cl            = NULL,
                                                            tau       = tau,
                                                            eta       = eta,
                                                            tauAR     = tauAR,
+                                                           etaAR     = etaAR,
                                                            rho       = rho,
                                                            gamma     = gamma,
                                                            psi       = psi,
@@ -459,6 +465,7 @@ wlsPower <- function( Cl            = NULL,
                           tau       = tau,
                           eta       = eta,
                           tauAR     = tauAR,
+                          etaAR     = etaAR,
                           rho       = rho,
                           gamma     = gamma,
                           psi       = psi,

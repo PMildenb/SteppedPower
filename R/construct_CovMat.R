@@ -14,7 +14,10 @@
 #'
 #' @examples
 #' construct_CovBlk(sigma=rep(2,5), tau=rep(1,5))
-
+#'
+#' construct_CovBlk(sigma=rep(2,5),
+#'                 tau=rep(.5,5), eta=c(0,0,1,1,1),
+#'                 tauAR=.5, etaAR=1)
 
 construct_CovBlk <- function(sigma,
                              tau,
@@ -30,12 +33,12 @@ construct_CovBlk <- function(sigma,
   timepoints <- length(sigma)
 
   tauMat <- if(is.null(tauAR)) tau %o% tau
-            else toeplitz(tau^2 * tauAR ** c(0:(timepoints-1)))
+            else tau %o% tau * toeplitz(tauAR ** c(0:(timepoints-1)))
   out    <- diag(sigma^2, timepoints) + tauMat
 
   if(!is.null(eta)) {
     etaMat <- if(is.null(etaAR)) eta %o% eta
-              else toeplitz(eta^2 * etaAR ** c(0:(timepoints-1)))
+              else eta %o% eta * toeplitz(etaAR ** c(0:(timepoints-1)))
     out <- out + etaMat
   }
   if(!is.null(rho)) {
