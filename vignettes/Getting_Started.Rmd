@@ -232,30 +232,30 @@ knitr::kable(mod1$DesignMatrix$trtMat)
 
 In longitudinal studies, it can be sensible to assume that correlation within 
 clusters decreases with increasing time lag.
-The argument `tauAR` enables the user to specify a AR-1 correlation. `tauAR`
+The argument `AR` enables the user to specify a AR-1 correlation. `AR`
 must be any value between `0` and `1`. 
 The former corresponds to i.i.d. observations, 
 the latter to the usual compound symmetry covariance type.  
 
 An example of a stepped wedge design with 8 clusters in 4 waves, 
-once with medium autocorrelation (`tauAR=0.6`) and 
-once with high autocorrelation (`tauAR=0.95`):
+once with medium autocorrelation (`AR=0.6`) and 
+once with high autocorrelation (`AR=0.95`):
 
 ```{r}
 mod2 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
-              sigma=1, N=100, tau=1, tauAR=.6, verbose=2)
+              sigma=1, N=100, tau=1, AR=.6, verbose=2)
 
 mod3 <- wlsPower(Cl=c(2,2,2,2), mu0=0, mu1=1, 
-              sigma=1, N=100, tau=1, tauAR=.95, verbose=2)
+              sigma=1, N=100, tau=1, AR=.95, verbose=2)
 ```
 
-For `tauAR=0.6`, the covariance matrix within one cluster then looks like this:
+For `AR=0.6`, the covariance matrix within one cluster then looks like this:
 
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(as.matrix(mod2$CovarianceMatrix[1:5,1:5])))
 ```
 
-For `tauAR=0.95` it takes the following shape
+For `AR=0.95` it takes the following shape
 
 ```{r, echo=FALSE}
 suppressWarnings(knitr::kable(as.matrix(mod3$CovarianceMatrix[1:5,1:5])))
