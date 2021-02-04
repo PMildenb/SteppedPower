@@ -40,11 +40,16 @@
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric (scalar or matrix), standard deviation of random slopes.
 #' If `eta` is given as scalar, `trtMat` is needed as well.
-#' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+#' @param AR numeric, vector containing one or two values, each between 0 and 1.
+#' Defaults to NULL. The first element and second element denote the
+#' AR(1)-correlation of random cluster intercept and random treatment effect,
+#' respectively. If only one element is provided, autocorrelation of cluster and
+#' treatment are the same.
+##' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
+##' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
 #' *Currently not compatible with `rho`!=0 !*
-#' @param etaAR numeric (scalar), value between 0 and 1, defaults to `tauAR`.
-#' IF
+##' @param etaAR numeric (scalar), value between 0 and 1, defaults to `tauAR`.
+##' IF specified
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
@@ -106,8 +111,8 @@
 #' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 #' ##
 #' ##
-#' ## ... with auto-regressive cluster effect `tauAR=0.7`.
-#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
+#' ## ... with auto-regressive cluster effect `AR=0.7`.
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, AR=0.7, N=10)
 #' ##
 #' ##
 #' ## ... with varying cluster size
@@ -212,8 +217,7 @@ wlsPower <- function( Cl            = NULL,
                       sigma         = NULL,
                       tau           = NULL,
                       eta           = NULL,
-                      tauAR         = NULL,
-                      etaAR         = tauAR,
+                      AR            = NULL,
                       rho           = NULL,
                       gamma         = NULL,
                       psi           = NULL,
@@ -255,7 +259,7 @@ wlsPower <- function( Cl            = NULL,
     warning("Argument sigma is not used for binomial distribution.")
 
   ## Check covariance information #####
-  UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,tauAR), is.null))
+  UseRandEff <- !all(sapply(c(tau,eta,rho,gamma,AR), is.null))
   Usealpha   <- !is.null(alpha_0_1_2)
   UseCovMat  <- !is.null(CovMat)
   UsedOptions <- sum(UseRandEff, Usealpha, UseCovMat)
@@ -271,9 +275,12 @@ wlsPower <- function( Cl            = NULL,
   if (UseRandEff) {
     if(any(c(tau,eta,gamma, psi)<0))
       stop("tau, eta, gamma and psi must be >=0")
-    if(!is.null(tauAR)){
-      if(is.null(tau)) stop("If tauAR is supplied, tau is needed as well.")
-      if(tauAR<0 | tauAR>1) stop("tauAR must be between 0 and 1.")
+    if(!is.null(AR)){
+      if(is.null(tau)) stop("If AR is supplied, tau is needed as well.")
+      if(is.null(eta) & length(AR)>1)
+        stop("If AR has length 2, eta must be supplied.")
+      if(min(AR)<0 | max(AR)>1) stop("AR must be between 0 and 1.")
+      if(length(AR)==1)   AR <- rep(AR, length.out=2)
     }
     if(!is.null(rho)){
       if(is.null(eta) | is.null(tau))
@@ -439,8 +446,7 @@ wlsPower <- function( Cl            = NULL,
                                                            sigma     = sigma,
                                                            tau       = tau,
                                                            eta       = eta,
-                                                           tauAR     = tauAR,
-                                                           etaAR     = etaAR,
+                                                           AR        = AR,
                                                            rho       = rho,
                                                            gamma     = gamma,
                                                            psi       = psi,
@@ -464,8 +470,7 @@ wlsPower <- function( Cl            = NULL,
                           sigma     = sigma,
                           tau       = tau,
                           eta       = eta,
-                          tauAR     = tauAR,
-                          etaAR     = etaAR,
+                          AR        = AR,
                           rho       = rho,
                           gamma     = gamma,
                           psi       = psi,
@@ -517,8 +522,7 @@ compute_wlsPower <- function(DesMat,
                              sigma,
                              tau        = 0,
                              eta        = NULL,
-                             tauAR      = NULL,
-                             etaAR      = NULL,
+                             AR         = NULL,
                              rho        = NULL,
                              gamma      = NULL,
                              psi        = NULL,
@@ -541,8 +545,7 @@ compute_wlsPower <- function(DesMat,
                                  sigma      = sigma,
                                  tau        = tau,
                                  eta        = eta,
-                                 tauAR      = tauAR,
-                                 etaAR      = etaAR,
+                                 AR         = AR,
                                  rho        = rho,
                                  gamma      = gamma,
                                  psi        = psi,
@@ -576,12 +579,12 @@ compute_wlsPower <- function(DesMat,
                              sigma     = sigma,
                              tau       = tau,
                              eta       = eta,
-                             tauAR     = tauAR,
-                             etaAR     = etaAR,
+                             trtDelay   = DesMat$trtDelay,
+                             N          = N,
                              rho       = rho,
                              gamma     = gamma,
                              psi       = psi,
-                             denomDF   = df,
+                             AR         = AR,
                              dfAdjust  = dfAdjust,
                              sig.level = sig.level))
   }
