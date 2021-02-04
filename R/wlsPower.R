@@ -1,5 +1,5 @@
 #'@title
-#'Compute power
+#' Compute power via weighted least squares
 #'
 #' @description
 #' This is the main function of the SteppedPower package.
@@ -15,11 +15,12 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat matrix of dimension ... , if supplied,
+#' @param DesMat Either an object of class `DesMat` or a matrix indicating the
+#' treatment status for each cluster at each timepoint. If supplied,
 #' `timepoints`,`Cl`,`trtDelay` are ignored.
 #' @param trtDelay numeric (possibly vector), value(s)
-#' between 0 and 1 specifying
-#' the intervention effect in the first (second ... ) intervention phase
+#' between 0 and 1 specifying the proportion of intervention effect
+#' in the first (second ... ) intervention phase.
 #' @param incomplete integer, either a scalar (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
 #' control to intervention that are observed. A matrix consists of 1's for
@@ -45,9 +46,9 @@
 #' AR(1)-correlation of random cluster intercept and random treatment effect,
 #' respectively. If only one element is provided, autocorrelation of cluster and
 #' treatment are the same.
+#' *Currently not compatible with `rho`!=0 !*
 ##' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
 ##' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
-#' *Currently not compatible with `rho`!=0 !*
 ##' @param etaAR numeric (scalar), value between 0 and 1, defaults to `tauAR`.
 ##' IF specified
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
@@ -62,7 +63,7 @@
 #' defined by Hooper et al. (2016).
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
 #' of length #Clusters or a matrix of dimension #Clusters x timepoints.
-#' Defaults to 'rep(1,sum(Cl))' if not passed.
+#' Defaults to 1 if not passed.
 #' @param family character, distribution family. One of "gaussian", "binomial".
 #' Defaults to "gaussian"
 #' @param Power numeric, a specified target power.
@@ -76,7 +77,8 @@
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix with
 #' (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
-#' `sigma`, `tau`, `eta`, `rho` and `psi` are ignored.
+#' `sigma`, `tau`, `eta`, `rho`, `gamma` and `psi` as well as `alpha_0_1_2`
+#' must be NULL.
 #' @param INDIV_LVL logical, should the computation be conducted on an
 #' individual level? This leads to longer run time and is
 #' mainly for diagnostic purposes.
@@ -498,19 +500,17 @@ wlsPower <- function( Cl            = NULL,
 
 #' @title Compute Power via weighted least squares
 #'
-#' @description This function calls `construct_DesMat` and `construct_CovMat` to
-#' construct the design and covariance matrix, repectively. These matrices are
+#' @description
+#' This function is not intended to be used directly, but rather to be called
+#' by `wlsPower` - the main function of this package.
+#' construct the covariance matrix. These matrices are
 #' used to calculate the variance of the treatment effect estimator which is
 #' then used to calculate the power to detect the assumed treatment effect.
 #'
 #' @inheritParams wlsPower
-#' @param DesMat  list, containing a matrix, the design matrix,
-#' numeric timepoints, numeric total number of Clusters
+#' @param DesMat  object of class `DesMat`.
 #' @param EffSize raw effect, i.e. difference between mean under control and
 #' mean under intervention
-#' @param etaAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-#' If `etaAR` is not NULL, the random slope `eta` is AR1-correlated.
-#' *Currently not compatible with `rho`!=0 !*
 #'
 #' @return
 #' The return depends on the `verbose` parameter.

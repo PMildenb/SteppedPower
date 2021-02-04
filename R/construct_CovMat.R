@@ -109,6 +109,7 @@ construct_CovSubMat <- function(N,
 
 #' @title Construct a Covariance Matrix
 #'
+#' @description
 #' constructs a (block diagonal) covariance matrix.
 #' This function calls `construct_CovBlk`
 #' (or `construct_CovSubMat` in case of repeated

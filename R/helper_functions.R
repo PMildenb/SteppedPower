@@ -1,7 +1,8 @@
 
 #' @title Compute Power of a Wald Test
 #'
-#' computes the power of a scaled Wald test given a standard error,
+#' @description
+#' Computes the power of a scaled Wald test given a standard error,
 #' an effect size, the degrees of freedom of the t-distribution and
 #' a significance level.
 #' Computes the exact power, see second example
