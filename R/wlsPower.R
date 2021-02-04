@@ -396,7 +396,9 @@ wlsPower <- function( Cl            = NULL,
   }
 
   EffSize <- mu1-mu0
-  if(marginal_mu) print(paste("The (raw) effect is",round(EffSize,5)))
+
+  if(marginal_mu & verbose>0)
+    print(paste("The (raw) effect is",round(EffSize,5)))
 
 
   ## incomplete designs #####
@@ -484,8 +486,10 @@ wlsPower <- function( Cl            = NULL,
 
   if(verbose>0) {
     out$Params <- append(out$Params,
-                         list(mu0=mu0,
-                              mu1=mu1))
+                         list(mu0         = mu0,
+                              mu1         = mu1,
+                              family      = family,
+                              alpha_0_1_2 = alpha_0_1_2))
     class(out) <- "wlsPower"
   }
 
@@ -556,7 +560,7 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
   VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  if(verbose==2) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
+  if(verbose>0) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
                                 nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
                                 byrow=TRUE)
 
@@ -575,23 +579,27 @@ compute_wlsPower <- function(DesMat,
     out <- c(Pwr)
   } else {
     out <- list(Power  =Pwr,
-                Params =list(N         = N,
-                             sigma     = sigma,
-                             tau       = tau,
-                             eta       = eta,
+                Params =list(Cl         = DesMat$Cl,
+                             timeAdjust = DesMat$timeAdjust,
+                             timepoints = DesMat$timepoints,
+                             designtype = DesMat$dsntype,
                              trtDelay   = DesMat$trtDelay,
                              N          = N,
-                             rho       = rho,
-                             gamma     = gamma,
-                             psi       = psi,
+                             sigma      = sigma,
+                             tau        = tau,
+                             eta        = eta,
                              AR         = AR,
-                             dfAdjust  = dfAdjust,
-                             sig.level = sig.level))
+                             rho        = rho,
+                             gamma      = gamma,
+                             psi        = psi,
+                             denomDF    = df,
+                             dfAdjust   = dfAdjust,
+                             sig.level  = sig.level,
+                             ProjMatrix = ProjMat))
   }
   if(verbose==2)
     out <- append(out,
-                  list(ProjMatrix       = ProjMat,
-                       DesignMatrix     = DesMat,
+                  list(DesignMatrix     = DesMat,
                        CovarianceMatrix = CovMat))
   return(out)
 }
@@ -637,39 +645,39 @@ print.wlsPower <- function(x, ...){
 #' @export
 #'
 plot.wlsPower <- function(x,...){
-  if(!"ProjMatrix" %in% names(x))
-    stop("Please rerun wlsPower() with `verbose=2` ")
+
   wgt <- x$ProjMatrix
-  mx <- max(abs(wgt))
+  mx  <- max(abs(wgt))
   sumCl <- dim(wgt)[1]
   timep <- dim(wgt)[2]
 
-  subp <- suppressWarnings(subplot(
-    plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
-                            weight = colSums(abs(wgt))),
-            type="bar", x=~time, y=~weight, color=I("grey")) %>%
-      layout(yaxis=list(title="Sum|weights|"),
-             xaxis=list(title="", showticklabels=FALSE))
-    ,
-    plotly_empty(type="scatter",mode="marker")
-    ,
-    plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
-            colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-            xgap=.3, ygap=.3, name=" ",
-            hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
-      colorbar(len=1,limits=c(-mx,mx)) %>%
-      layout(xaxis=list(title="time"),
-             yaxis=list(title="cluster", autorange="reversed"))
-    ,
-    plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
-                            weight=rowSums(abs(wgt))),
-            type="bar", orientation="h",
-            y=~cluster, x=~weight, color=I("grey")) %>%
-      layout(xaxis=list(title="Sum|weights|"),
-             yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
-    ,
-    nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-  ) %>% layout(showlegend=FALSE)
+  subp <- suppressWarnings(
+    subplot(
+      plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+                              weight = colSums(abs(wgt))),
+              type="bar", x=~time, y=~weight, color=I("grey")) %>%
+        layout(yaxis=list(title="Sum|weights|"),
+               xaxis=list(title="", showticklabels=FALSE))
+      ,
+      plotly_empty(type="scatter",mode="marker")
+      ,
+      plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
+              colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+              xgap=.3, ygap=.3, name=" ",
+              hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
+        colorbar(len=1,limits=c(-mx,mx)) %>%
+        layout(xaxis=list(title="time"),
+               yaxis=list(title="cluster", autorange="reversed"))
+      ,
+      plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+                              weight=rowSums(abs(wgt))),
+              type="bar", orientation="h",
+              y=~cluster, x=~weight, color=I("grey")) %>%
+        layout(xaxis=list(title="Sum|weights|"),
+               yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+      ,
+      nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+    ) %>% layout(showlegend=FALSE)
   )
   return(subp)
 }

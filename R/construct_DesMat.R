@@ -75,6 +75,7 @@ construct_DesMat <- function(Cl          = NULL,
 
   DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
+                  trtDelay   = trtDelay,
                   Cl         = Cl,
                   N          = if(INDIV_LVL) N else NULL,
                   dsntype    = dsntype,
