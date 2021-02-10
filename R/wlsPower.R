@@ -41,16 +41,13 @@
 #' @param tau numeric, standard deviation of random intercepts
 #' @param eta numeric (scalar or matrix), standard deviation of random slopes.
 #' If `eta` is given as scalar, `trtMat` is needed as well.
-#' @param AR numeric, vector containing one or two values, each between 0 and 1.
-#' Defaults to NULL. The first element and second element denote the
-#' AR(1)-correlation of random cluster intercept and random treatment effect,
-#' respectively. If only one element is provided, autocorrelation of cluster and
-#' treatment are the same.
+#' @param AR numeric, vector containing up to three values, each between 0 and 1.
+#' Defaults to NULL. It defines the AR(1)-correlation of random effects.
+#' The first element corresponds to the cluster intercept, the second to the
+#' treatment effect and the third to subject specific intercept.
+#' If only one element is provided, autocorrelation of all random effects is
+#' assumed to be the same.
 #' *Currently not compatible with `rho`!=0 !*
-##' @param tauAR numeric (scalar), value between 0 and 1. Defaults to NULL.
-##' If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
-##' @param etaAR numeric (scalar), value between 0 and 1, defaults to `tauAR`.
-##' IF specified
 #' @param rho numeric (scalar), correlation of `tau` and `eta`
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
@@ -58,7 +55,7 @@
 #' @param alpha_0_1_2 numeric vector or list of length 2 or 3, that consists of
 #' alpha_0, alpha_1 and alpha_2. Can be used instead of random effects to define
 #' the correlation structure, following Li et al. (2018). When omitting alpha_2,
-#' this describes a cross-sectional design, where alpha_0 and alpha_1 denote
+#' this describes a cross-sectional design, where alpha_0 and alpha_1 define
 #' the intracluster correlation and cluster autocorrelation, respectively - as
 #' defined by Hooper et al. (2016).
 #' @param N numeric, number of individuals per cluster. Either a scalar, vector
@@ -279,10 +276,12 @@ wlsPower <- function( Cl            = NULL,
       stop("tau, eta, gamma and psi must be >=0")
     if(!is.null(AR)){
       if(is.null(tau)) stop("If AR is supplied, tau is needed as well.")
-      if(is.null(eta) & length(AR)>1)
+      if(is.null(eta) & length(AR)==2)
         stop("If AR has length 2, eta must be supplied.")
+      if(is.null(psi) & length(AR)==3)
+        stop("If AR has length 3, psi must be supplied.")
       if(min(AR)<0 | max(AR)>1) stop("AR must be between 0 and 1.")
-      if(length(AR)==1)   AR <- rep(AR, length.out=2)
+      AR <- rep(AR, length.out=3)
     }
     if(!is.null(rho)){
       if(is.null(eta) | is.null(tau))
@@ -315,8 +314,9 @@ wlsPower <- function( Cl            = NULL,
     if(alpha_0_1_2[[2]] > alpha_0_1_2[[1]] + alpha_0_1_2[[3]])
       stop("Correlation matrix defined by alpha_0_1_2 is not positve definite.",
            "\nThe following must hold:   alpha1 < alpha0 + alpha2")
-  # }else if (UseCovMat){
-  #
+  }else if (UseCovMat){
+    if(min(eigen(CovMat)$values) > 0)
+      stop("Covariance matrix is not positive definite")
   }
 
 
@@ -594,8 +594,8 @@ compute_wlsPower <- function(DesMat,
                              psi        = psi,
                              denomDF    = df,
                              dfAdjust   = dfAdjust,
-                             sig.level  = sig.level,
-                             ProjMatrix = ProjMat))
+                             sig.level  = sig.level),
+                ProjMatrix = ProjMat)
   }
   if(verbose==2)
     out <- append(out,

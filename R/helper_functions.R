@@ -49,8 +49,10 @@ choose_character_Input <- function(Options, Input){
 
 ################################################################################
 ## auxiliary functions for binomial outcome ####
-tau_to_tauLin <- function(tau,mu){tau/logit.deriv(mu)}
-logit.deriv   <- function(x) 1/(x-x^2)
+tau_to_tauLin    <- function(tau,mu){tau/logit.deriv(mu)}
+logit.deriv      <- function(x) 1/(x-x^2)
+sdLin_invlogit   <- function(sdLin,mu){sdLin/logit.deriv(mu)}
+sd_to_logit      <- function(sd,mu){sd * logit.deriv(mu)}
 
 muMarg_to_muCond <- function(muMarg,tauLin) {
   muMargLin <- binomial()$linkfun(muMarg)
@@ -67,7 +69,27 @@ muCond_to_muMarg <- function(muCond,tauLin){
           c(1e-6,1-1e-6),
           tol=100*.Machine$double.eps)$root
 }
-
+#
+# muMarg_to_muCond(.136,1.1)
+# muCond_to_muMarg(.136,1.1)
+# tau_to_tauLin(.11,.13)
+#
+# x <- seq(0,1,length.out=1001)
+# plot(x, tau_to_tauLin(x,mu=.13), type="l")
+# lines(x,tau_to_tauLin(x,mu=.5), col=3)
+# lines(x,tau_to_tauLin(x,mu=.05), col=4)
+# lines(x,x,col=2)
+#
+# binomial()$linkfun(.65) - binomial()$linkfun(.65+.05)
+# binomial()$linkfun(.65) - binomial()$linkfun(.65-.05)
+#
+# tau_to_tauLin(.22,.65)
+#
+# plot(x,binomial()$linkfun(x), type="l")
+# deriv(expression(binomial()$linkfun),"x")
+#
+# logit <- function(x) log(x/(1-x))
+# a <- Deriv::Deriv(logit)
 
 ################################################################################
 ## Alternative input options for covariance structure ####

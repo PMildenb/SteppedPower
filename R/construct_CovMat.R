@@ -29,7 +29,7 @@ construct_CovBlk <- function(sigma,
   if(!is.null(eta) & !length(tau)==length(eta))
     stop ("In construct_CovBlk: sigma, tau and eta must be of same length.")
 
-  AR         <- rep(AR, length.out=2)
+  # AR         <- rep(AR, length.out=3) ## NEEDED ???
   timepoints <- length(sigma)
 
   tauMat <- if(is.null(AR[[1]])) tau %o% tau
@@ -87,18 +87,20 @@ construct_CovSubMat <- function(N,
   ClBlk  <- construct_CovBlk(sigma = gamma,
                              tau   = tau,
                              eta   = eta,
-                             AR    = AR,
+                             AR    = c(AR[[1]],AR[[2]]),
                              rho   = rho)
 
   if(INDIV_LVL){
     SubMat <- construct_CovMat(SumCl      = N,
                                timepoints = timepoints,
                                sigma      = sigma,
-                               tau        = psi)
+                               tau        = psi,
+                               AR         = c(AR[[3]],AR[[2]]))
     out <- matrix(1,N,N) %x% ClBlk + SubMat
   }else {
-    SubBlk <- construct_CovBlk(sigma=sigma,
-                               tau  =psi)
+    SubBlk <- construct_CovBlk(sigma = sigma,
+                               tau   = psi,
+                               AR    = c(AR[[3]],AR[[2]]))
     out <- ClBlk + (1/N)*SubBlk
   }
 
@@ -140,8 +142,6 @@ construct_CovSubMat <- function(N,
 #' construct_CovMat(SumCl=2, timepoints=3, sigma=3, tau=1, AR=.8)
 #' ##
 #' ##
-#'
-#'
 #' ## ... with sigma and tau variing over time and between clusters:
 #' construct_CovMat(SumCl=2,timepoints=3,
 #'                  sigma=matrix(c(1,2,2,1,1,2),nrow=2, byrow=TRUE),
@@ -234,15 +234,15 @@ construct_CovMat <- function(SumCl      = NULL,
     }else
       rhoLst <- vector("list", length=SumCl)
 
-    if(is.null(AR)) AR <- vector("list", length=SumCl)
+    # if(is.null(AR)) AR <- vector("list", length=SumCl)
 
     if(cross_sectional & !INDIV_LVL){
       CovBlks <- mapply(construct_CovBlk,
                         sigma = sigmaLst,
                         tau   = tauLst,
                         eta   = etaLst,
-                        AR    = AR,
                         rho   = rhoLst,
+                        MoreArgs = list(AR = AR),
                         SIMPLIFY = FALSE)
     }else{
       NMat <- matrix(N, nrow=SumCl, ncol=1)
@@ -264,14 +264,14 @@ construct_CovMat <- function(SumCl      = NULL,
                         N     = NLst,
                         gamma = gammaLst,
                         psi   = psiLst,
-                        AR    = AR,
                         MoreArgs = list(timepoints = timepoints,
-                                        INDIV_LVL  = INDIV_LVL),
+                                        INDIV_LVL  = INDIV_LVL,
+                                        AR         = AR),
                         SIMPLIFY = FALSE)
     }
   }
   CovMat <- Matrix::bdiag(CovBlks)
-  if(!is.null(gamma) & is.null(psi)) {
+  if(!is.null(gamma) & is.null(psi) & !INDIV_LVL) {
     diag(CovMat) <- Matrix::diag(CovMat) + gamma^2
   }
 
