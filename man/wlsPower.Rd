@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{wlsPower}
 \alias{wlsPower}
-\title{Compute power}
+\title{Compute power via weighted least squares}
 \usage{
 wlsPower(
   Cl = NULL,
@@ -19,7 +19,7 @@ wlsPower(
   sigma = NULL,
   tau = NULL,
   eta = NULL,
-  tauAR = NULL,
+  AR = NULL,
   rho = NULL,
   gamma = NULL,
   psi = NULL,
@@ -43,12 +43,13 @@ or number in control and intervention (in parallel designs)}
 If design is swd, timepoints defaults to length(Cl)+1.
 Defaults to 1 for parallel designs.}
 
-\item{DesMat}{matrix of dimension ... , if supplied,
+\item{DesMat}{Either an object of class `DesMat` or a matrix indicating the
+treatment status for each cluster at each timepoint. If supplied,
 `timepoints`,`Cl`,`trtDelay` are ignored.}
 
 \item{trtDelay}{numeric (possibly vector), value(s)
-between 0 and 1 specifying
-the intervention effect in the first (second ... ) intervention phase}
+between 0 and 1 specifying the proportion of intervention effect
+in the first (second ... ) intervention phase.}
 
 \item{incomplete}{integer, either a scalar (only for SWD) or a matrix.
 A vector defines the number of periods before and after the switch from
@@ -81,8 +82,12 @@ the prevalence conditional on random effects being 0
 \item{eta}{numeric (scalar or matrix), standard deviation of random slopes.
 If `eta` is given as scalar, `trtMat` is needed as well.}
 
-\item{tauAR}{numeric (scalar), value between 0 and 1. Defaults to NULL.
-If `tauAR` is not NULL, the random intercept `tau` is AR1-correlated.
+\item{AR}{numeric, vector containing up to three values, each between 0 and 1.
+Defaults to NULL. It defines the AR(1)-correlation of random effects.
+The first element corresponds to the cluster intercept, the second to the
+treatment effect and the third to subject specific intercept.
+If only one element is provided, autocorrelation of all random effects is
+assumed to be the same.
 *Currently not compatible with `rho`!=0 !*}
 
 \item{rho}{numeric (scalar), correlation of `tau` and `eta`}
@@ -95,17 +100,18 @@ Leads to a closed cohort setting}
 \item{alpha_0_1_2}{numeric vector or list of length 2 or 3, that consists of
 alpha_0, alpha_1 and alpha_2. Can be used instead of random effects to define
 the correlation structure, following Li et al. (2018). When omitting alpha_2,
-this describes a cross-sectional design, where alpha_0 and alpha_1 denote
+this describes a cross-sectional design, where alpha_0 and alpha_1 define
 the intracluster correlation and cluster autocorrelation, respectively - as
 defined by Hooper et al. (2016).}
 
 \item{CovMat}{numeric, a positive-semidefinite matrix with
 (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
-`sigma`, `tau`, `eta`, `rho` and `psi` are ignored.}
+`sigma`, `tau`, `eta`, `rho`, `gamma` and `psi` as well as `alpha_0_1_2`
+must be NULL.}
 
 \item{N}{numeric, number of individuals per cluster. Either a scalar, vector
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
-Defaults to 'rep(1,sum(Cl))' if not passed.}
+Defaults to 1 if not passed.}
 
 \item{Power}{numeric, a specified target power.
 If supplied, the minimal `N` is returned.}
@@ -158,8 +164,8 @@ estimated via weighted least squares (see also vignette 'Getting Started').
 wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, N=10)
 ##
 ##
-## ... with auto-regressive cluster effect `tauAR=0.7`.
-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, tauAR=0.7, N=10)
+## ... with auto-regressive cluster effect `AR=0.7`.
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, AR=0.7, N=10)
 ##
 ##
 ## ... with varying cluster size
