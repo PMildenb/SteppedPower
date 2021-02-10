@@ -1,12 +1,13 @@
 #' @title Construct the Design Matrix
 #'
+#' @description
 #' Constructs the design matrix with one column for every (fixed)
 #' parameter to be estimated and one row for every cluster for every timepoint.
-#' This function calls `construct_trtMat` to construct a matrix with
-#' `#cluster` columns and `#timepoints` rows, indicating treatment status
-#' fore each cluster at each timepoint. This is then transformed into the first
+#' This function calls `construct_trtMat` to construct a matrix that indicates
+#' treatment status for each cluster at each timepoint.
+#' This is then transformed into the first
 #' column of the design matrix. `construct_CovMat` further calls
-#' `construct_timeajust` to get the fixed effect(s) of the timepoints.
+#' `construct_timeadjust` to get the fixed effect(s) of the timepoints.
 #'
 #' Note: Unlike the usual notation, the treatment effect is in the first column
 #' (for easier access by higher level functions).
@@ -75,6 +76,7 @@ construct_DesMat <- function(Cl          = NULL,
 
   DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
+                  trtDelay   = trtDelay,
                   Cl         = Cl,
                   N          = if(INDIV_LVL) N else NULL,
                   dsntype    = dsntype,
