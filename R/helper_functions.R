@@ -47,32 +47,59 @@ choose_character_Input <- function(Options, Input){
                           ignore.case=TRUE))]
 }
 
+
+
+BYROW <- function(input, SumCl, tp){
+  len <- length(input)
+  out <- if(len %in% c(1,SumCl, SumCl*tp)) FALSE else if(len==tp) TRUE else
+           stop(paste('length of input is ', len,
+                      '. This does not fit to given number of timepoints, ',
+                      'which is ',tp,
+                      ', or to the given number of clusters, which is ', SumCl))
+  if(tp==SumCl & len==tp)
+    warning("Input is assumed to change between clusters. If you wanted it
+              to change over time, please provide as matrix of dimension
+              #Cluster x timepoints")
+  return(out)
+}
+
+input_to_Mat <- function(input, SumCl, tp){
+  return(matrix(input, nrow=SumCl, ncol=tp, byrow=BYROW(input,SumCl,tp)))
+}
+
 ################################################################################
 ## auxiliary functions for binomial outcome ####
-tau_to_tauLin    <- function(tau,mu){tau/logit.deriv(mu)}
 logit.deriv      <- function(x) 1/(x-x^2)
 sdLin_invlogit   <- function(sdLin,mu){sdLin/logit.deriv(mu)}
 sd_to_logit      <- function(sd,mu){sd * logit.deriv(mu)}
+logit    <- function(p) log(p/(1-p))
+invlogit <- function(x) 1/(1+exp(-x))
 
-muMarg_to_muCond <- function(muMarg,tauLin) {
-  muMargLin <- binomial()$linkfun(muMarg)
-  i <- function(x,muMargLin,tauLin){
-    stats::dnorm(x,0,tauLin)/(1+exp(-x-muMargLin))}
 
-  ifelse(tauLin<1e-5,muMarg,
-         stats::integrate(i,-Inf,Inf,
-                   muMargLin=muMargLin,tauLin=tauLin,
-                   rel.tol=100*.Machine$double.eps)$value)
-}
 muCond_to_muMarg <- function(muCond,tauLin){
   uniroot(function(x) {muMarg_to_muCond(x,tauLin=tauLin)-muCond},
           c(1e-6,1-1e-6),
           tol=100*.Machine$double.eps)$root
 }
-#
-# muMarg_to_muCond(.136,1.1)
-# muCond_to_muMarg(.136,1.1)
-# tau_to_tauLin(.11,.13)
+
+func <- function(tLin, tauLin, muCondLin){
+  stats::dnorm(tLin,0,tauLin) * invlogit(muCondLin + tLin) ## normal error on linear predictor
+}
+muCond_to_muMarg <- function(muCond, tauLin){
+  muCondLin <- logit(muCond)
+  out <- if (tauLin<1e-5) { invlogit(muCondLin) } else {
+    integrate(func, -Inf, Inf, tauLin=tauLin, muCondLin=muCondLin )
+  }
+  return(out$value)
+}
+muMarg_to_muCond <- function(muMarg,tauLin){
+  uniroot(function(x,muMarg,tauLin) {muCond_to_muMarg(x,tauLin=tauLin)-muMarg},
+          c(1e-6,1-1e-6),
+          muMarg=muMarg, tauLin=tauLin,
+          tol=5*.Machine$double.eps)$root
+}
+
+
 #
 # x <- seq(0,1,length.out=1001)
 # plot(x, tau_to_tauLin(x,mu=.13), type="l")
