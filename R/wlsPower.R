@@ -251,7 +251,7 @@ wlsPower <- function( Cl            = NULL,
     stop("Both target power and individuals per cluster not NULL. ",
          "Either N or Power must be NULL.")
 
-  if(is.null(sigma) & family=="gaussian")
+  if(is.null(sigma) & family=="gaussian" & is.null(CovMat))
     stop("For gaussian distribution, sigma must be provided.")
 
   if(!is.null(sigma) & family=="binomial")
@@ -315,8 +315,8 @@ wlsPower <- function( Cl            = NULL,
       stop("Correlation matrix defined by alpha_0_1_2 is not positve definite.",
            "\nThe following must hold:   alpha1 < alpha0 + alpha2")
   }else if (UseCovMat){
-    if(min(eigen(CovMat)$values) > 0)
-      stop("Covariance matrix is not positive definite")
+    # if(min(eigen(CovMat)$values) > 0)
+      # stop("Covariance matrix is not positive definite")
   }
 
 
