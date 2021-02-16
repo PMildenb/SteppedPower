@@ -74,16 +74,10 @@ sdLin_invlogit   <- function(sdLin,mu){sdLin/logit.deriv(mu)}
 sd_to_logit      <- function(sd,mu){sd * logit.deriv(mu)}
 logit    <- function(p) log(p/(1-p))
 invlogit <- function(x) 1/(1+exp(-x))
-
-
-muCond_to_muMarg <- function(muCond,tauLin){
-  uniroot(function(x) {muMarg_to_muCond(x,tauLin=tauLin)-muCond},
-          c(1e-6,1-1e-6),
-          tol=100*.Machine$double.eps)$root
-}
+invlogit.deriv <- function(x) exp(-x)/(1+exp(-x))^2
 
 func <- function(tLin, tauLin, muCondLin){
-  stats::dnorm(tLin,0,tauLin) * invlogit(muCondLin + tLin) ## normal error on linear predictor
+  stats::dnorm(tLin,0,tauLin) * invlogit(muCondLin + tLin)
 }
 muCond_to_muMarg <- function(muCond, tauLin){
   muCondLin <- logit(muCond)
