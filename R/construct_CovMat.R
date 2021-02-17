@@ -227,7 +227,7 @@ construct_CovMat <- function(SumCl      = NULL,
                         MoreArgs = list(AR  = AR,
                                         rho = rho),
                         SIMPLIFY = FALSE)
-      CovMat       <- Matrix::bdiag(CovBlks)
+      CovMat       <- SteppedPower:::bdiag_m(CovBlks)
       diag(CovMat) <- Matrix::diag(CovMat) + as.numeric(t(gammaMat))^2
 
     }else{
