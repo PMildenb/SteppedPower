@@ -29,3 +29,29 @@ numeric, variance of the estimator for treatment effect
 From Kasza et al "Sample size and power calculations for open cohort
 longitudinal cluster rondomized trials" 2020
 }
+\examples{
+##  test setting, from Hussey&Hughes 2007  ####
+trtMat <- construct_DesMat(c(6,6,6,6))$trtMat
+tau <- .025 ; sigma <- sqrt(.041*.959) ; N <- 100 ;
+gamma <- 0.01 ; psi <- .1 ; chi <- .7
+
+tmp <- VarClosed_Kasza(trtMat, tau=tau, sigma=sigma, gamma=0, psi=0, N=N, chi=0)
+tTestPwr((.05-.032), sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=.05, mu1=.032, verbose=0,
+        sigma=sigma, gamma=0, tau=tau, psi=0)
+
+tmp <- VarClosed_Kasza(trtMat, tau=tau, sigma=sigma, gamma=gamma, psi=psi, N=N, chi=0)
+tTestPwr((.05-.032), sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=.05, mu1=.032, verbose=0,
+        sigma=sigma, gamma=gamma, tau=tau, psi=psi)
+
+tmp <- VarClosed_Kasza(trtMat, tau=tau, sigma=sigma, gamma=gamma, psi=psi, N=N, chi=1)
+tTestPwr((.05-.032), sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=.05, mu1=.032, verbose=0,
+         sigma=sigma, gamma=sqrt(gamma^2+psi^2/N), tau=tau, psi=0)
+
+tmp <- VarClosed_Kasza(trtMat, tau=tau, sigma=sigma, gamma=gamma, psi=psi, N=N, chi=chi)
+tTestPwr((.05-.032), sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=.05, mu1=.032, verbose=0,
+         sigma=sigma, gamma=sqrt(gamma^2+chi*psi^2/N), tau=tau, psi=sqrt(1-chi)*psi)
+}
