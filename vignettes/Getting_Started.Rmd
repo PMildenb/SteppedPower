@@ -57,16 +57,16 @@ A common approach to model the correlation in
 longitudinal studies are random effects.[@hussey2007design; @li2020mixed]
 Such a model has the form
 
-$$y_{ijk}= \mu_0 + \alpha_i + T_{ij} \theta + b_j + e_{ijk}$$ 
+$$y_{ijk}= \mu_0 + \pi_i + T_{ij} \theta + c_j + e_{ijk}$$ 
 
 with
 
 * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
 * $\mu_0$ a overall mean (under control)
-* $\alpha_i$ the time trend at time $i$
+* $\pi_i$ the time trend at time $i$
 * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
 * $\theta$ the treatment effect 
-* $b_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
+* $c_j$ a random cluster effect for cluster $j$ with $b_j \sim N(0,\tau^2)$
 * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
 
 For power calculation, the standard deviation of random effects is assumed to be known.
@@ -95,18 +95,16 @@ that corresponds to $\hat\theta$.
 
 Extensions to the above formula implemented in this package are  
 
-* random treatment effect
-* autoregressive cluster effect
-* binomial outcomes with logit-link
 
 with leads to the following extended model formula:
 
-$$y_{ijk}= g\big( \mu + \alpha_i + X (\theta_{ij} + c_j) + b_j + e_{ijk}\big)$$ 
+$$y_{ijk}= \mu_0 + \pi_i + T (\theta_{ij} + d_j) + c_j + t_{ij} + s_{ijk} + e_{ijk}$$ 
 with  
 
-* $g(\cdot)$ a link function
-* $c_j$ a random treatment effect
-* $b_j$ and $c_j$ jointly distributed with $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
+* $d_j$ a random treatment effect
+* $c_j$ and $d_j$ jointly distributed with $\left(\begin{smallmatrix} \tau^2 & \rho\tau\eta \\ \rho\tau\eta & \eta^2\end{smallmatrix}\right)$
+* $s_{ijk}$ a random subject specific effect
+* $t_{ij}$ a random time effect
 
 # A quick tour
 
