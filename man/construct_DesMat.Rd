@@ -63,7 +63,7 @@ This function calls `construct_trtMat` to construct a matrix that indicates
 treatment status for each cluster at each timepoint.
 This is then transformed into the first
 column of the design matrix. `construct_CovMat` further calls
-`construct_timeadjust` to get the fixed effect(s) of the timepoints.
+`construct_timeAdjust` to get the fixed effect(s) of the timepoints.
 
 Note: Unlike the usual notation, the treatment effect is in the first column
 (for easier access by higher level functions).

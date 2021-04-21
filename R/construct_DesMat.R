@@ -7,7 +7,7 @@
 #' treatment status for each cluster at each timepoint.
 #' This is then transformed into the first
 #' column of the design matrix. `construct_CovMat` further calls
-#' `construct_timeadjust` to get the fixed effect(s) of the timepoints.
+#' `construct_timeAdjust` to get the fixed effect(s) of the timepoints.
 #'
 #' Note: Unlike the usual notation, the treatment effect is in the first column
 #' (for easier access by higher level functions).
@@ -66,7 +66,7 @@ construct_DesMat <- function(Cl          = NULL,
                  tmpTrtMat <- trtMat
 
   ## TIME ADJUSTMENT ####
-  timeBlks <- construct_timeadjust(Cl          =tmpCl,
+  timeBlks <- construct_timeAdjust(Cl          =tmpCl,
                                   timepoints   =timepoints,
                                   timeAdjust   =timeAdjust,
                                   period       =period,
@@ -261,7 +261,7 @@ construct_trtMat <- function(Cl,
 #'
 #' @export
 
-construct_timeadjust <- function(Cl,
+construct_timeAdjust <- function(Cl,
                                  timepoints,
                                  timeAdjust = "factor",
                                  period     = NULL,
@@ -279,14 +279,21 @@ construct_timeadjust <- function(Cl,
 
   timeBlks <- switch (timeAdjust,
     factor   = cbind(1,rbind(0,diag(timepoints-1))
-                     )[rep(seq_len(timepoints),SumCl),],
-    none     = matrix(rep(1,timepoints*SumCl)),
+                     )[rep(seq_len(timepoints),SumCl),]
+    ,
+    none     = matrix(rep(1,timepoints*SumCl))
+    ,
     linear   = cbind(rep(1,timepoints*SumCl),
-                     rep(seq_len(timepoints)/timepoints,SumCl)),
+                     rep(seq_len(timepoints)/timepoints,SumCl))
+    ,
     periodic = cbind(rep(1,timepoints),
                      sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period))
                      )[rep(seq_len(timepoints),SumCl),]
+    ,
+    quadratic= cbind(rep(1,timepoints*SumCl),
+                     rep(seq_len(timepoints)/timepoints,SumCl),
+                     rep(seq_len(timepoints)/timepoints,SumCl)^2)
   )
 
   return(timeBlks)

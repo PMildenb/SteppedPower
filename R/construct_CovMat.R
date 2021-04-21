@@ -188,11 +188,11 @@ construct_CovMat <- function(SumCl      = NULL,
       sigmaMat <- sigmaMat / sqrt(NMat)
     }
     ## sigma transformed to list ##
-    sigmaLst <- split(sigmaMat,row(sigmaMat))
+    sigmaLst <- split(sigmaMat,1:nrow(sigmaMat))
 
     ## tau (input can be scalar, vector or matrix) ##
     tauMat <- input_to_Mat(tau, SumCl, timepoints)
-    tauLst <- split(tauMat, row(tauMat))
+    tauLst <- split(tauMat, 1:nrow(tauMat))
 
     ## eta (input can be scalar or matrix, is passed as list of vectors) ##
     if(!is.null(eta)) {
@@ -206,7 +206,7 @@ construct_CovMat <- function(SumCl      = NULL,
         etaMat <- trtMat * eta
       }else stop("If argument eta is a scalar, ",
                  "argument trtMat needs to be provided")
-      etaLst <- split(etaMat, row(etaMat))
+      etaLst <- split(etaMat, 1:nrow(etaMat))
     }else
       etaLst <- vector("list", length=SumCl)
 
@@ -216,7 +216,7 @@ construct_CovMat <- function(SumCl      = NULL,
     ## gamma (input can be scalar or matrix, is passed as list of vectors) ##
     if(is.null(gamma)) gamma <- 0
     gammaMat <- input_to_Mat(gamma, SumCl, timepoints)
-    gammaLst <- split(gammaMat, row(gammaMat))
+    gammaLst <- split(gammaMat, 1:nrow(gammaMat))
 
 
     if(cross_sectional & !INDIV_LVL){
@@ -234,11 +234,11 @@ construct_CovMat <- function(SumCl      = NULL,
       NMat <- input_to_Mat(N,
                            SumCl = SumCl,
                            tp    = ifelse(is.null(psi), timepoints, 1))
-      NLst <- split(NMat, row(NMat))
+      NLst <- split(NMat, 1:nrow(NMat))
 
       if(is.null(psi)) psi <- 0
       psiMat <- input_to_Mat(psi, SumCl, timepoints)
-      psiLst <- split(psiMat, row(psiMat))
+      psiLst <- split(psiMat, 1:nrow(psiMat))
 
       CovBlks <- mapply(construct_CovSubMat,
                         sigma = sigmaLst,
