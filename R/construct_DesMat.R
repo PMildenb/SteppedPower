@@ -150,8 +150,6 @@ plot.DesMat <- function(x, ...){
                                                          autorange="reversed"))
 }
 
-
-
 #' @title Construct Treatment Matrix
 #'
 #' @description
@@ -256,7 +254,7 @@ construct_trtMat <- function(Cl,
 #'
 #' @inheritParams construct_DesMat
 #'
-#' @return a matrix with one row for every cluster at every timepoint and columns
+#' @return a matrix with one row for every cluster at every timepoint and number of columns
 #' depending of adjustment type.
 #'
 #' @export

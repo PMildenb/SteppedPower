@@ -40,7 +40,7 @@ crossover designs. Further design types can be
 easily defined by the user.  
 
 Currently, normal outcomes and binomial outcomes with 
-logit link are implemented. 
+indentity link are implemented. 
 The following random effects can be specified:
 random cluster intercept, random treatment effect, 
 random subject specific intercept and random time effect.
@@ -112,24 +112,39 @@ with
 ## Specification of the correlation structure
 
 
-The variances of the random effects define a correlation structure
+<!-- The variances of the random effects define a correlation structure -->
 
 
-Besides to the random effect specification
+<!-- Besides to the random effect specification -->
 
-$\left(\operatorname{corr}\left(y_{i j k}, y_{i j k^{\prime}}\right)=\alpha_{0} \text { for } k \neq k^{\prime}\right)$ 
+<!-- $\left(\operatorname{corr}\left(y_{i j k}, y_{i j k^{\prime}}\right)=\alpha_{0} \text { for } k \neq k^{\prime}\right)$  -->
 
-$\left(\operatorname{corr}\left(y_{i j k}, y_{i j^{\prime} k^{\prime}}\right)=\alpha_{1}\right. \text{ for } j \neq j^{\prime} \text{ for } k \neq k^{\prime}$ 
+<!-- $\left(\operatorname{corr}\left(y_{i j k}, y_{i j^{\prime} k^{\prime}}\right)=\alpha_{1}\right. \text{ for } j \neq j^{\prime} \text{ for } k \neq k^{\prime}$  -->
 
-$\left(\operatorname{corr}\left(y_{i j k}, y_{i j^{\prime} k}\right)=\alpha_{2} \text { for } j \neq j^{\prime}\right)$
+<!-- $\left(\operatorname{corr}\left(y_{i j k}, y_{i j^{\prime} k}\right)=\alpha_{2} \text { for } j \neq j^{\prime}\right)$ -->
 
-$$\begin{align}
-\sigma_M^2 &:= \tau^2+\gamma^2 + \psi^2 + \sigma^2   \\
-\alpha_0 &:= \frac{\tau^2 + \gamma^2}{\sigma_M^2}  \\
-\alpha_1 &:= \frac{\tau^2}{\sigma_M^2} \\
-\alpha_2 &:= \frac{\tau^2 + \psi^2}{\sigma_M^2}
-\end{align}$$
+<!-- $$\begin{align} -->
+<!-- \sigma_M^2 &:= \tau^2+\gamma^2 + \psi^2 + \sigma^2   \\ -->
+<!-- \alpha_0 &:= \frac{\tau^2 + \gamma^2}{\sigma_M^2}  \\ -->
+<!-- \alpha_1 &:= \frac{\tau^2}{\sigma_M^2} \\ -->
+<!-- \alpha_2 &:= \frac{\tau^2 + \psi^2}{\sigma_M^2} -->
+<!-- \end{align}$$ -->
 
+A different approach to establish a covariance structure is to directly assume cluster cell correlation as proposed by \cite{Preisser2003integrated} and introduced to the context of stepped wedge designs in \cite{li2018sample}. They use $\boldsymbol{\alpha}:=(\alpha_0, \alpha_1, \alpha_2)$ where 
+		$\alpha_0:=\operatorname{corr}({y_{ijk},y_{ijk'}})$ for $ k\neq k'$ defines the within-period correlation; $\alpha_1:=\operatorname{corr}({y_{ijk},y_{ij'k'}})$ for $j\neq j', \, k\neq k'$ defines the inter-period correlation and $\alpha_0:=\operatorname{corr}({y_{ijk},y_{ij'k}})$ for $ j\neq j'$ defines the within-individual correlation.
+		
+One receives an easily interpretable correlation matrix, albeit at the cost of some flexibility. We can translate $\boldsymbol{\alpha}$ into a representation with random effects, given a marginal variance $\sigma^2_{\text{marg}}$.
+		
+$$
+	\begin{align*}
+		\tau^2   		&:= {\sigma^2_{\text{marg}} \alpha_1} \\
+		\gamma^2 		&:= {\sigma^2_{\text{marg}} (\alpha_0-\alpha_1)} \\
+		\psi^2   	 	&:= {\sigma^2_{\text{marg}} (\alpha_2-\alpha_2)} \\
+		\sigma^2_{\text{res}} 	&:= {\sigma^2_{\text{marg}} (1-\alpha_0 - \alpha_2 + \alpha_1)}
+	\end{align*}
+$$ 
+
+Note that $\boldsymbol{\alpha}$ as defined above cannot specify a random treatment effect.
 
 
 # A quick tour
@@ -218,7 +233,7 @@ wlsPower(Cl=c(1,1), mu0=0,mu1=1.2, sigma=1, tau=0, N=10,
 pwr::pwr.norm.test(.3,n=20)$power
 ```
 
->A quick Note on t-tests: It is much more challenging to use `SteppedPower` 
+>A quick note on t-tests: It is much more challenging to use `SteppedPower` 
 to reproduce settings in which the variance is assumed to be unknown, 
 most prominently the well known t-test.
 In this package, you find implemented some (experimental) heuristics 
@@ -248,11 +263,14 @@ the `Cl` argument, i.e. `Cl=c(4,4,4,0)`.
 ```{r, warning=FALSE}
 mod1 <- wlsPower(Cl=c(1,1,1,0), mu0=0, mu1=1, 
                  sigma=0.4, tau=0, verbose=2)
+```
 
+The treatment matrix then is
+```{r, echo=FALSE}
 knitr::kable(mod1$DesignMatrix$trtMat)
 ```
 
-## Autocorrelated cluster effects
+## Autocorrelated random effects
 
 In longitudinal studies, it can be sensible to assume that correlation within 
 clusters decreases with increasing time lag.
@@ -260,6 +278,11 @@ The argument `AR` enables the user to specify a AR-1 correlation. `AR`
 must be any value between `0` and `1`. 
 The former corresponds to i.i.d. observations, 
 the latter to the usual compound symmetry covariance type.  
+
+Optionally, you can pass a vector of up to length three to `AR`. Then, the first element 
+applies to the cluster intercept, the second to the treatment effect (i.e. slope)
+and the third to the subject specific intercept. This is especially useful for 
+open cohort designs (see below).
 
 An example of a stepped wedge design with 8 clusters in 4 waves, 
 once with medium autocorrelation (`AR=0.6`) and 
@@ -285,6 +308,7 @@ For `AR=0.95` it takes the following shape
 suppressWarnings(knitr::kable(as.matrix(mod3$CovarianceMatrix[1:5,1:5])))
 rm(mod1,mod2,mod3)
 ```
+
 
 ## Unequal cluster sizes
 
@@ -420,26 +444,145 @@ random subject (or subcluster) specific intercept.
   
 The power is calculated on aggregated cluster means:
 ```{r}
-Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
-                      N=3, verbose=2)
-a <- plot(Closed1$DesignMatrix)
+Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
+                    sigma=5, tau=1, psi=3,
+                    N=3, verbose=2)
+# plot(Closed1)
 ```
 
-With`INIDV_LVL=TRUE`, the calculation is done on the individual level. 
-This yields the same results but is far more comutationally expensive and is 
+With `INIDV_LVL=TRUE`, the calculation is done on the individual level. 
+This yields the same results but is far more computationally expensive and is 
 mainly intended for diagnostic purposes.
 
 ```{r}
-Closed2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), sigma=5, tau=1, psi=2, gamma=1,
-                      N=3, verbose=2, INDIV_LVL = TRUE)
+Closed2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
+                    sigma=5, tau=1, psi=3,
+                    N=3, verbose=2, INDIV_LVL = TRUE)
 plot(Closed2)
+```
+
+```{r}
+Closed1$Power - Closed2$Power
+```
+
+
+## Open cohort designs 
+
+The `AR` argument mentioned above specifies the autocorrelation of random effects.
+It offers a convenient way to model open cohort designs. The third element of `AR` 
+can be seen as the estimated probability that a subject included in period $j$ 
+is also included in period $j+1$. 
+
+Expanding on the closed cohort example above, one could assume that subjects 
+have a 75% chance to reappear in the next study period. 
+```{r}
+Open1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
+                  sigma=5, tau=1, psi=3, AR=c(1,1,.75),
+                  N=3, verbose=2)
+
+Closed1$Power
+Open1$Power
+```
+So this would result in a power loss of roughly 
+`r round( Closed1$Power - Open1$Power,3)*100`% 
+compared to a closed cohort design in this case. 
+
+### Covariance structure for open cohort designs
+
+This proposed covariance structure is then a mixture of exchangeable (on cluster level) 
+and autoregressive (on individual level). Let's have a look on a toy example with
+three cluster, each consisting of three individuals. The covariance matrix could
+be visualised as follows:
+
+```{r}
+Open2Indiv <- wlsPower(mu0=0, mu1=10, Cl=c(1,1,1,0), 
+                       sigma=1, tau=5, psi=10, AR=c(1,1,.65),
+                       N=3, verbose=2, INDIV_LVL=TRUE)
+
+covar <- as.matrix(Open2Indiv$CovarianceMatrix)
+seqLength <- seq_len(dim(covar)[1])
+p <- plotly::plot_ly(type="heatmap", colors=c("white","steelblue"),
+             x=~seqLength, y=~seqLength, z=~covar, xgap=1, ygap=1, showscale=FALSE)
+plotly::layout(p,
+               xaxis=list(title="", visible=FALSE),
+               yaxis=list(title="", visible=FALSE, autorange="reversed") )
+```
+
+
+## Reproducing common closed formulae
+
+
+There exist some formulae that do not need explicitly construct design and 
+covariance matices, most notably [@kasza2020sample] and [@li2020design]. 
+Both include the one presented in [@hussey2007design] as a special case.
+
+These formulae are also implemented in `SteppedPower`. 
+As a showcase, here is an example that is loosely based 
+on [@hussey2007design]:
+
+```{r}
+trtMat <- construct_DesMat(c(6,6,6,6))$trtMat
+mu0 <- 0.05 ; mu1 <- 0.032 ; N <- 100 
+
+tau <- .025 ; sigma <- sqrt(.041*.959) 
+gamma <- 0.01 ; psi <- .1 ; chi <- .5 ; AR <- .5
+```
+
+### Closed formula for proportional decay stucture
+
+`VarClosed_Li` computes the treatment variance for stepped wedge designs with a 
+autoregressive (syn. proportional decay) structure. It can be used to compute 
+a variance for the treatment effect and thus the power for the setting in question:
+
+```{r}
+tmp <- VarClosed_Li(trtMat, tau=tau, psi=psi, N=N, AR=AR)
+tTestPwr(mu0-mu1, se=sqrt(tmp), df=Inf)
+```
+
+Explicit calculation yields the same:
+```{r}
+a <- SteppedPower::wlsPower(Cl=rep(6,4), mu0=mu0, mu1=mu1, AR=AR,
+                       sigma=0, tau=tau, N=N, psi=psi, verbose=2, INDIV_LVL = TRUE)
+```
+
+
+### Closed formula for open cohort designs 
+
+Kasza et al. offer an extension to open cohort designs by the use of an attrition 
+or churn rate `chi`. It can be understood as the estimated probability 
+that a subject included in period $j$ 
+is also included in period $j'$ for $j\ne j'$. Note that this differs from the
+approach mentioned above, as it results in a mixture of exchangeable covariance matrices.
+
+Since it differs from the way `SteppedPower` intents to model open cohort designs, 
+it requires a bit of tinkering to reproduce the results of the closed formula with 
+this package. It can be done with the help of the random time effect (`gamma`).
+
+```{r}
+tmp <- VarClosed_Kasza(trtMat, sigma=sigma, tau=tau, gamma=gamma, psi=psi, N=N, chi=0)
+tTestPwr(mu0-mu1, se=sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=mu0, mu1=mu1, verbose=0,
+         sigma=sigma, tau=tau, gamma=gamma, psi=psi)
+
+tmp <- VarClosed_Kasza(trtMat, sigma=sigma, tau=tau, gamma=gamma, psi=psi, N=N, chi=1)
+tTestPwr(mu0-mu1, sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=mu0, mu1=mu1, verbose=0,
+         sigma=sigma, tau=tau, 
+         gamma=sqrt(gamma^2+psi^2/N), psi=0)
+
+tmp <- VarClosed_Kasza(trtMat, sigma=sigma, tau=tau, gamma=gamma, psi=psi, N=N, chi=chi)
+tTestPwr(mu0-mu1, sqrt(tmp), df = Inf)
+wlsPower(Cl = rep(6,4), N=N, mu0=mu0, mu1=mu1, verbose=0,
+         sigma=sigma, tau=tau, 
+         gamma=sqrt(gamma^2+chi*psi^2/N), psi=sqrt(1-chi)*psi)
 ```
 
 
 # Session Info {-}
 
-```{r}
-sessionInfo()
+```{r, echo=FALSE}
+si <- sessionInfo()
+print(si,locale=FALSE)
 ```
 
 # References {-}

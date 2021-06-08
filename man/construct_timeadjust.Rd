@@ -31,7 +31,7 @@ the time adjustment in one cluster.
 Is repeated for every cluster.}
 }
 \value{
-a matrix with one row for every cluster at every timepoint and columns
+a matrix with one row for every cluster at every timepoint and number of columns
 depending of adjustment type.
 }
 \description{
