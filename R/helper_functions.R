@@ -143,7 +143,7 @@ RandEff_to_icc <- function(sigResid, tau, gamma=0){
 }
 
 
-#' Correlation structure: transform alpha to random effects
+#' Correlation structure: transform random effects to alpha
 #'
 #' @param sigResid Residual standard deviation on individual leve
 #' @param tau standard deviation of random cluster intercept
