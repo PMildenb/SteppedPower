@@ -644,41 +644,52 @@ print.wlsPower <- function(x, ...){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x,...){
+plot.wlsPower <- function(x, which=1, ...){
 
-  wgt <- x$ProjMatrix
-  mx  <- max(abs(wgt))
-  sumCl <- dim(wgt)[1]
-  timep <- dim(wgt)[2]
+  WgtPlot <- if (1 %in% which){
+    wgt <- x$ProjMatrix
+    mx  <- max(abs(wgt))
+    sumCl <- dim(wgt)[1]
+    timep <- dim(wgt)[2]
 
-  subp <- suppressWarnings(
-    subplot(
-      plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
-                              weight = colSums(abs(wgt))),
-              type="bar", x=~time, y=~weight, color=I("grey")) %>%
-        layout(yaxis=list(title="Sum|weights|"),
-               xaxis=list(title="", showticklabels=FALSE))
-      ,
-      plotly_empty(type="scatter",mode="marker")
-      ,
-      plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
-              colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-              xgap=.3, ygap=.3, name=" ",
-              hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
-        colorbar(len=1,limits=c(-mx,mx)) %>%
-        layout(xaxis=list(title="time"),
-               yaxis=list(title="cluster", autorange="reversed"))
-      ,
-      plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
-                              weight=rowSums(abs(wgt))),
-              type="bar", orientation="h",
-              y=~cluster, x=~weight, color=I("grey")) %>%
-        layout(xaxis=list(title="Sum|weights|"),
-               yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
-      ,
-      nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-    ) %>% layout(showlegend=FALSE)
-  )
-  return(subp)
+    suppressWarnings(
+      subplot(
+        plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+                                weight = colSums(abs(wgt))),
+                type="bar", x=~time, y=~weight, color=I("grey")) %>%
+          layout(yaxis=list(title="Sum|weights|"),
+                 xaxis=list(title="", showticklabels=FALSE))
+        ,
+        plotly_empty(type="scatter",mode="marker")
+        ,
+        plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
+                colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+                xgap=.3, ygap=.3, name=" ",
+                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
+          colorbar(len=1,limits=c(-mx,mx)) %>%
+          layout(xaxis=list(title="time"),
+                 yaxis=list(title="cluster", autorange="reversed"))
+        ,
+        plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+                                weight=rowSums(abs(wgt))),
+                type="bar", orientation="h",
+                y=~cluster, x=~weight, color=I("grey")) %>%
+          layout(xaxis=list(title="Sum|weights|"),
+                 yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+        ,
+        nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+      ) %>% layout(showlegend=FALSE)
+    )
+  } else NULL
+
+  DMplot <- if (2 %in% which){
+    plot(x$DesignMatrix)
+  } else NULL
+
+  CMplot <- if (3 %in% which){
+    plot_CovMat(x$CovarianceMatrix)
+  } else NULL
+
+  return(list(WgtPlot,DMplot,CMplot))
 }
 
