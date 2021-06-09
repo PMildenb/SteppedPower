@@ -271,9 +271,12 @@ plot_CovMat <- function(CovMat){
 
   CovMat <- as.matrix(CovMat)
   seqLength <- seq_len(dim(CovMat)[1])
-  p <- plotly::plot_ly(type="heatmap", colors=c("white","steelblue"),
-                       x=~seqLength, y=~seqLength, z=~CovMat, xgap=1, ygap=1, showscale=FALSE)
-  plotly::layout(p,
-                 xaxis=list(title="", visible=FALSE),
-                 yaxis=list(title="", visible=FALSE, autorange="reversed") )
+
+  plot_ly(type="heatmap", colors=c("white","steelblue"),
+          x=~seqLength, y=~seqLength, z=~CovMat,
+          xgap=1, ygap=1) %>%
+    layout(xaxis=list(title="", visible=FALSE),
+           yaxis=list(title="", visible=FALSE, autorange="reversed") ) %>%
+    colorbar(len=1, title="")
 }
+
