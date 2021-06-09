@@ -27,6 +27,7 @@ knitr::opts_chunk$set(
 library(knitr)
 library(SteppedPower)
 library(Matrix)
+library(plotly)
 ```
 
 # About `SteppedPower`
@@ -176,7 +177,12 @@ to a block diagonal matrix.
 
 ## Plot Method
 
-In the weighted least squares setting, 
+The `plot.wlsPower` method makes up to three plots, visualising the influence 
+of cluster-periods, the treatment matrix $T$ and the covariance matrix 
+(selectable by `which=`). 
+
+By default, only the first plot is returned. It is constructed by exploiting the 
+approximation to a weighted least squares setting. Therefore, 
 the estimator $\hat \beta$ is a linear function of the data $y$
 
 $$\hat\beta = \underbrace{(X'\Omega^{-1}X)^{-1}(X'\Omega^{-1})}_{=:\text{M}}\cdot y$$
@@ -198,8 +204,9 @@ $\hat\theta$, but not for $\text{Var}(\hat\theta)$ !
 
 ```{r}
 wlsPwr <- wlsPower(Cl=c(3,2,3), mu0=0, mu1=1, sigma=1, tau=.5, verbose=2)
-plot(wlsPwr)
+plot(wlsPwr)[[1]] # (Accessing the first list element is needed to trigger plotting in an rmarkdown-environment) 
 ```
+
 
 ## Find Sample Size for given Power
 
@@ -323,7 +330,7 @@ The argument `N` defines the cluster size. `N` can be
 ```{r}
 mod4 <- wlsPower(Cl=c(1,1,1), mu0=0, mu1=1, N=c(1,3,10), 
                  sigma=1, tau=.5, verbose=2)
-plot(mod4)
+plot(mod4)[[1]]
 ```
 
 ```{r, echo=FALSE}
@@ -395,7 +402,7 @@ clusters have a weight of exactly zero at the timepoints
 where they are not observed
 
 ```{r}
-plot(incompletePwr)
+plot(incompletePwr)[[1]]
 ```
 
 
@@ -447,7 +454,6 @@ The power is calculated on aggregated cluster means:
 Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
                     sigma=5, tau=1, psi=3,
                     N=3, verbose=2)
-# plot(Closed1)
 ```
 
 With `INIDV_LVL=TRUE`, the calculation is done on the individual level. 
@@ -458,7 +464,7 @@ mainly intended for diagnostic purposes.
 Closed2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
                     sigma=5, tau=1, psi=3,
                     N=3, verbose=2, INDIV_LVL = TRUE)
-plot(Closed2)
+plot(Closed2)[[1]]
 ```
 
 ```{r}
@@ -490,24 +496,22 @@ compared to a closed cohort design in this case.
 ### Covariance structure for open cohort designs
 
 This proposed covariance structure is then a mixture of exchangeable (on cluster level) 
-and autoregressive (on individual level). Let's have a look on a toy example with
-three cluster, each consisting of three individuals. The covariance matrix could
-be visualised as follows:
+and autoregressive (on subject level). Let's have a look at a toy example with
+three clusters, each consisting of three subjects. The probability that an 
+individual reappears in two consecutive periods is estimated to be 60%. 
+The covariance matrix (on subject level) could be visualised as follows:
 
 ```{r}
 Open2Indiv <- wlsPower(mu0=0, mu1=10, Cl=c(1,1,1,0), 
-                       sigma=1, tau=5, psi=10, AR=c(1,1,.65),
+                       sigma=1, tau=5, psi=10, AR=c(1,1,.60),
                        N=3, verbose=2, INDIV_LVL=TRUE)
 
-covar <- as.matrix(Open2Indiv$CovarianceMatrix)
-seqLength <- seq_len(dim(covar)[1])
-p <- plotly::plot_ly(type="heatmap", colors=c("white","steelblue"),
-             x=~seqLength, y=~seqLength, z=~covar, xgap=1, ygap=1, showscale=FALSE)
-plotly::layout(p,
-               xaxis=list(title="", visible=FALSE),
-               yaxis=list(title="", visible=FALSE, autorange="reversed") )
+plot(Open2Indiv, which=3)[[1]]
 ```
 
+Note that you can zoom to get a better look at the structure. The autoregressive 
+structure on the subject level in the small boxes along the main diagonal and the 
+block exchangeable structure on cluster level becomes evident.
 
 ## Reproducing common closed formulae
 
@@ -581,8 +585,7 @@ wlsPower(Cl = rep(6,4), N=N, mu0=mu0, mu1=mu1, verbose=0,
 # Session Info {-}
 
 ```{r, echo=FALSE}
-si <- sessionInfo()
-print(si,locale=FALSE)
+print(sessionInfo(),locale=FALSE)
 ```
 
 # References {-}
