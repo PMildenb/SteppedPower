@@ -47,7 +47,7 @@ random cluster intercept, random treatment effect,
 random subject specific intercept and random time effect.
 The covariance structure can be compound symmetry or autoregressive.
 
-This code is modularised in order to be flexible and easy to use 
+This package is modularised in order to be flexible and easy to use 
 (and hopefully to maintain as well). 
 At the same time, the use of sparse matrix classes of the `matrix` 
 package makes computation of large designs feasible. 
@@ -63,7 +63,7 @@ $$y_{ijk}= \mu_0 + \pi_i + T_{ij} \theta + c_j + e_{ijk}$$
 with
 
 * $y_{ijk}$ the response in cluster $j$ at time $i$ for individual $k$
-* $\mu_0$ a overall mean (under control)
+* $\mu_0$ an overall mean (under control)
 * $\pi_i$ the time trend at time $i$
 * $T_{ij}$ indicates the treatment status (0 = control, 1 = interventional treatment)
 * $\theta$ the treatment effect 
@@ -483,8 +483,7 @@ Expanding on the closed cohort example above, one could assume that subjects
 have a 75% chance to reappear in the next study period. 
 ```{r}
 Open1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
-                  sigma=5, tau=1, psi=3, AR=c(1,1,.75),
-                  N=3, verbose=2)
+                  sigma=5, tau=1, psi=3, AR=c(1,1,.75), N=3)
 
 Closed1$Power
 Open1$Power

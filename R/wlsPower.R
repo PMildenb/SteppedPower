@@ -576,7 +576,7 @@ compute_wlsPower <- function(DesMat,
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
   if(verbose==0){
-    out <- c(Pwr)
+    out <- Pwr
   } else {
     out <- list(Power  =Pwr,
                 Params =list(Cl         = DesMat$Cl,

@@ -115,7 +115,7 @@ dsn_out <- switch (x$dsntype,
   message("Timepoints                         = ", x$timepoints,"\n",
           "Number of clusters per seqence     = ", paste(x$Cl, collapse= ", "))
   if(!is.null(x$N)){
-  message("Number of subclusters per cluster  = ", x$N)
+  message("Number of subclusters per cluster  = ", paste(x$N, collapse=", "))
   }
   message("Design type                        = ", dsn_out,"\n",
           "Time adjustment                    = ", x$timeAdjust, "\n",
