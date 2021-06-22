@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{compute_wlsPower}
 \alias{compute_wlsPower}
-\title{Compute Power via weighted least squares}
+\title{Compute power via weighted least squares}
 \usage{
 compute_wlsPower(
   DesMat,

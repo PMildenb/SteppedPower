@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{RandEff_to_alpha012}
 \alias{RandEff_to_alpha012}
-\title{Correlation structure: transform alpha to random effects}
+\title{Correlation structure: transform random effects to alpha}
 \usage{
 RandEff_to_alpha012(sigResid, tau, gamma, psi)
 }
@@ -21,7 +21,7 @@ a list containing four named elements (possibly matrices):
 denotes the marginal standard deviation
 }
 \description{
-Correlation structure: transform alpha to random effects
+Correlation structure: transform random effects to alpha
 }
 \examples{
 RandEff_to_alpha012(sigResid=sqrt(11), tau=4, gamma=3, psi=2)

@@ -63,10 +63,10 @@
 #' Defaults to 1 if not passed.
 #' @param family character, distribution family. One of "gaussian", "binomial".
 #' Defaults to "gaussian"
-#' @param Power numeric, a specified target power.
+#' @param power numeric, a specified target power.
 #' If supplied, the minimal `N` is returned.
 #' @param N_range numeric, vector specifying the lower and upper bound for `N`,
-#' ignored if `Power` is NULL.
+#' ignored if `power` is NULL.
 #' @param sig.level numeric (scalar), significance level, defaults to 0.05
 #' @param dfAdjust character, one of the following: "none","between-within",
 #' "containment", "residual".
@@ -160,11 +160,11 @@
 #'## stepped wedge design with 5 Clusters in 5 sequences, residual sd = 2,
 #'## cluster effect sd = 0.33. How many Individuals are needed to achieve a
 #'## power of 80% ?
-#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, power=.8)
 #'##
 #'## ... How many are needed if we have a closed cohort design with a random
 #'## individuum effect of .7?
-#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
+#' wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, power=.8)
 #'##
 #'##
 #'## longitudinal parallel design, with 5 time periods, 3 clusters in treatment
@@ -223,7 +223,7 @@ wlsPower <- function( Cl            = NULL,
                       alpha_0_1_2   = NULL,
                       CovMat        = NULL,
                       N             = NULL,
-                      Power         = NULL,
+                      power         = NULL,
                       family        = "gaussian",
                       N_range       = c(1,1000),
                       sig.level     = 0.05,
@@ -247,9 +247,9 @@ wlsPower <- function( Cl            = NULL,
   }
 
   ## CHECKS #####
-  if(!is.null(N) & !is.null(Power))
+  if(!is.null(N) & !is.null(power))
     stop("Both target power and individuals per cluster not NULL. ",
-         "Either N or Power must be NULL.")
+         "Either N or power must be NULL.")
 
   if(is.null(sigma) & family=="gaussian" & is.null(CovMat))
     stop("For gaussian distribution, sigma must be provided.")
@@ -296,7 +296,7 @@ wlsPower <- function( Cl            = NULL,
               " are assumed to be 0, i.e. the observations across clusters are",
               " assumed to be i.i.d. Declare tau=0 to supress this warning.")
     }
-    if(!is.null(psi) & is.null(Power)){
+    if(!is.null(psi) & is.null(power)){
       if(is.null(N))
         stop("If the standard deviation `psi` is not null, N is needed.")
       if(is.matrix(N)){
@@ -442,10 +442,10 @@ wlsPower <- function( Cl            = NULL,
   }
 
   ## calculate samplesize (if needed, i.e. if power is not NULL ) #####
-  if(!is.null(Power)){
-    if(Power<0 | Power>1) stop("Power needs to be between 0 and 1.")
+  if(!is.null(power)){
+    if(power<0 | power>1) stop("power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(
-              uniroot(function(N){Power - compute_wlsPower(DesMat    = DesMat,
+              uniroot(function(N){power - compute_wlsPower(DesMat    = DesMat,
                                                            EffSize   = EffSize,
                                                            sigma     = sigma,
                                                            tau       = tau,
@@ -462,7 +462,7 @@ wlsPower <- function( Cl            = NULL,
                                                            verbose   = 0)},
                 interval=N_range)$root),
               error=function(cond){
-                message(paste0("Maximal N yields power below ",Power,
+                message(paste0("Maximal N yields power below ",power,
                                ". Increase argument N_range."))
                 return(N_range[2])
               })
@@ -484,7 +484,7 @@ wlsPower <- function( Cl            = NULL,
                           CovMat    = CovMat,
                           INDIV_LVL = INDIV_LVL,
                           verbose   = verbose)
-  if(!is.null(Power)) out$N_opt <- N_opt
+  if(!is.null(power)) out$N_opt <- N_opt
 
   if(verbose>0) {
     out$Params <- append(out$Params,
@@ -498,7 +498,7 @@ wlsPower <- function( Cl            = NULL,
   return(out)
 }
 
-#' @title Compute Power via weighted least squares
+#' @title Compute power via weighted least squares
 #'
 #' @description
 #' This function is not intended to be used directly, but rather to be called
@@ -576,9 +576,9 @@ compute_wlsPower <- function(DesMat,
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
   if(verbose==0){
-    out <- c(Pwr)
+    out <- Pwr
   } else {
-    out <- list(Power  =Pwr,
+    out <- list(power  =Pwr,
                 Params =list(Cl         = DesMat$Cl,
                              timeAdjust = DesMat$timeAdjust,
                              timepoints = DesMat$timepoints,
@@ -618,7 +618,7 @@ compute_wlsPower <- function(DesMat,
 #'
 #'
 print.wlsPower <- function(x, ...){
-  message("Power                                = ", round(x$Power,4))
+  message("Power                                = ", round(x$power,4))
   if(x$Params$dfAdjust!="none"){
     message("ddf adjustment                       = ", x$Params$dfAdjust,"\n",
             "Denominator degrees of freedom       = ", x$Params$denomDF)
@@ -632,53 +632,66 @@ print.wlsPower <- function(x, ...){
 
 #' @title plot an object of class `wlsPower`
 #'
-#' @description Plot a matrix that visualises the influence of each cluster for
-#' each timepoint
+#' @description Up to three plots (selectable by `which`) that visualise:
+#' influence of each cluster for each timepoint,
+#' the treatment status for each cluster for each timepoint and
+#' the covariance matrix. By default, only the first plot is returned.
 #'
 #' @param x object of class wlsPower
+#' @param which Specify a subset of the numbers 1:3 to select plots
 #' @param ... Arguments to be passed to methods
 #'
 #' @method plot wlsPower
 #'
-#' @return a plotly html widget
+#' @return a list of plotly html widgets
 #'
 #' @export
 #'
-plot.wlsPower <- function(x,...){
+plot.wlsPower <- function(x, which=1, ...){
 
-  wgt <- x$ProjMatrix
-  mx  <- max(abs(wgt))
-  sumCl <- dim(wgt)[1]
-  timep <- dim(wgt)[2]
+  WgtPlot <- if (1 %in% which){
+    wgt <- x$ProjMatrix
+    mx  <- max(abs(wgt))
+    sumCl <- dim(wgt)[1]
+    timep <- dim(wgt)[2]
 
-  subp <- suppressWarnings(
-    subplot(
-      plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
-                              weight = colSums(abs(wgt))),
-              type="bar", x=~time, y=~weight, color=I("grey")) %>%
-        layout(yaxis=list(title="Sum|weights|"),
-               xaxis=list(title="", showticklabels=FALSE))
-      ,
-      plotly_empty(type="scatter",mode="marker")
-      ,
-      plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
-              colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-              xgap=.3, ygap=.3, name=" ",
-              hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
-        colorbar(len=1,limits=c(-mx,mx)) %>%
-        layout(xaxis=list(title="time"),
-               yaxis=list(title="cluster", autorange="reversed"))
-      ,
-      plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
-                              weight=rowSums(abs(wgt))),
-              type="bar", orientation="h",
-              y=~cluster, x=~weight, color=I("grey")) %>%
-        layout(xaxis=list(title="Sum|weights|"),
-               yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
-      ,
-      nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-    ) %>% layout(showlegend=FALSE)
-  )
-  return(subp)
+    suppressWarnings(
+      subplot(
+        plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+                                weight = colSums(abs(wgt))),
+                type="bar", x=~time, y=~weight, color=I("grey")) %>%
+          layout(yaxis=list(title="Sum|weights|"),
+                 xaxis=list(title="", showticklabels=FALSE))
+        ,
+        plotly_empty(type="scatter",mode="marker")
+        ,
+        plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
+                colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+                xgap=.3, ygap=.3, name=" ",
+                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
+          colorbar(len=1,limits=c(-mx,mx)) %>%
+          layout(xaxis=list(title="time"),
+                 yaxis=list(title="cluster", autorange="reversed"))
+        ,
+        plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+                                weight=rowSums(abs(wgt))),
+                type="bar", orientation="h",
+                y=~cluster, x=~weight, color=I("grey")) %>%
+          layout(xaxis=list(title="Sum|weights|"),
+                 yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+        ,
+        nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+      ) %>% layout(showlegend=FALSE)
+    )
+  } else NULL
+
+  DMplot <- if (2 %in% which){
+    plot(x$DesignMatrix)
+  } else NULL
+
+  CMplot <- if (3 %in% which){
+    plot_CovMat(x$CovarianceMatrix)
+  } else NULL
+
+  return(list(WgtPlot,DMplot,CMplot))
 }
-
