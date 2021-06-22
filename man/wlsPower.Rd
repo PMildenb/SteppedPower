@@ -26,7 +26,7 @@ wlsPower(
   alpha_0_1_2 = NULL,
   CovMat = NULL,
   N = NULL,
-  Power = NULL,
+  power = NULL,
   family = "gaussian",
   N_range = c(1, 1000),
   sig.level = 0.05,
@@ -113,14 +113,14 @@ must be NULL.}
 of length #Clusters or a matrix of dimension #Clusters x timepoints.
 Defaults to 1 if not passed.}
 
-\item{Power}{numeric, a specified target power.
+\item{power}{numeric, a specified target power.
 If supplied, the minimal `N` is returned.}
 
 \item{family}{character, distribution family. One of "gaussian", "binomial".
 Defaults to "gaussian"}
 
 \item{N_range}{numeric, vector specifying the lower and upper bound for `N`,
-ignored if `Power` is NULL.}
+ignored if `power` is NULL.}
 
 \item{sig.level}{numeric (scalar), significance level, defaults to 0.05}
 
@@ -214,11 +214,11 @@ mod_aggr$CovarianceMatrix[1:6,1:6] ; mod_indiv$CovarianceMatrix[1:60,1:60]
 ## stepped wedge design with 5 Clusters in 5 sequences, residual sd = 2,
 ## cluster effect sd = 0.33. How many Individuals are needed to achieve a
 ## power of 80\% ?
-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, Power=.8)
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, power=.8)
 ##
 ## ... How many are needed if we have a closed cohort design with a random
 ## individuum effect of .7?
-wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, Power=.8)
+wlsPower(mu0=0, mu1=1, Cl=rep(1,5), sigma=2, tau=0.33, psi=.7, power=.8)
 ##
 ##
 ## longitudinal parallel design, with 5 time periods, 3 clusters in treatment

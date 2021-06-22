@@ -210,13 +210,16 @@ plot(wlsPwr)[[1]] # (Accessing the first list element is needed to trigger plott
 
 ## Find Sample Size for given Power
 
-When the argument `Power` is passed to `wlsPower`, 
+When the argument `power` is passed to `wlsPower`, 
 the sample size needed is calculated, under the assumption of equally sized 
 clusters and periods. 
 
 ```{r}
-wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
+wlsPower(Cl=c(3,3,3), mu0=0, mu1=.2, sigma=1, tau=0, power=.8)
 ```
+
+So in this setting, you would need $50$ individuals per period in each cluster to 
+achieve a target power of $80%$
 
 # Use cases and examples
 
@@ -272,7 +275,7 @@ mod1 <- wlsPower(Cl=c(1,1,1,0), mu0=0, mu1=1,
                  sigma=0.4, tau=0, verbose=2)
 ```
 
-The treatment matrix then is
+The treatment matrix is then stored under `mod1$DesignMatrix$trtMat`:
 ```{r, echo=FALSE}
 knitr::kable(mod1$DesignMatrix$trtMat)
 ```
@@ -455,6 +458,7 @@ The power is calculated on aggregated cluster means:
 Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
                     sigma=5, tau=1, psi=3,
                     N=3, verbose=2)
+Closed1
 ```
 
 With `INDIV_LVL=TRUE`, the calculation is done on the individual level. 
@@ -465,11 +469,12 @@ mainly intended for diagnostic purposes.
 Closed2 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
                     sigma=5, tau=1, psi=3,
                     N=3, verbose=2, INDIV_LVL = TRUE)
+Closed2
 plot(Closed2)[[1]]
 ```
 
 ```{r}
-Closed1$Power - Closed2$Power
+Closed1$power - Closed2$power
 ```
 
 
@@ -486,11 +491,11 @@ have a 75% chance to reappear in the next study period.
 Open1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3), 
                   sigma=5, tau=1, psi=3, AR=c(1,1,.75), N=3)
 
-Closed1$Power
-Open1$Power
+Closed1$power
+Open1$power
 ```
 So this would result in a power loss of roughly 
-`r round( Closed1$Power - Open1$Power,3)*100`% 
+`r round( Closed1$power - Open1$power,3)*100`% 
 compared to a closed cohort design in this case. 
 
 ### Covariance structure for open cohort designs
@@ -501,12 +506,12 @@ three clusters, each consisting of three subjects. The probability that an
 individual reappears in two consecutive periods is estimated to be 60%. 
 The covariance matrix (on subject level) could be visualised as follows:
 
-```{r}
+```{r, fig.height=6}
 Open2Indiv <- wlsPower(mu0=0, mu1=10, Cl=c(1,1,1,0), 
                        sigma=1, tau=5, psi=10, AR=c(1,1,.60),
                        N=3, verbose=2, INDIV_LVL=TRUE)
 
-plot(Open2Indiv, which=3)[[1]]
+plot(Open2Indiv, which=3)[[3]]
 ```
 
 Note that you can zoom to get a better look at the structure. The autoregressive 
@@ -522,7 +527,7 @@ Both include the one presented in [@hussey2007design] as a special case.
 
 These formulae are also implemented in `SteppedPower`. 
 As a showcase, here is an example that is loosely based 
-on [@hussey2007design]:
+on the example in [@hussey2007design]:
 
 ```{r}
 trtMat <- construct_DesMat(c(6,6,6,6))$trtMat
