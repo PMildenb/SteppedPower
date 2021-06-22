@@ -55,7 +55,7 @@ package makes computation of large designs feasible.
 # Methods and Notation
 
 A common approach to model the correlation in 
-longitudinal studies are random effects.[@hussey2007design; @li2020mixed]
+longitudinal studies are random effects [@hussey2007design; @li2020mixed].
 Such a model has the form
 
 $$y_{ijk}= \mu_0 + \pi_i + T_{ij} \theta + c_j + e_{ijk}$$ 
@@ -71,7 +71,7 @@ with
 * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
 
 For power calculation, the standard deviation of random effects is assumed to be known.
-Lets define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
+Let's define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
 This leads to a compact and more general notation of the above equation:
 
 $$\begin{align}
@@ -131,8 +131,8 @@ with
 <!-- \alpha_2 &:= \frac{\tau^2 + \psi^2}{\sigma_M^2} -->
 <!-- \end{align}$$ -->
 
-A different approach to establish a covariance structure is to directly assume cluster cell correlation as proposed by \cite{Preisser2003integrated} and introduced to the context of stepped wedge designs in \cite{li2018sample}. They use $\boldsymbol{\alpha}:=(\alpha_0, \alpha_1, \alpha_2)$ where 
-		$\alpha_0:=\operatorname{corr}({y_{ijk},y_{ijk'}})$ for $ k\neq k'$ defines the within-period correlation; $\alpha_1:=\operatorname{corr}({y_{ijk},y_{ij'k'}})$ for $j\neq j', \, k\neq k'$ defines the inter-period correlation and $\alpha_0:=\operatorname{corr}({y_{ijk},y_{ij'k}})$ for $ j\neq j'$ defines the within-individual correlation.
+A different approach to establish a covariance structure is to directly assume cluster cell correlation as proposed by \cite{Preisser2003integrated} and introduced to the context of stepped wedge designs in [@li2018sample]. They use $\boldsymbol{\alpha}:=(\alpha_0, \alpha_1, \alpha_2)$ where 
+		$\alpha_0:=\operatorname{corr}({y_{ijk},y_{ijk'}})$ for $ k\neq k'$ defines the within-period correlation; $\alpha_1:=\operatorname{corr}({y_{ijk},y_{ij'k'}})$ for $j\neq j', \, k\neq k'$ defines the inter-period correlation and $\alpha_0:=\operatorname{corr}({y_{ijk},y_{ij'k}})$ for $j\neq j'$ defines the within-individual correlation.
 		
 One receives an easily interpretable correlation matrix, albeit at the cost of some flexibility. We can translate $\boldsymbol{\alpha}$ into a representation with random effects, given a marginal variance $\sigma^2_{\text{marg}}$.
 		
@@ -157,7 +157,7 @@ helpful to design non-standard user defined settings.
 
 `wlsPower` is essentially just a flexible wrapper for the function 
 `compute_wlsPower`, which does the actual computation.  
-`compute_wlsPower` then calls `constuct_DesMat` and `construct_CovMat`.
+`compute_wlsPower` then calls `construct_DesMat` and `construct_CovMat`.
 
 `construct_DesMat` builds the design matrix which consists of the treatment 
 status, usually built by`construct_trtMat` and the time adjustment, usually
@@ -223,7 +223,7 @@ wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
 ## Comparison of two groups -- Z-Test
 
 This might be a proof of concept rather than an example with 
-practical relevance, but let's to compare the mean in two groups. 
+practical relevance, but let's try to compare the mean in two groups. 
 For two groups of 10 observations each, the power of a Z-test 
 can be calculated as follows:
 
@@ -245,7 +245,7 @@ to reproduce settings in which the variance is assumed to be unknown,
 most prominently the well known t-test.
 In this package, you find implemented some (experimental) heuristics 
 for guessing the denominator degrees of freedom, but they yield rather 
-scaled Wald tests than t tests. 
+scaled Wald tests than t-tests. 
 The main difference is that the distribution under 
 the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
@@ -320,6 +320,7 @@ rm(mod1,mod2,mod3)
 ## Unequal cluster sizes
 
 The argument `N` defines the cluster size. `N` can be 
+
 * a scalar, if all clusters have the same assumed size, 
   which is also constant over time
 * a vector, if the size differs between clusters but 
@@ -344,7 +345,7 @@ Rather, clusters that switch early to the intervention
 are not observed until the end.
 Analogous, observation starts later in clusters 
 that switch towards the end of the study.
-This is sometimes called 'incomplete SWD' [hemming2015stepped].
+This is sometimes called 'incomplete SWD' [@hemming2015stepped].
 
 There are two ways to achieve this in `SteppedPower`, both by using the `incomplete` argument.
 One can either scalar, which then defines the number of observed periods before and 
@@ -431,12 +432,12 @@ TimeAdj2 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, sigma=1, tau=0,
 ```
 
 Design matrix of the first cluster with linear adjustment for secular trend:
-```{r}
+```{r, echo=FALSE}
 knitr::kable(head(TimeAdj1$DesignMatrix$dsnmatrix, 5))
 ```
 
 Design matrix of the first cluster with categorical adjustment for secular trend:
-```{r}
+```{r, echo=FALSE}
 knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 ```
 
@@ -456,7 +457,7 @@ Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3),
                     N=3, verbose=2)
 ```
 
-With `INIDV_LVL=TRUE`, the calculation is done on the individual level. 
+With `INDIV_LVL=TRUE`, the calculation is done on the individual level. 
 This yields the same results but is far more computationally expensive and is 
 mainly intended for diagnostic purposes.
 
@@ -546,13 +547,14 @@ Explicit calculation yields the same:
 ```{r}
 a <- SteppedPower::wlsPower(Cl=rep(6,4), mu0=mu0, mu1=mu1, AR=AR,
                        sigma=0, tau=tau, N=N, psi=psi, verbose=2, INDIV_LVL = TRUE)
+a
 ```
 
 
 ### Closed formula for open cohort designs 
 
 Kasza et al. offer an extension to open cohort designs by the use of an attrition 
-or churn rate `chi`. It can be understood as the estimated probability 
+or churn rate `chi` [@kasza2020sample]. It can be understood as the estimated probability 
 that a subject included in period $j$ 
 is also included in period $j'$ for $j\ne j'$. Note that this differs from the
 approach mentioned above, as it results in a mixture of exchangeable covariance matrices.
