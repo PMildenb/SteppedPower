@@ -54,7 +54,7 @@ package makes computation of large designs feasible.
 # Methods and Notation
 
 A common approach to model the correlation in 
-longitudinal studies are random effects.[@hussey2007design; @li2020mixed]
+longitudinal studies are random effects [@hussey2007design; @li2020mixed].
 Such a model has the form
 
 $$y_{ijk}= \mu_0 + \pi_i + T_{ij} \theta + c_j + e_{ijk}$$ 
@@ -337,7 +337,7 @@ Rather, clusters that switch early to the intervention
 are not observed until the end.
 Analogous, observation starts later in clusters 
 that switch towards the end of the study.
-This is sometimes called 'incomplete SWD' [hemming2015stepped].
+This is sometimes called 'incomplete SWD' [@hemming2015stepped].
 
 There are two ways to achieve this in `SteppedPower`, both by using the `incomplete` argument.
 One can either scalar, which then defines the number of observed periods before and 
@@ -543,13 +543,14 @@ Explicit calculation yields the same:
 ```{r}
 a <- SteppedPower::wlsPower(Cl=rep(6,4), mu0=mu0, mu1=mu1, AR=AR,
                        sigma=0, tau=tau, N=N, psi=psi, verbose=2, INDIV_LVL = TRUE)
+a
 ```
 
 
 ### Closed formula for open cohort designs 
 
 Kasza et al. offer an extension to open cohort designs by the use of an attrition 
-or churn rate `chi`. It can be understood as the estimated probability 
+or churn rate `chi` [@kasza2020sample]. It can be understood as the estimated probability 
 that a subject included in period $j$ 
 is also included in period $j'$ for $j\ne j'$. Note that this differs from the
 approach mentioned above, as it results in a mixture of exchangeable covariance matrices.
