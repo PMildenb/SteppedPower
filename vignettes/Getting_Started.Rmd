@@ -70,7 +70,7 @@ with
 * $e_{ijk}$ a normal random error term with $e_{ijk}\sim N(0,\sigma^2)$
 
 For power calculation, the standard deviation of random effects is assumed to be known.
-Lets define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
+Let's define $\beta:=(\mu,\alpha',\theta)'$ and $\omega_{ijk}:=b_j+e_{ijk}$. 
 This leads to a compact and more general notation of the above equation:
 
 $$\begin{align}
@@ -156,7 +156,7 @@ helpful to design non-standard user defined settings.
 
 `wlsPower` is essentially just a flexible wrapper for the function 
 `compute_wlsPower`, which does the actual computation.  
-`compute_wlsPower` then calls `constuct_DesMat` and `construct_CovMat`.
+`compute_wlsPower` then calls `construct_DesMat` and `construct_CovMat`.
 
 `construct_DesMat` builds the design matrix which consists of the treatment 
 status, usually built by`construct_trtMat` and the time adjustment, usually
@@ -216,7 +216,7 @@ wlsPower(Cl=c(3,2,3), mu0=0, mu1=.2, sigma=1, tau=0, Power=.8)
 ## Comparison of two groups -- Z-Test
 
 This might be a proof of concept rather than an example with 
-practical relevance, but let's to compare the mean in two groups. 
+practical relevance, but let's try to compare the mean in two groups. 
 For two groups of 10 observations each, the power of a Z-test 
 can be calculated as follows:
 
@@ -238,7 +238,7 @@ to reproduce settings in which the variance is assumed to be unknown,
 most prominently the well known t-test.
 In this package, you find implemented some (experimental) heuristics 
 for guessing the denominator degrees of freedom, but they yield rather 
-scaled Wald tests than t tests. 
+scaled Wald tests than t-tests. 
 The main difference is that the distribution under 
 the alternative is assumed to be symmetric,
 whereas the t-test assumes a non-central (hence skewed) t-distribution.
@@ -313,6 +313,7 @@ rm(mod1,mod2,mod3)
 ## Unequal cluster sizes
 
 The argument `N` defines the cluster size. `N` can be 
+
 * a scalar, if all clusters have the same assumed size, 
   which is also constant over time
 * a vector, if the size differs between clusters but 
@@ -450,7 +451,7 @@ Closed1 <- wlsPower(mu0=0, mu1=5, Cl=rep(3,3),
 # plot(Closed1)
 ```
 
-With `INIDV_LVL=TRUE`, the calculation is done on the individual level. 
+With `INDIV_LVL=TRUE`, the calculation is done on the individual level. 
 This yields the same results but is far more computationally expensive and is 
 mainly intended for diagnostic purposes.
 
