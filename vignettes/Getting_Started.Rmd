@@ -424,12 +424,12 @@ TimeAdj2 <- wlsPower(Cl=rep(2,4), mu0=0, mu1=1, sigma=1, tau=0,
 ```
 
 Design matrix of the first cluster with linear adjustment for secular trend:
-```{r}
+```{r, echo=FALSE}
 knitr::kable(head(TimeAdj1$DesignMatrix$dsnmatrix, 5))
 ```
 
 Design matrix of the first cluster with categorical adjustment for secular trend:
-```{r}
+```{r, echo=FALSE}
 knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 ```
 
