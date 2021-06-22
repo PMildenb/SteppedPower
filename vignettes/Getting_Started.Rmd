@@ -130,8 +130,8 @@ with
 <!-- \alpha_2 &:= \frac{\tau^2 + \psi^2}{\sigma_M^2} -->
 <!-- \end{align}$$ -->
 
-A different approach to establish a covariance structure is to directly assume cluster cell correlation as proposed by \cite{Preisser2003integrated} and introduced to the context of stepped wedge designs in \cite{li2018sample}. They use $\boldsymbol{\alpha}:=(\alpha_0, \alpha_1, \alpha_2)$ where 
-		$\alpha_0:=\operatorname{corr}({y_{ijk},y_{ijk'}})$ for $ k\neq k'$ defines the within-period correlation; $\alpha_1:=\operatorname{corr}({y_{ijk},y_{ij'k'}})$ for $j\neq j', \, k\neq k'$ defines the inter-period correlation and $\alpha_0:=\operatorname{corr}({y_{ijk},y_{ij'k}})$ for $ j\neq j'$ defines the within-individual correlation.
+A different approach to establish a covariance structure is to directly assume cluster cell correlation as proposed by \cite{Preisser2003integrated} and introduced to the context of stepped wedge designs in [@li2018sample]. They use $\boldsymbol{\alpha}:=(\alpha_0, \alpha_1, \alpha_2)$ where 
+		$\alpha_0:=\operatorname{corr}({y_{ijk},y_{ijk'}})$ for $ k\neq k'$ defines the within-period correlation; $\alpha_1:=\operatorname{corr}({y_{ijk},y_{ij'k'}})$ for $j\neq j', \, k\neq k'$ defines the inter-period correlation and $\alpha_0:=\operatorname{corr}({y_{ijk},y_{ij'k}})$ for $j\neq j'$ defines the within-individual correlation.
 		
 One receives an easily interpretable correlation matrix, albeit at the cost of some flexibility. We can translate $\boldsymbol{\alpha}$ into a representation with random effects, given a marginal variance $\sigma^2_{\text{marg}}$.
 		
