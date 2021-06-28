@@ -26,6 +26,13 @@
 #' construct_DesMat(Cl=c(2,0,1))
 #' construct_DesMat(Cl=c(2,0,1), N=c(1,3,2))
 #'
+#' ## manually defined time adjustment (same as above)
+#' timeBlock <- matrix(c(1,0,0,0,
+#'                       1,1,0,0,
+#'                       1,0,1,0,
+#'                       1,0,0,1), 4, byrow=TRUE)
+#' construct_DesMat(Cl=c(2,0,1), timeBlk=timeBlock)
+#'
 construct_DesMat <- function(Cl          = NULL,
                              trtDelay    = NULL,
                              dsntype     = "SWD",
@@ -47,19 +54,23 @@ construct_DesMat <- function(Cl          = NULL,
 
   ## TREATMENT MATRIX ####
   if(!is.null(trtmatrix)){
-    trtMat  <- trtmatrix
+
+    if(inherits(trtmatrix,"matrix")){
+      trtMat  <- trtmatrix
+    }else if (inherits(trtMat, "list") & "swDsn" %in% names(trtmatrix)){
+      trtMat <- trtmatrix$swDsn
+    } else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
+
     dsntype <- "userdefined"
-    if(inherits(trtMat,"matrix")){
-      timepoints  <- ncol(trtMat)
-      Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))
-      tmpCl       <- Cl
-    }else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
+    timepoints  <- ncol(trtMat)
+    Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))
+    tmpCl       <- Cl
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
                                 trtDelay      =trtDelay,
                                 dsntype       =dsntype,
                                 timepoints    =timepoints)
-    timepoints <- dim(trtMat)[2]  ## trtMat has good heuristics for guessing
+    timepoints <- dim(trtMat)[2]  ## construct_trtMat has good heuristics for guessing
                                   ## number of timepoints (if not provided)
   }
   if(INDIV_LVL)  tmpTrtMat <- trtMat[rep(seq_len(sum(Cl)),N),] else
@@ -141,9 +152,10 @@ print.DesMat <- function(x, ...){
 # x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
 plot.DesMat <- function(x, ...){
   trt <- x$trtMat
-  plot_ly(type="heatmap", colors=c("lightblue","red"),
-          x=~(seq_len(dim(trt)[1])), y=~(seq_len(dim(trt)[2]-1)),
+  plot_ly(type="heatmap",
+          x=~(seq_len(dim(trt)[2])), y=~(seq_len(dim(trt)[1])),
           z=~trt, xgap=5, ygap=5, name=" ",
+          colors=grDevices::colorRamp(c("steelblue","lightgoldenrod1","firebrick")),
           hovertemplate="Time: %{x},   Cluster: %{y} \nTreatment Status: %{z}") %>%
     layout(xaxis = list(title="time", type="category"),
            yaxis = list(title="cluster",autorange="reversed",type="category")) %>%
@@ -251,7 +263,7 @@ construct_trtMat <- function(Cl,
 
 #' @title Construct the time period adjustment in the design matrix
 #'
-#' @description Offers several options for time adjustment
+#' @description Offers several options to adjust for secular trends.
 #'
 #' @inheritParams construct_DesMat
 #'
