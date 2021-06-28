@@ -4,7 +4,7 @@
 \alias{construct_CovBlk}
 \title{Construct a Single Block of the Covariance Matrix}
 \usage{
-construct_CovBlk(sigma, tau, eta = NULL, AR = NULL, rho = NULL)
+construct_CovBlk(sigma, tau = NULL, eta = NULL, AR = NULL, rho = NULL)
 }
 \arguments{
 \item{sigma}{numeric (vector of length `timepoints`),

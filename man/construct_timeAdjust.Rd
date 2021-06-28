@@ -35,5 +35,5 @@ a matrix with one row for every cluster at every timepoint and number of columns
 depending of adjustment type.
 }
 \description{
-Offers several options for time adjustment
+Offers several options to adjust for secular trends.
 }

@@ -72,4 +72,11 @@ Note: Unlike the usual notation, the treatment effect is in the first column
 construct_DesMat(Cl=c(2,0,1))
 construct_DesMat(Cl=c(2,0,1), N=c(1,3,2))
 
+## manually defined time adjustment (same as above)
+timeBlock <- matrix(c(1,0,0,0,
+                      1,1,0,0,
+                      1,0,1,0,
+                      1,0,0,1), 4, byrow=TRUE)
+construct_DesMat(Cl=c(2,0,1), timeBlk=timeBlock)
+
 }
