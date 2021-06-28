@@ -56,15 +56,25 @@ BYROW <- function(input, SumCl, tp){
                       '. This does not fit to given number of timepoints, ',
                       'which is ',tp,
                       ', or to the given number of clusters, which is ', SumCl))
-  if(tp==SumCl & len==tp)
-    warning("Input is assumed to change between clusters. If you wanted it
-              to change over time, please provide as matrix of dimension
-              #Cluster x timepoints")
+  # if(tp==SumCl & len==tp)
+  #   warning("Input is assumed to change between clusters. If you wanted it
+  #             to change over time, please provide as matrix of dimension
+  #             #Cluster x timepoints")
   return(out)
 }
 
 input_to_Mat <- function(input, SumCl, tp){
   return(matrix(input, nrow=SumCl, ncol=tp, byrow=BYROW(input,SumCl,tp)))
+}
+
+input_to_List <- function(input, SumCl, tp){
+  if(is.null(input)){
+    out <- vector("list", SumCl)
+  } else {
+    Mat <- input_to_Mat(input=input, SumCl=SumCl, tp=tp)
+    out <- split(Mat, 1:nrow(Mat))
+  }
+  return(out)
 }
 
 ################################################################################

@@ -21,25 +21,27 @@
 #'                 AR=c(.5, 1))
 
 construct_CovBlk <- function(sigma,
-                             tau,
+                             tau   = NULL,
                              eta   = NULL,
                              AR    = NULL,
                              rho   = NULL){
-  if(!(length(sigma)==length(tau)))
-    stop ("In construct_CovBlk: sigma and tau must be of same length.")
+  if(!(length(tau) %in% c(0,length(tau)) ) )
+    stop ("In construct_CovBlk: If tau is provided, ",
+          "sigma and tau must be of same length.")
   if(!is.null(eta) & !length(tau)==length(eta))
     stop ("In construct_CovBlk: sigma, tau and eta must be of same length.")
 
   # AR         <- rep(AR, length.out=3) ## NEEDED ???
   timepoints <- length(sigma)
+  if(is.null(tau)) tau <- vector(mode="double", timepoints)
 
   tauMat <- if(is.null(AR[[1]])) tau %o% tau
-            else tau %o% tau * toeplitz(AR[[1]] ** c(0:(timepoints-1)))
+            else tau %o% tau * toeplitz(AR[[1]] ** (0:(timepoints-1)))
   out    <- diag(sigma^2, timepoints) + tauMat
 
   if(!is.null(eta)) {
     etaMat <- if(is.null(AR[[2]])) eta %o% eta
-              else eta %o% eta * toeplitz(AR[[2]] ** c(0:(timepoints-1)))
+              else eta %o% eta * toeplitz(AR[[2]] ** (0:(timepoints-1)))
     out <- out + etaMat
   }
   if(!is.null(rho)) {
@@ -80,23 +82,25 @@ construct_CovSubMat <- function(N,
                                 eta       = NULL,
                                 AR        = NULL,
                                 rho       = NULL,
-                                gamma     = 0,
+                                gamma     = NULL,
                                 trtMat    = NULL,
                                 psi       = NULL,
                                 INDIV_LVL = FALSE){
 
-  ClBlk  <- construct_CovBlk(sigma = gamma,
+  ClBlk  <- construct_CovBlk(sigma = vector("double", timepoints),
                              tau   = tau,
                              eta   = eta,
                              AR    = c(AR[[1]],AR[[2]]),
                              rho   = rho)
+  if(!is.null(gamma)) diag(ClBlk) <- diag(ClBlk) + gamma^2
+
 
   if(INDIV_LVL){
     SubMat <- construct_CovMat(SumCl      = N,
                                timepoints = timepoints,
                                sigma      = sigma,
                                tau        = psi,
-                               gamma      = 0,
+                               gamma      = NULL,
                                AR         = c(AR[[3]],AR[[2]]))
     out <- matrix(1,N,N) %x% ClBlk + SubMat
   }else {
@@ -192,8 +196,7 @@ construct_CovMat <- function(SumCl      = NULL,
     sigmaLst <- split(sigmaMat,1:nrow(sigmaMat))
 
     ## tau (input can be scalar, vector or matrix) ##
-    tauMat <- input_to_Mat(tau, SumCl, timepoints)
-    tauLst <- split(tauMat, 1:nrow(tauMat))
+    tauLst <- input_to_List(tau, SumCl, timepoints)
 
     ## eta (input can be scalar or matrix, is passed as list of vectors) ##
     if(!is.null(eta)) {
@@ -213,14 +216,10 @@ construct_CovMat <- function(SumCl      = NULL,
 
     ## rho (input must be scalar, is passed as scalar) ##
     ## AR  (input must be scalar, is passed as scalar) ##
-
     ## gamma (input can be scalar or matrix, is passed as list of vectors) ##
-    if(is.null(gamma)) gamma <- 0
-    gammaMat <- input_to_Mat(gamma, SumCl, timepoints)
-    gammaLst <- split(gammaMat, 1:nrow(gammaMat))
-
 
     if(cross_sectional & !INDIV_LVL){
+
       CovBlks <- mapply(construct_CovBlk,
                         sigma = sigmaLst,
                         tau   = tauLst,
@@ -229,17 +228,15 @@ construct_CovMat <- function(SumCl      = NULL,
                                         rho = rho),
                         SIMPLIFY = FALSE)
       CovMat       <- Matrix::bdiag(CovBlks)
-      diag(CovMat) <- Matrix::diag(CovMat) + as.numeric(t(gammaMat))^2
 
+      if(!is.null(gamma)) {
+        gammaMat     <- input_to_Mat(gamma, SumCl, timepoints)
+        diag(CovMat) <- Matrix::diag(CovMat) + as.numeric(t(gammaMat))^2
+      }
     }else{
-      NMat <- input_to_Mat(N,
-                           SumCl = SumCl,
-                           tp    = ifelse(is.null(psi), timepoints, 1))
-      NLst <- split(NMat, 1:nrow(NMat))
-
-      if(is.null(psi)) psi <- 0
-      psiMat <- input_to_Mat(psi, SumCl, timepoints)
-      psiLst <- split(psiMat, 1:nrow(psiMat))
+      gammaLst <- input_to_List(gamma, SumCl, timepoints)
+      psiLst   <- input_to_List(psi, SumCl, timepoints)
+      NLst     <- input_to_List(N, SumCl, ifelse(INDIV_LVL, 1, timepoints))
 
       CovBlks <- mapply(construct_CovSubMat,
                         sigma = sigmaLst,
