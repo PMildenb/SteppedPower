@@ -35,5 +35,5 @@ a matrix with one row for every cluster at every timepoint and number of columns
 depending of adjustment type.
 }
 \description{
-Construct the time period adjustment in the design matrix
+Offers several options for time adjustment
 }

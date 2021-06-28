@@ -294,7 +294,7 @@ wlsPower <- function( Cl            = NULL,
       tau <- 0
       warning("Random cluster effect tau and random treatment effect eta",
               " are assumed to be 0, i.e. the observations across clusters are",
-              " assumed to be i.i.d. Declare tau=0 to supress this warning.")
+              " assumed to be marginally independent. Declare tau=0 to supress this warning.")
     }
     if(!is.null(psi) & is.null(power)){
       if(is.null(N))
@@ -503,7 +503,8 @@ wlsPower <- function( Cl            = NULL,
 #' @description
 #' This function is not intended to be used directly, but rather to be called
 #' by `wlsPower` - the main function of this package.
-#' construct the covariance matrix. These matrices are
+#' It expects the design matrix as an input argument `DesMat` and
+#' construct the covariance matrix (if not given as well). These matrices are
 #' used to calculate the variance of the treatment effect estimator which is
 #' then used to calculate the power to detect the assumed treatment effect.
 #'
@@ -604,7 +605,8 @@ compute_wlsPower <- function(DesMat,
   return(out)
 }
 
-#' @title print.wlsPower
+#' @title Print an object of class `wlsPower`
+#'
 #'
 #' @param x object of class wlsPower
 #' @param ... Arguments to be passed to methods

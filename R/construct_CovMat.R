@@ -1,9 +1,10 @@
 
-#' @title Construct a Block of the Covariance Matrix
+#' @title Construct a Single Block of the Covariance Matrix
 #'
 #' @description Constructs the covariance matrix
 #' for multiple measurements of the same cluster.
-#' This function is not designed to be used directly.
+#' This function is usually called by `construct_CovMat` and is
+#'  not designed to be used directly.
 #'
 #' @inheritParams construct_CovSubMat
 #'
@@ -269,8 +270,13 @@ construct_CovMat <- function(SumCl      = NULL,
 
 plot_CovMat <- function(CovMat){
 
-  CovMat <- as.matrix(CovMat)
+  CovMat    <- as.matrix(CovMat)
   seqLength <- seq_len(dim(CovMat)[1])
+
+  ## Work-around for incomplete designs, .. is there a nicer way?
+  tmpaux <- colSums(CovMat)==Inf
+  CovMat[tmpaux,] <- 0
+  CovMat[,tmpaux] <- 0
 
   plot_ly(type="heatmap", colors=c("white","steelblue"),
           x=~seqLength, y=~seqLength, z=~CovMat,
