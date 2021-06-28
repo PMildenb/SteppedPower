@@ -1,9 +1,10 @@
 
-#' @title Construct a Block of the Covariance Matrix
+#' @title Construct a Single Block of the Covariance Matrix
 #'
 #' @description Constructs the covariance matrix
 #' for multiple measurements of the same cluster.
-#' This function is not designed to be used directly.
+#' This function is usually called by `construct_CovMat` and is
+#'  not designed to be used directly.
 #'
 #' @inheritParams construct_CovSubMat
 #'

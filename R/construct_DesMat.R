@@ -94,7 +94,7 @@ construct_DesMat <- function(Cl          = NULL,
 
 #'  print.DesMat
 #'
-#' @param x object of class DesMat
+#' @param x  An object of class `DesMat
 #' @param ... Arguments to be passed to methods
 #'
 #' @method print DesMat
@@ -105,12 +105,11 @@ construct_DesMat <- function(Cl          = NULL,
 #'
 print.DesMat <- function(x, ...){
 
-dsn_out <- switch (x$dsntype,
-                  "SWD"               = "stepped wedge" ,
-                  "parallel"          = "parallel",
-                  "parallel_baseline" = "parallel with baseline period(s)",
-                  "userdefined"       = "userdefined")
-
+  dsn_out <- switch (x$dsntype,
+                    "SWD"               = "stepped wedge" ,
+                    "parallel"          = "parallel",
+                    "parallel_baseline" = "parallel with baseline period(s)",
+                    "userdefined"       = "userdefined")
 
   message("Timepoints                         = ", x$timepoints,"\n",
           "Number of clusters per seqence     = ", paste(x$Cl, collapse= ", "))
@@ -129,7 +128,7 @@ dsn_out <- switch (x$dsntype,
 
 #' plot.DesMat
 #'
-#' @param x d
+#' @param x An object of class `DesMat`
 #' @param ... Arguments to be passed to methods
 #'
 #' @method plot DesMat
@@ -252,6 +251,7 @@ construct_trtMat <- function(Cl,
 
 #' @title Construct the time period adjustment in the design matrix
 #'
+#' @description Offers several options for time adjustment
 #'
 #' @inheritParams construct_DesMat
 #'

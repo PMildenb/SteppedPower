@@ -80,7 +80,8 @@ If requested (by `verbose`=2) this list also contains relevant matrices.
 \description{
 This function is not intended to be used directly, but rather to be called
 by `wlsPower` - the main function of this package.
-construct the covariance matrix. These matrices are
+It expects the design matrix as an input argument `DesMat` and
+construct the covariance matrix (if not given as well). These matrices are
 used to calculate the variance of the treatment effect estimator which is
 then used to calculate the power to detect the assumed treatment effect.
 }

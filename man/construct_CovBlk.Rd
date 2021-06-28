@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_CovMat.R
 \name{construct_CovBlk}
 \alias{construct_CovBlk}
-\title{Construct a Block of the Covariance Matrix}
+\title{Construct a Single Block of the Covariance Matrix}
 \usage{
 construct_CovBlk(sigma, tau, eta = NULL, AR = NULL, rho = NULL)
 }
@@ -33,7 +33,8 @@ corresponding to intra-cluster covariance over time for one cluster
 \description{
 Constructs the covariance matrix
 for multiple measurements of the same cluster.
-This function is not designed to be used directly.
+This function is usually called by `construct_CovMat` and is
+ not designed to be used directly.
 }
 \examples{
 construct_CovBlk(sigma=rep(2,5), tau=rep(1,5))
