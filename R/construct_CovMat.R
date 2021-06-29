@@ -265,7 +265,7 @@ construct_CovMat <- function(SumCl      = NULL,
 #' @return a plotly object
 #'
 
-plot_CovMat <- function(CovMat){
+plot_CovMat <- function(CovMat, show_colorbar=TRUE){
 
   CovMat    <- as.matrix(CovMat)
   seqLength <- seq_len(dim(CovMat)[1])
@@ -277,7 +277,8 @@ plot_CovMat <- function(CovMat){
 
   plot_ly(type="heatmap", colors=c("white","steelblue"),
           x=~seqLength, y=~seqLength, z=~CovMat,
-          xgap=1, ygap=1) %>%
+          xgap=1, ygap=1,
+          showscale=show_colorbar) %>%
     layout(xaxis=list(title="", visible=FALSE),
            yaxis=list(title="", visible=FALSE, autorange="reversed") ) %>%
     colorbar(len=1, title="")

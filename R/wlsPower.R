@@ -649,7 +649,7 @@ print.wlsPower <- function(x, ...){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, which=1, ...){
+plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
 
   WgtPlot <- if (1 %in% which){
     wgt <- x$ProjMatrix
@@ -688,11 +688,13 @@ plot.wlsPower <- function(x, which=1, ...){
   } else NULL
 
   DMplot <- if (2 %in% which){
-    plot(x$DesignMatrix)
+    if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
+    plot(x$DesignMatrix, show_colorbar=show_colorbars)
   } else NULL
 
   CMplot <- if (3 %in% which){
-    plot_CovMat(x$CovarianceMatrix)
+    if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
+    plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbars)
   } else NULL
 
   return(list(WgtPlot,DMplot,CMplot))
