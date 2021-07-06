@@ -150,11 +150,12 @@ print.DesMat <- function(x, ...){
 #'
 
 # x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
-plot.DesMat <- function(x, ...){
+plot.DesMat <- function(x, show_colorbar=FALSE, ...){
   trt <- x$trtMat
   plot_ly(type="heatmap",
           x=~(seq_len(dim(trt)[2])), y=~(seq_len(dim(trt)[1])),
           z=~trt, xgap=5, ygap=5, name=" ",
+          showscale=show_colorbar,
           colors=grDevices::colorRamp(c("steelblue","lightgoldenrod1","firebrick")),
           hovertemplate="Time: %{x},   Cluster: %{y} \nTreatment Status: %{z}") %>%
     layout(xaxis = list(title="time", type="category"),

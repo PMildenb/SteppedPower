@@ -12,7 +12,7 @@ construct_CovSubMat(
   eta = NULL,
   AR = NULL,
   rho = NULL,
-  gamma = 0,
+  gamma = NULL,
   trtMat = NULL,
   psi = NULL,
   INDIV_LVL = FALSE
