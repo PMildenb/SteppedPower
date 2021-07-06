@@ -25,5 +25,3 @@ random intervention effect and random subject intercept.
 ## R CMD check results
 
 0 errors | 0 warnings | 0 notes
-
-* This is a new submission.
