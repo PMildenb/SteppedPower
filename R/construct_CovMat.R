@@ -260,7 +260,9 @@ construct_CovMat <- function(SumCl      = NULL,
 #' @title Visualise a Covariance Matrix
 #'
 #' @description Currently not exported.
+#'
 #' @param CovMat A covariance matrix (possibly in sparse matrix notation)
+#' @param show_colorbar logical, should the colorbar be shown?
 #'
 #' @return a plotly object
 #'

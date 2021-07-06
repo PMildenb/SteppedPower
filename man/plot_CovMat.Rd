@@ -4,10 +4,12 @@
 \alias{plot_CovMat}
 \title{Visualise a Covariance Matrix}
 \usage{
-plot_CovMat(CovMat)
+plot_CovMat(CovMat, show_colorbar = TRUE)
 }
 \arguments{
 \item{CovMat}{A covariance matrix (possibly in sparse matrix notation)}
+
+\item{show_colorbar}{logical, should the colorbar be shown?}
 }
 \value{
 a plotly object
