@@ -41,7 +41,7 @@ crossover designs. Further design types can be
 easily defined by the user.  
 
 Currently, normal outcomes and binomial outcomes with 
-indentity link are implemented. 
+identity link are implemented. 
 The following random effects can be specified:
 random cluster intercept, random treatment effect, 
 random subject specific intercept and random time effect.
@@ -522,7 +522,7 @@ block exchangeable structure on cluster level becomes evident.
 
 
 There exist some formulae that do not need explicitly construct design and 
-covariance matices, most notably [@kasza2020sample] and [@li2020design]. 
+covariance matrices, most notably [@kasza2020sample] and [@li2020design]. 
 Both include the one presented in [@hussey2007design] as a special case.
 
 These formulae are also implemented in `SteppedPower`. 
@@ -537,7 +537,7 @@ tau <- .025 ; sigma <- sqrt(.041*.959)
 gamma <- 0.01 ; psi <- .1 ; chi <- .5 ; AR <- .5
 ```
 
-### Closed formula for proportional decay stucture
+### Closed formula for proportional decay structure
 
 `VarClosed_Li` computes the treatment variance for stepped wedge designs with a 
 autoregressive (syn. proportional decay) structure. It can be used to compute 
