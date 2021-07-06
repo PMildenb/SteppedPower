@@ -641,6 +641,7 @@ print.wlsPower <- function(x, ...){
 #'
 #' @param x object of class wlsPower
 #' @param which Specify a subset of the numbers 1:3 to select plots
+#' @param show_colorbars logical, should the colorbars be shown?
 #' @param ... Arguments to be passed to methods
 #'
 #' @method plot wlsPower

@@ -137,9 +137,10 @@ print.DesMat <- function(x, ...){
 
 
 
-#' plot.DesMat
+#' @title plot.DesMat
 #'
 #' @param x An object of class `DesMat`
+#' @param show_colorbar logical, should the colorbar be shown?
 #' @param ... Arguments to be passed to methods
 #'
 #' @method plot DesMat
@@ -148,8 +149,9 @@ print.DesMat <- function(x, ...){
 #'
 #' @export
 #'
+#' @examples
+#' x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
 
-# x <- construct_DesMat(C=c(2,2,2,0,2,2,2),.5)
 plot.DesMat <- function(x, show_colorbar=FALSE, ...){
   trt <- x$trtMat
   plot_ly(type="heatmap",

@@ -4,12 +4,14 @@
 \alias{plot.wlsPower}
 \title{plot an object of class `wlsPower`}
 \usage{
-\method{plot}{wlsPower}(x, which = 1, ...)
+\method{plot}{wlsPower}(x, which = 1, show_colorbars = NULL, ...)
 }
 \arguments{
 \item{x}{object of class wlsPower}
 
 \item{which}{Specify a subset of the numbers 1:3 to select plots}
+
+\item{show_colorbars}{logical, should the colorbars be shown?}
 
 \item{...}{Arguments to be passed to methods}
 }
