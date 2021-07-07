@@ -16,7 +16,7 @@ to be known (or guessed) in advance.
 
 Install from CRAN with
 `install.packages("SteppedPower")`. 
-Current version on CRAN is 0.1.0.
+Current version on CRAN is 0.2.0.
 
 To install the latest stable version type    
 `devtools::install_github("PMildenb/SteppedPower", build_vignettes=TRUE)`  
@@ -27,4 +27,4 @@ The development version with the most recent changes can be installed with
 
 ## Vignette 
 The vignette can be viewed with
-`vignette("Getting_Started_with_SteppedPower")`
+`vignette("Getting_Started", package="SteppedPower")`

@@ -1,7 +1,7 @@
 
-## Resubmission
+## Resubmission (Update)
 
-This is a resubmission.
+This is an update.
 
 Since the last submission (published 2021-02-04), I changed the following:
 
