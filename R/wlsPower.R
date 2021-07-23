@@ -662,7 +662,9 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
       subplot(
         plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
                                 weight = colSums(abs(wgt))),
-                type="bar", x=~time, y=~weight, color=I("grey")) %>%
+                type="bar", x=~time, y=~weight, color=I("grey"),
+                name=" ",
+                hovertemplate="Time: %{x}\nWeight: %{y}") %>%
           layout(yaxis=list(title="Sum|weights|"),
                  xaxis=list(title="", showticklabels=FALSE))
         ,
@@ -679,7 +681,9 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
         plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
                                 weight=rowSums(abs(wgt))),
                 type="bar", orientation="h",
-                y=~cluster, x=~weight, color=I("grey")) %>%
+                y=~cluster, x=~weight, color=I("grey"),
+                name=" ",
+                hovertemplate="Cluster: %{y}\nAbsWeight: %{x}") %>%
           layout(xaxis=list(title="Sum|weights|"),
                  yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
         ,
