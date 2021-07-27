@@ -596,7 +596,7 @@ compute_wlsPower <- function(DesMat,
       InfoContent$Cluster[i] <- VarMat_drop[1,1]/VarMat[1,1]
       for(j in J){
         J_drop <- J[-j] + J_start
-        tmpmat_drop <- matrix(0, dim(tmpmat)[1], tp)
+        tmpmat_drop <- matrix(0, dsncols, tp)
         tmpmat_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
                                 Matrix::chol2inv( Matrix::chol(
                                   matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2 ],tp) [J[-j],J[-j]]
@@ -604,6 +604,7 @@ compute_wlsPower <- function(DesMat,
         VarMat_drop <- Matrix::solve( VarInv +
                           (tp_drop_updt <- (tmpmat_drop[,J]-tmpmat[,J_start+J]) %*%
                                dsnmatrix[J_start+J,]) )
+        tp_drop[,,j]           <- (tp_drop[,,j] + tp_drop_updt)
         InfoContent$Cells[i,j] <- VarMat_drop[1,1]/VarMat[1,1]
       }
     }
@@ -702,11 +703,22 @@ print.wlsPower <- function(x, ...){
 
 plot_InfoContent <- function(IC){
 
-  mx  <- max(IC)
-  sumCl <- dim(IC)[1]
-  timep <- dim(IC)[2]
+  mx  <- max(IC$Cells)
+  sumCl <- dim(IC$Cells)[1]
+  timep <- dim(IC$Cells)[2]
 
-  plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=IC,
+  subplot(
+    plot_ly(data=data.frame(time   = seq_along(IC$time),
+                            InfoC  = IC$time),
+            type="bar", x=~time, y=~InfoC, color=I("grey"),
+            name=" ",
+            hovertemplate="Time: %{x}\nInfoContent: %{y:.3f}") %>%
+      layout(yaxis=list(title=""),
+             xaxis=list(title="", showticklabels=FALSE))
+    ,
+    plotly_empty(type="scatter",mode="marker")
+    ,
+    plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=IC$Cells,
                      type="heatmap",
                      colors=grDevices::colorRamp(c("gold","darkorange1","firebrick")),
                      xgap=.3, ygap=.3, name=" ",
@@ -714,6 +726,18 @@ plot_InfoContent <- function(IC){
     colorbar(len=1,limits=c(1-1e-8,mx)) %>%
     layout(xaxis=list(title="time"),
            yaxis=list(title="cluster", autorange="reversed"))
+    ,
+    plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
+                            InfoC   = IC$Cluster),
+            type="bar", orientation="h",
+            y=~cluster, x=~InfoC, color=I("grey"),
+            name=" ",
+            hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.3f}") %>%
+      layout(xaxis=list(title=""),
+             yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+    ,
+    nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+  ) %>% layout(showlegend=FALSE)
 }
 
 
