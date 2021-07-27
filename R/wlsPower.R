@@ -547,7 +547,7 @@ compute_wlsPower <- function(DesMat,
                              INFO_CONTENT = FALSE,
                              verbose    = 1){
   dsnmatrix  <- DesMat$dsnmatrix
-  timepoints <- DesMat$timepoints
+  tp         <- DesMat$timepoints
   SumCl      <- sum(DesMat$Cl)
   SumSubCl   <- sum(DesMat$N)
   trtMat     <- DesMat$trtMat
@@ -555,7 +555,7 @@ compute_wlsPower <- function(DesMat,
   ## get covariance matrix #####
   if(is.null(CovMat))
     CovMat   <- construct_CovMat(SumCl      = SumCl,
-                                 timepoints = timepoints,
+                                 timepoints = tp,
                                  sigma      = sigma,
                                  tau        = tau,
                                  eta        = eta,
@@ -568,39 +568,54 @@ compute_wlsPower <- function(DesMat,
                                  INDIV_LVL  = INDIV_LVL)
 
   ## matrices for power calculation #####
-  tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
-  VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  if(verbose>0) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
+  dsncols <- dim(dsnmatrix)[2]
+
+  tmpmat <- matrix(
+    ((tdsnmatrix <- t(dsnmatrix)) %*% Matrix::chol2inv(Matrix::chol(CovMat)))@x,dsncols)
+  VarMat <- Matrix::solve( VarInv <- tmpmat %*% dsnmatrix )
+
+  if(verbose>0) ProjMat <- matrix((VarMat[1,] %*% tmpmat),
                                 nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
                                 byrow=TRUE)
 
-  ## Information content if requested ####
+  ## Information content, if requested ####
   if(INFO_CONTENT){
-    tdsnmatrix <- t(dsnmatrix)
-    VarInv     <- tmpmat %*% dsnmatrix
-
-    tp <- timepoints
-    I <- 1:SumCl #SumCl
-    J <- 1:tp #timepoints
-    InfoContent <- matrix(0,SumCl,tp)
+    I <- 1:SumCl
+    J <- 1:tp
+    InfoContent <- list(Cells=matrix(0,SumCl,tp),
+                        Cluster=numeric(SumCl),
+                        time =  numeric(tp))
+    tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     for(i in I){
       J_start <- tp*(i-1)
+
+      VarMat_drop <- Matrix::solve(
+        VarInv - tmpmat[,(J_start+J)] %*% dsnmatrix[(J_start+J),]
+      )
+      InfoContent$Cluster[i] <- VarMat_drop[1,1]/VarMat[1,1]
       for(j in J){
         J_drop <- J[-j] + J_start
         tmpmat_drop <- matrix(0, dim(tmpmat)[1], tp)
         tmpmat_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
-                                  Matrix::chol2inv(
-                                    Matrix::chol(
-                                      matrix(
-                                        CovMat@x[tp^2*(i-1) + 1:(tp)^2 ]
-                                        ,tp
-                                      ) [J[-j],J[-j]]
-                                  ))
+                                Matrix::chol2inv( Matrix::chol(
+                                  matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2 ],tp) [J[-j],J[-j]]
+                                ))
         VarMat_drop <- Matrix::solve( VarInv +
-                                      (tmpmat_drop[,J]-tmpmat[,J_start+J]) %*%
-                                      dsnmatrix[J_start+J,])
-        InfoContent[i,j] <- VarMat_drop[1,1]/VarMat[1,1]
+                          (tp_drop_updt <- (tmpmat_drop[,J]-tmpmat[,J_start+J]) %*%
+                               dsnmatrix[J_start+J,]) )
+        InfoContent$Cells[i,j] <- VarMat_drop[1,1]/VarMat[1,1]
+      }
+    }
+    if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
+      for(j in J){
+        VarMat_drop <- Matrix::solve( (VarInv + tp_drop[,,j])[-(j+1),-(j+1)])
+        InfoContent$time[j] <- VarMat_drop[1,1]/VarMat[1,1]
+      }
+    }else {
+      for(j in J){
+        VarMat_drop <- Matrix::solve( (VarInv + tp_drop[,,j]))
+        InfoContent$time[j] <- VarMat_drop[1,1]/VarMat[1,1]
       }
     }
   }
@@ -684,7 +699,7 @@ print.wlsPower <- function(x, ...){
 #' @return a plotly object
 #' @export
 #'
-#' @examples
+
 plot_InfoContent <- function(IC){
 
   mx  <- max(IC)
