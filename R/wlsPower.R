@@ -696,43 +696,56 @@ print.wlsPower <- function(x, ...){
 #' @title plot the information content of a wls object
 #'
 #' @param IC a matrix with information content for each cluster at each time period
+#' @param annotations logical, should the information content of cells be annotated in the Plot?
 #'
 #' @return a plotly object
 #' @export
 #'
 
-plot_InfoContent <- function(IC){
+plot_InfoContent <- function(IC, annotations=NULL){
 
+  if(is.null(annotations)){
+    annotations <- ifelse(length(IC$Cells)<=100,TRUE,FALSE)
+  }
   mx  <- max(IC$Cells)
   sumCl <- dim(IC$Cells)[1]
   timep <- dim(IC$Cells)[2]
+
+
+  PLT <- plot_ly(data=cbind(expand.grid(y=seq_len(sumCl),
+                                  x=seq_len(timep)),
+                      z=as.numeric(IC$Cells)),
+          x=~x, y=~y, z=~z,
+          type="heatmap",
+          colors=grDevices::colorRamp(c("gold","darkorange1","firebrick")),
+          xgap=.3, ygap=.3, name=" ",
+          hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.6f}" ) %>%
+    colorbar(len=1,limits=c(1-1e-8,mx)) %>%
+    layout(xaxis=list(title="Time"),
+           yaxis=list(title="Cluster", autorange="reversed"))
+  if(annotations){
+    PLT <- PLT %>% add_annotations(text=~round(z,3), showarrow=FALSE)
+  }
 
   subplot(
     plot_ly(data=data.frame(time   = seq_along(IC$time),
                             InfoC  = IC$time),
             type="bar", x=~time, y=~InfoC, color=I("grey"),
             name=" ",
-            hovertemplate="Time: %{x}\nInfoContent: %{y:.3f}") %>%
+            hovertemplate="Time: %{x}\nInfoContent: %{y:.6f}") %>%
       layout(yaxis=list(title=""),
              xaxis=list(title="", showticklabels=FALSE))
     ,
     plotly_empty(type="scatter",mode="marker")
     ,
-    plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=IC$Cells,
-                     type="heatmap",
-                     colors=grDevices::colorRamp(c("gold","darkorange1","firebrick")),
-                     xgap=.3, ygap=.3, name=" ",
-          hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.3f}") %>%
-    colorbar(len=1,limits=c(1-1e-8,mx)) %>%
-    layout(xaxis=list(title="time"),
-           yaxis=list(title="cluster", autorange="reversed"))
+    PLT
     ,
     plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
                             InfoC   = IC$Cluster),
             type="bar", orientation="h",
             y=~cluster, x=~InfoC, color=I("grey"),
             name=" ",
-            hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.3f}") %>%
+            hovertemplate="Cluster: %{y}\nInfoContent: %{x:.6f}") %>%
       layout(xaxis=list(title=""),
              yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
     ,
@@ -756,6 +769,7 @@ plot_InfoContent <- function(IC){
 #' @param which Specify a subset of the numbers 1:3 to select plots
 #' @param show_colorbars logical, should the colorbars be shown?
 #' @param ... Arguments to be passed to methods
+#' @param annotations logical, should the cell contributions be annotated in the Plot?
 #'
 #' @method plot wlsPower
 #'
@@ -763,40 +777,53 @@ plot_InfoContent <- function(IC){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
+plot.wlsPower <- function(x, which=1, show_colorbars=NULL,
+                          annotations=NULL, ...){
 
   WgtPlot <- if (1 %in% which){
+
+    if(is.null(annotations)){
+      annotations <- ifelse(length(x$ProjMatrix)<=100,TRUE,FALSE)
+    }
     wgt <- x$ProjMatrix
     mx  <- max(abs(wgt))
     sumCl <- dim(wgt)[1]
     timep <- dim(wgt)[2]
 
+    PLT <- plot_ly(data=cbind(expand.grid(y=seq_len(sumCl),
+                                          x=seq_len(timep)),
+                              wgt=as.numeric(wgt)),
+            x=~x, y=~y, z=~wgt, type="heatmap",
+            colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+            xgap=.3, ygap=.3, name=" ",
+            hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
+      colorbar(len=1,limits=c(-mx,mx)) %>%
+      layout(xaxis=list(title="time"),
+             yaxis=list(title="cluster", autorange="reversed"))
+    if(annotations){
+      PLT <- PLT %>% add_annotations(text=~round(wgt,3), showarrow=FALSE)
+    }
+
     suppressWarnings(
       subplot(
-        plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+        plot_ly(data=data.frame(time   = seq_len(timep),
                                 weight = colSums(abs(wgt))),
                 type="bar", x=~time, y=~weight, color=I("grey"),
                 name=" ",
-                hovertemplate="Time: %{x}\nWeight: %{y:.3f}") %>%
+                hovertemplate="Time: %{x}\nWeight: %{y:.6f}") %>%
           layout(yaxis=list(title="Sum|weights|"),
                  xaxis=list(title="", showticklabels=FALSE))
         ,
         plotly_empty(type="scatter",mode="marker")
         ,
-        plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
-                colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-                xgap=.3, ygap=.3, name=" ",
-                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.3f}") %>%
-          colorbar(len=1,limits=c(-mx,mx)) %>%
-          layout(xaxis=list(title="time"),
-                 yaxis=list(title="cluster", autorange="reversed"))
+        PLT
         ,
-        plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+        plot_ly(data=data.frame(cluster=seq_len(sumCl),
                                 weight=rowSums(abs(wgt))),
                 type="bar", orientation="h",
                 y=~cluster, x=~weight, color=I("grey"),
                 name=" ",
-                hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.3f}") %>%
+                hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.6f}") %>%
           layout(xaxis=list(title="Sum|weights|"),
                  yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
         ,

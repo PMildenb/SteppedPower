@@ -4,7 +4,7 @@
 \alias{plot.wlsPower}
 \title{plot an object of class `wlsPower`}
 \usage{
-\method{plot}{wlsPower}(x, which = 1, show_colorbars = NULL, ...)
+\method{plot}{wlsPower}(x, which = 1, show_colorbars = NULL, annotations = NULL, ...)
 }
 \arguments{
 \item{x}{object of class wlsPower}
@@ -12,6 +12,8 @@
 \item{which}{Specify a subset of the numbers 1:3 to select plots}
 
 \item{show_colorbars}{logical, should the colorbars be shown?}
+
+\item{annotations}{logical, should the cell contributions be annotated in the Plot?}
 
 \item{...}{Arguments to be passed to methods}
 }

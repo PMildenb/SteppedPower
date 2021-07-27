@@ -4,10 +4,12 @@
 \alias{plot_InfoContent}
 \title{plot the information content of a wls object}
 \usage{
-plot_InfoContent(IC)
+plot_InfoContent(IC, annotations = NULL)
 }
 \arguments{
 \item{IC}{a matrix with information content for each cluster at each time period}
+
+\item{annotations}{logical, should the information content of cells be annotated in the Plot?}
 }
 \value{
 a plotly object
