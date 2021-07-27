@@ -71,6 +71,7 @@
 #' @param dfAdjust character, one of the following: "none","between-within",
 #' "containment", "residual".
 #' @param verbose integer, how much information should the function return?
+#' See also under `Value`.
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix with
 #' (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
@@ -79,6 +80,8 @@
 #' @param INDIV_LVL logical, should the computation be conducted on an
 #' individual level? This leads to longer run time and is
 #' mainly for diagnostic purposes.
+#' @param INFO_CONTENT logical, should the information content of cluster cells be
+#' computed? As it may be time-consuming, the default ist `FALSE`. This ist still experimental(!)
 #'
 #' @details
 #' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
@@ -199,10 +202,12 @@
 #' wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 #'               family="binomial", marginal_mu=TRUE)
 #'
+#'##
+#'##
+#'
 
 
-
-wlsPower <- function( Cl            = NULL,
+ wlsPower <- function( Cl            = NULL,
                       timepoints    = NULL,
                       DesMat        = NULL,
                       trtDelay      = NULL,
@@ -229,6 +234,7 @@ wlsPower <- function( Cl            = NULL,
                       sig.level     = 0.05,
                       dfAdjust      = "none",
                       INDIV_LVL     = FALSE,
+                      INFO_CONTENT  = FALSE,
                       verbose       = 1){
   ## Match string inputs ####
   ### dsntype
@@ -459,6 +465,7 @@ wlsPower <- function( Cl            = NULL,
                                                            sig.level = sig.level,
                                                            CovMat    = CovMat,
                                                            INDIV_LVL = INDIV_LVL,
+                                                           INFO_CONTENT = FALSE,
                                                            verbose   = 0)},
                 interval=N_range)$root),
               error=function(cond){
@@ -483,6 +490,7 @@ wlsPower <- function( Cl            = NULL,
                           sig.level = sig.level,
                           CovMat    = CovMat,
                           INDIV_LVL = INDIV_LVL,
+                          INFO_CONTENT = INFO_CONTENT,
                           verbose   = verbose)
   if(!is.null(power)) out$N_opt <- N_opt
 
@@ -536,6 +544,7 @@ compute_wlsPower <- function(DesMat,
                              dfAdjust   = "none",
                              sig.level  = .05,
                              INDIV_LVL  = FALSE,
+                             INFO_CONTENT = FALSE,
                              verbose    = 1){
   dsnmatrix  <- DesMat$dsnmatrix
   timepoints <- DesMat$timepoints
@@ -564,6 +573,38 @@ compute_wlsPower <- function(DesMat,
   if(verbose>0) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
                                 nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
                                 byrow=TRUE)
+
+  ## Information content if requested ####
+  if(INFO_CONTENT){
+    tdsnmatrix <- t(dsnmatrix)
+    VarInv     <- tmpmat %*% dsnmatrix
+
+    tp <- timepoints
+    I <- 1:SumCl #SumCl
+    J <- 1:tp #timepoints
+    InfoContent <- matrix(0,SumCl,tp)
+
+    for(i in I){
+      J_start <- tp*(i-1)
+      for(j in J){
+        J_drop <- J[-j] + J_start
+        tmpmat_drop <- matrix(0, dim(tmpmat)[1], tp)
+        tmpmat_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
+                                  Matrix::chol2inv(
+                                    Matrix::chol(
+                                      matrix(
+                                        CovMat@x[tp^2*(i-1) + 1:(tp)^2 ]
+                                        ,tp
+                                      ) [J[-j],J[-j]]
+                                  ))
+        VarMat_drop <- Matrix::solve( VarInv +
+                                      (tmpmat_drop[,J]-tmpmat[,J_start+J]) %*%
+                                      dsnmatrix[J_start+J,])
+        InfoContent[i,j] <- VarMat_drop[1,1]/VarMat[1,1]
+      }
+    }
+  }
+
 
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
@@ -597,12 +638,16 @@ compute_wlsPower <- function(DesMat,
                              dfAdjust   = dfAdjust,
                              sig.level  = sig.level),
                 ProjMatrix = ProjMat)
+  if(INFO_CONTENT){
+    out <- append(out,
+                  list(InformationContent= InfoContent))
   }
   if(verbose==2)
     out <- append(out,
                   list(DesignMatrix     = DesMat,
                        CovarianceMatrix = CovMat))
   return(out)
+  }
 }
 
 #' @title Print an object of class `wlsPower`
@@ -629,6 +674,35 @@ print.wlsPower <- function(x, ...){
   if("N_opt" %in% names(x))
   message("Needed N per cluster per period      = ", x$N_opt,"\n")
 }
+
+
+
+#' @title plot the information content of a wls object
+#'
+#' @param IC a matrix with information content for each cluster at each time period
+#'
+#' @return a plotly object
+#' @export
+#'
+#' @examples
+plot_InfoContent <- function(IC){
+
+  mx  <- max(IC)
+  sumCl <- dim(IC)[1]
+  timep <- dim(IC)[2]
+
+  plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=IC,
+                     type="heatmap",
+                     colors=grDevices::colorRamp(c("gold","darkorange1","firebrick")),
+                     xgap=.3, ygap=.3, name=" ",
+          hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.3f}") %>%
+    colorbar(len=1,limits=c(1-1e-8,mx)) %>%
+    layout(xaxis=list(title="time"),
+           yaxis=list(title="cluster", autorange="reversed"))
+}
+
+
+
 
 
 
@@ -664,7 +738,7 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
                                 weight = colSums(abs(wgt))),
                 type="bar", x=~time, y=~weight, color=I("grey"),
                 name=" ",
-                hovertemplate="Time: %{x}\nWeight: %{y}") %>%
+                hovertemplate="Time: %{x}\nWeight: %{y:.3f}") %>%
           layout(yaxis=list(title="Sum|weights|"),
                  xaxis=list(title="", showticklabels=FALSE))
         ,
@@ -673,7 +747,7 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
         plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
                 colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
                 xgap=.3, ygap=.3, name=" ",
-                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
+                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.3f}") %>%
           colorbar(len=1,limits=c(-mx,mx)) %>%
           layout(xaxis=list(title="time"),
                  yaxis=list(title="cluster", autorange="reversed"))
@@ -683,7 +757,7 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
                 type="bar", orientation="h",
                 y=~cluster, x=~weight, color=I("grey"),
                 name=" ",
-                hovertemplate="Cluster: %{y}\nAbsWeight: %{x}") %>%
+                hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.3f}") %>%
           layout(xaxis=list(title="Sum|weights|"),
                  yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
         ,

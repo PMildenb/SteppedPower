@@ -32,6 +32,7 @@ wlsPower(
   sig.level = 0.05,
   dfAdjust = "none",
   INDIV_LVL = FALSE,
+  INFO_CONTENT = FALSE,
   verbose = 1
 )
 }
@@ -131,7 +132,11 @@ ignored if `power` is NULL.}
 individual level? This leads to longer run time and is
 mainly for diagnostic purposes.}
 
-\item{verbose}{integer, how much information should the function return?}
+\item{INFO_CONTENT}{logical, should the information content of cluster cells be
+computed? As it may be time-consuming, the default ist `FALSE`. This ist still experimental(!)}
+
+\item{verbose}{integer, how much information should the function return?
+See also under `Value`.}
 }
 \value{
 The return depends on the `verbose` parameter.
@@ -252,5 +257,8 @@ wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 ## ... with  marginally defined proportions
 wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
               family="binomial", marginal_mu=TRUE)
+
+##
+##
 
 }
