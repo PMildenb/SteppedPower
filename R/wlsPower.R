@@ -81,7 +81,8 @@
 #' individual level? This leads to longer run time and is
 #' mainly for diagnostic purposes.
 #' @param INFO_CONTENT logical, should the information content of cluster cells be
-#' computed? As it may be time-consuming, the default ist `FALSE`. This ist still experimental(!)
+#' computed? The default is `TRUE` for designs with less or equal than 2500
+#' cluster cells, otherwise `FALSE`. This ist still experimental(!)
 #'
 #' @details
 #' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
@@ -234,7 +235,7 @@
                       sig.level     = 0.05,
                       dfAdjust      = "none",
                       INDIV_LVL     = FALSE,
-                      INFO_CONTENT  = FALSE,
+                      INFO_CONTENT  = NULL,
                       verbose       = 1){
   ## Match string inputs ####
   ### dsntype
@@ -363,6 +364,9 @@
     dsntype <- DesMat$dsntype
   }
 
+  if(is.null(INFO_CONTENT) & verbose>0)
+    INFO_CONTENT <- ifelse(length(DesMat$trtmatrix)<=2500,TRUE,FALSE)
+
   ## declare temporary variables #####
   timepoints <- DesMat$timepoints
   lenCl      <- length(DesMat$Cl)
@@ -489,6 +493,7 @@
                           dfAdjust  = dfAdjust,
                           sig.level = sig.level,
                           CovMat    = CovMat,
+                          incompMat = if(exists("IM")) IM else NULL,    ## TODO: should be included into `DesMat`
                           INDIV_LVL = INDIV_LVL,
                           INFO_CONTENT = INFO_CONTENT,
                           verbose   = verbose)
@@ -543,6 +548,7 @@ compute_wlsPower <- function(DesMat,
                              CovMat     = NULL,
                              dfAdjust   = "none",
                              sig.level  = .05,
+                             incompMat  = NULL,
                              INDIV_LVL  = FALSE,
                              INFO_CONTENT = FALSE,
                              verbose    = 1){
@@ -570,11 +576,11 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   dsncols <- dim(dsnmatrix)[2]
 
-  tmpmat <- matrix(
+  XQ <- matrix(
     ((tdsnmatrix <- t(dsnmatrix)) %*% Matrix::chol2inv(Matrix::chol(CovMat)))@x,dsncols)
-  VarMat <- Matrix::solve( VarInv <- tmpmat %*% dsnmatrix )
+  Var <- Matrix::solve( VarInv <- XQ %*% dsnmatrix )
 
-  if(verbose>0) ProjMat <- matrix((VarMat[1,] %*% tmpmat),
+  if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
                                 nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
                                 byrow=TRUE)
 
@@ -582,45 +588,46 @@ compute_wlsPower <- function(DesMat,
   if(INFO_CONTENT){
     I <- 1:sumCl
     J <- 1:tp
-    InfoContent <- list(Cells=matrix(0,sumCl,tp),
-                         Cluster=numeric(sumCl),
-                         time =  numeric(tp))
+    InfoContent <- list(Cells=matrix(NA,sumCl,tp),
+                        Cluster=numeric(sumCl),
+                        time =  numeric(tp))
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     for(i in I){
-      J_start <- tp*(i-1)
+      J_start  <- tp*(i-1)
+      J_incomp <- if(is.null(incompMat)) J else J[incompMat[i,]==1]  ## no computation of empty cells
 
-      VarMat_drop <- Matrix::solve(
-        VarInv - tmpmat[,(J_start+J)] %*% dsnmatrix[(J_start+J),]
-      )
-      InfoContent$Cluster[i] <- VarMat_drop[1,1]/VarMat[1,1]
-      for(j in J){
+      Var_drop <-Rfast::spdinv( VarInv - XQ[,(J_start+J)] %*% dsnmatrix[(J_start+J),] )
+      InfoContent$Cluster[i] <- Var_drop[1,1]/Var[1,1]
+
+      for(j in J_incomp){
         J_drop <- J[-j] + J_start
-        tmpmat_drop <- matrix(0, dsncols, tp)
-        tmpmat_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
-                                Matrix::chol2inv( Matrix::chol(
-                                  matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2 ],tp) [J[-j],J[-j]]
-                                ))
-        VarMat_drop <- Matrix::solve( VarInv +
-                          (tp_drop_updt <- (tmpmat_drop[,J]-tmpmat[,J_start+J]) %*%
-                               dsnmatrix[J_start+J,]) )
-        tp_drop[,,j]           <- (tp_drop[,,j] + tp_drop_updt)
-        InfoContent$Cells[i,j] <- VarMat_drop[1,1]/VarMat[1,1]
+        XQ_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
+        XQ_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
+          Rfast::spdinv(
+            matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2 ],tp) [J[-j],J[-j]]
+          )
+        Var_drop <- Rfast::spdinv(
+          VarInv + (tp_drop_updt <- (XQ_drop[,J]-XQ[,J_start+J]) %*%
+                      dsnmatrix[J_start+J,])
+        )
+        tp_drop[,,j]           <- tp_drop[,,j] + tp_drop_updt
+        InfoContent$Cells[i,j] <- Var_drop[1,1]/Var[1,1]
       }
     }
     if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
       for(j in J){
-        VarMat_drop <- Matrix::solve( (VarInv + tp_drop[,,j])[-(j+1),-(j+1)])
-        InfoContent$time[j] <- VarMat_drop[1,1]/VarMat[1,1]
+        Var_drop <- Rfast::spdinv(
+          (VarInv + tp_drop[,,j])[-(j+1),-(j+1)]  )
+        InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
       }
     }else {
       for(j in J){
-        VarMat_drop <- Matrix::solve( (VarInv + tp_drop[,,j]))
-        InfoContent$time[j] <- VarMat_drop[1,1]/VarMat[1,1]
+        Var_drop <- Rfast::spdinv( VarInv + tp_drop[,,j] )
+        InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
       }
     }
   }
-
 
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
@@ -705,27 +712,28 @@ print.wlsPower <- function(x, ...){
 plot_InfoContent <- function(IC, annotations=NULL){
 
   if(is.null(annotations)){
-    annotations <- ifelse(length(IC$Cells)<=100,TRUE,FALSE)
+    annotations <- ifelse(length(IC$Cells)<=1e4,TRUE,FALSE)
   }
   mx  <- max(IC$Cells)
   sumCl <- dim(IC$Cells)[1]
   timep <- dim(IC$Cells)[2]
 
+  dat=cbind(expand.grid(y=seq_len(sumCl),
+                        x=seq_len(timep)),
+            z=as.numeric(IC$Cells),
+            zChar=as.character(round(IC$Cells,3)))
+  dat$zChar[is.na(dat$zChar)] <- ""
 
-  PLT <- plot_ly(data=cbind(expand.grid(y=seq_len(sumCl),
-                                  x=seq_len(timep)),
-                      z=as.numeric(IC$Cells)),
-          x=~x, y=~y, z=~z,
+  PLT <- plot_ly(data=dat, x=~x, y=~y,  z=~z,
           type="heatmap",
-          colors=grDevices::colorRamp(c("gold","darkorange1","firebrick")),
+          colors=grDevices::colorRamp(c("white","gold","firebrick")),
           xgap=.3, ygap=.3, name=" ",
           hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.6f}" ) %>%
     colorbar(len=1,limits=c(1-1e-8,mx)) %>%
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
-  if(annotations){
-    PLT <- PLT %>% add_annotations(text=~round(z,3), showarrow=FALSE)
-  }
+  if(annotations) PLT <- PLT %>% add_annotations(text=~zChar, showarrow=FALSE)
+
 
   subplot(
     plot_ly(data=data.frame(time   = seq_along(IC$time),
@@ -766,7 +774,8 @@ plot_InfoContent <- function(IC, annotations=NULL){
 #' the covariance matrix. By default, only the first plot is returned.
 #'
 #' @param x object of class wlsPower
-#' @param which Specify a subset of the numbers 1:3 to select plots
+#' @param which Specify a subset of the numbers `1:4` to select plots. The default is
+#' `1:2` or `1`, depending on whether `x` contains the information content.
 #' @param show_colorbars logical, should the colorbars be shown?
 #' @param ... Arguments to be passed to methods
 #' @param annotations logical, should the cell contributions be annotated in the Plot?
@@ -777,32 +786,35 @@ plot_InfoContent <- function(IC, annotations=NULL){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, which=1, show_colorbars=NULL,
+plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
                           annotations=NULL, ...){
+  if(is.null(which))
+    which <- if("InformationContent" %in% names(x)) 1:2 else 1
 
   WgtPlot <- if (1 %in% which){
 
     if(is.null(annotations)){
-      annotations <- ifelse(length(x$ProjMatrix)<=100,TRUE,FALSE)
+      annotations <- ifelse(length(x$ProjMatrix)<=1e4,TRUE,FALSE)
     }
     wgt <- x$ProjMatrix
     mx  <- max(abs(wgt))
     sumCl <- dim(wgt)[1]
     timep <- dim(wgt)[2]
 
-    PLT <- plot_ly(data=cbind(expand.grid(y=seq_len(sumCl),
-                                          x=seq_len(timep)),
-                              wgt=as.numeric(wgt)),
-            x=~x, y=~y, z=~wgt, type="heatmap",
+    dat <- cbind(expand.grid(y=seq_len(sumCl),
+                             x=seq_len(timep)),
+                 wgt=as.numeric(wgt),
+                 wgtChar=as.character(round(wgt,3)) )
+    dat$wgtChar[is.na(dat$wgtChar)] <- ""
+
+    PLT <- plot_ly(data=dat, x=~x, y=~y, z=~wgt, type="heatmap",
             colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
             xgap=.3, ygap=.3, name=" ",
             hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
       colorbar(len=1,limits=c(-mx,mx)) %>%
       layout(xaxis=list(title="time"),
              yaxis=list(title="cluster", autorange="reversed"))
-    if(annotations){
-      PLT <- PLT %>% add_annotations(text=~round(wgt,3), showarrow=FALSE)
-    }
+    if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
 
     suppressWarnings(
       subplot(
@@ -832,15 +844,21 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL,
     )
   } else NULL
 
-  DMplot <- if (2 %in% which){
+  ICplot <- if (2 %in% which){
+    if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
+    plot_InfoContent(x$InformationContent, annotations=annotations)
+  } else NULL
+
+  DMplot <- if (3 %in% which){
     if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot(x$DesignMatrix, show_colorbar=show_colorbars)
   } else NULL
 
-  CMplot <- if (3 %in% which){
+  CMplot <- if (4 %in% which){
     if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbars)
   } else NULL
 
-  return(list(WgtPlot,DMplot,CMplot))
+
+  return(list(WgtPlot,ICplot,DMplot,CMplot))
 }

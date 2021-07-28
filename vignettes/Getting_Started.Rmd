@@ -177,11 +177,14 @@ to a block diagonal matrix.
 
 ## Plot Method
 
-The `plot.wlsPower` method makes up to three plots, visualising the influence 
-of cluster-periods, the treatment matrix $T$ and the covariance matrix 
+The `plot.wlsPower` method makes up to four plots, visualising the influence 
+of cluster-periods, the information content of cluster-periods, 
+the treatment matrix $T$ and the covariance matrix 
 (selectable by `which=`). 
 
-By default, only the first plot is returned. It is constructed by exploiting the 
+By default, only the first plot is returned. The information content is also
+plotted if it the object to be plotted contains the corresponding matrix 
+(This is usually the case). It is constructed by exploiting the 
 approximation to a weighted least squares setting. Therefore, 
 the estimator $\hat \beta$ is a linear function of the data $y$
 

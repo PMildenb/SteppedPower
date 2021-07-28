@@ -13,6 +13,7 @@
 #' @importFrom utils adist
 #' @importFrom plotly colorbar config layout plot_ly plotly_empty subplot
 #' "%>%" add_annotations
+#' @importFrom Rfast spdinv
 #'
 #' @author Philipp Mildenberger \email{pmildenb@@uni-mainz.de}
 #' @name SteppedPower-pkg

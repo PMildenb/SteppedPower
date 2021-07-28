@@ -70,7 +70,8 @@ individual level? This leads to longer run time and is
 mainly for diagnostic purposes.}
 
 \item{INFO_CONTENT}{logical, should the information content of cluster cells be
-computed? As it may be time-consuming, the default ist `FALSE`. This ist still experimental(!)}
+computed? The default is `TRUE` for designs with less or equal than 2500
+cluster cells, otherwise `FALSE`. This ist still experimental(!)}
 
 \item{verbose}{integer, how much information should the function return?
 See also under `Value`.}
