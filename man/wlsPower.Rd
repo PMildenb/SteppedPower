@@ -32,7 +32,7 @@ wlsPower(
   sig.level = 0.05,
   dfAdjust = "none",
   INDIV_LVL = FALSE,
-  INFO_CONTENT = FALSE,
+  INFO_CONTENT = NULL,
   verbose = 1
 )
 }

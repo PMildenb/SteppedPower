@@ -366,7 +366,7 @@
   ## declare temporary variables #####
   timepoints <- DesMat$timepoints
   lenCl      <- length(DesMat$Cl)
-  SumCl      <- sum(DesMat$Cl)
+  sumCl      <- sum(DesMat$Cl)
 
 
   ## distribution family ####
@@ -387,7 +387,7 @@
       print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
     }
 
-    muMat   <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
+    muMat   <- matrix(mu0, sumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
     sigma   <- sqrt(muMat * (1-muMat))
 
     if (verbose>0) {
@@ -434,7 +434,7 @@
 
 
     }else if(is.matrix(incomplete)){
-      if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
+      if(!nrow(incomplete) %in% c(lenCl,sumCl) | ncol(incomplete)!=timepoints)
         stop("matrix dimensions of argument `incomplete` are ",
              paste(dim(incomplete),collapse="x"), " but must be ",
              paste(dim(DesMat$trtMat),collapse="x"), " or ",
@@ -443,7 +443,7 @@
       IM[which(IM==0)] <- Inf
       if(nrow(incomplete)==lenCl) IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
     }
-    sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
+    sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
 
@@ -548,13 +548,13 @@ compute_wlsPower <- function(DesMat,
                              verbose    = 1){
   dsnmatrix  <- DesMat$dsnmatrix
   tp         <- DesMat$timepoints
-  SumCl      <- sum(DesMat$Cl)
+  sumCl      <- sum(DesMat$Cl)
   SumSubCl   <- sum(DesMat$N)
   trtMat     <- DesMat$trtMat
 
   ## get covariance matrix #####
   if(is.null(CovMat))
-    CovMat   <- construct_CovMat(SumCl      = SumCl,
+    CovMat   <- construct_CovMat(sumCl      = sumCl,
                                  timepoints = tp,
                                  sigma      = sigma,
                                  tau        = tau,
@@ -575,16 +575,16 @@ compute_wlsPower <- function(DesMat,
   VarMat <- Matrix::solve( VarInv <- tmpmat %*% dsnmatrix )
 
   if(verbose>0) ProjMat <- matrix((VarMat[1,] %*% tmpmat),
-                                nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
+                                nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
                                 byrow=TRUE)
 
   ## Information content, if requested ####
   if(INFO_CONTENT){
-    I <- 1:SumCl
+    I <- 1:sumCl
     J <- 1:tp
-    InfoContent <- list(Cells=matrix(0,SumCl,tp),
-                        Cluster=numeric(SumCl),
-                        time =  numeric(tp))
+    InfoContent <- list(Cells=matrix(0,sumCl,tp),
+                         Cluster=numeric(sumCl),
+                         time =  numeric(tp))
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     for(i in I){
@@ -625,8 +625,8 @@ compute_wlsPower <- function(DesMat,
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
                "none"           = Inf,
-               "between-within" = SumCl - rankMatrix(dsnmatrix),
-               "containment"    = dim(dsnmatrix)[1] - SumCl,
+               "between-within" = sumCl - rankMatrix(dsnmatrix),
+               "containment"    = dim(dsnmatrix)[1] - sumCl,
                "residual"       = dim(dsnmatrix)[1] - rankMatrix(dsnmatrix))
   if(df<3){
     warning(dfAdjust,"-method not applicable. No DDF adjustment used.")

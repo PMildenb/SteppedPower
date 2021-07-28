@@ -187,7 +187,7 @@ construct_trtMat <- function(Cl,
                              dsntype,
                              timepoints=NULL){
 
-  SumCl         <- sum(Cl)
+  sumCl         <- sum(Cl)
   lenCl         <- length(Cl)
 
   if(dsntype=="SWD"){
@@ -281,10 +281,10 @@ construct_timeAdjust <- function(Cl,
                                  period     = NULL,
                                  timeBlk    = NULL){
 
-  SumCl   <- sum(Cl)
+  sumCl   <- sum(Cl)
   if(!is.null(timeBlk)) {
     timepoints <- dim(timeBlk)[1]
-    timeBlks   <- timeBlk[rep(seq_len(timepoints),SumCl),]
+    timeBlks   <- timeBlk[rep(seq_len(timepoints),sumCl),]
     return(timeBlks)
   }
 
@@ -293,21 +293,21 @@ construct_timeAdjust <- function(Cl,
 
   timeBlks <- switch (timeAdjust,
     factor   = cbind(1,rbind(0,diag(timepoints-1))
-                     )[rep(seq_len(timepoints),SumCl),]
+                     )[rep(seq_len(timepoints),sumCl),]
     ,
-    none     = matrix(rep(1,timepoints*SumCl))
+    none     = matrix(rep(1,timepoints*sumCl))
     ,
-    linear   = cbind(rep(1,timepoints*SumCl),
-                     rep(seq_len(timepoints)/timepoints,SumCl))
+    linear   = cbind(rep(1,timepoints*sumCl),
+                     rep(seq_len(timepoints)/timepoints,sumCl))
     ,
     periodic = cbind(rep(1,timepoints),
                      sin(0:(timepoints-1)*(2*pi/period)),
                      cos(0:(timepoints-1)*(2*pi/period))
-                     )[rep(seq_len(timepoints),SumCl),]
+                     )[rep(seq_len(timepoints),sumCl),]
     ,
-    quadratic= cbind(rep(1,timepoints*SumCl),
-                     rep(seq_len(timepoints)/timepoints,SumCl),
-                     rep(seq_len(timepoints)/timepoints,SumCl)^2)
+    quadratic= cbind(rep(1,timepoints*sumCl),
+                     rep(seq_len(timepoints)/timepoints,sumCl),
+                     rep(seq_len(timepoints)/timepoints,sumCl)^2)
   )
 
   return(timeBlks)
