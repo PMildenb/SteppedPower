@@ -42,6 +42,7 @@ construct_DesMat <- function(Cl          = NULL,
                              trtmatrix   = NULL,
                              timeBlk     = NULL,
                              N           = NULL,
+                             incomplete  = NULL,
                              INDIV_LVL   = FALSE){
   if(INDIV_LVL){
     if(length(N)==1){
@@ -57,7 +58,7 @@ construct_DesMat <- function(Cl          = NULL,
 
     if(inherits(trtmatrix,"matrix")){
       trtMat  <- trtmatrix
-    }else if (inherits(trtMat, "list") & "swDsn" %in% names(trtmatrix)){
+    }else if (inherits(trtMat, "list") & "swDsn" %in% names(trtmatrix)){ ## to handle swCRTdesign::swDsn()
       trtMat <- trtmatrix$swDsn
     } else stop("trtmatrix must be a matrix. It is a ",class(trtMat))
 
@@ -85,6 +86,14 @@ construct_DesMat <- function(Cl          = NULL,
 
   dsnmatrix <- cbind(trt=as.numeric(t(tmpTrtMat)), timeBlks)
 
+  ## INCOMPLETE DESIGNS ####
+  if(!is.null(incomplete))
+    incompMat <- construct_incompMat(incomplete = incomplete,
+                                     dsntype    = dsntype,
+                                     timepoints = timepoints,
+                                     Cl         = Cl,
+                                     trtmatrix  = trtMat)
+
   DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
                   trtDelay   = trtDelay,
@@ -94,7 +103,8 @@ construct_DesMat <- function(Cl          = NULL,
                   timeAdjust = ifelse(is.null(timeBlk),
                                       timeAdjust,
                                       "userdefined"),
-                  trtMat     = trtMat)
+                  trtMat     = trtMat,
+                  incompMat  = if(exists("incompMat")) incompMat else NULL)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
@@ -311,4 +321,50 @@ construct_timeAdjust <- function(Cl,
   )
 
   return(timeBlks)
+}
+
+#' @title Constructs a matrix of 0 and 1 for unobserved and observed cluster periods, respectively.
+#'
+#' @description Mostly useful to build incomplete stepped wedge designs
+#'
+#' @inheritParams construct_DesMat
+#' @return a matrix
+#' @export
+#'
+construct_incompMat <- function(incomplete,dsntype,timepoints,Cl,
+                                trtmatrix=NULL){
+  lenCl <- length(Cl)
+  sumCl <- sum(Cl)
+
+  if(is.vector(incomplete)){
+    if(dsntype !="SWD")
+      stop("scalar input for argument `incomplete` is only, ",
+           "applicable for dsntype = 'SWD'. ")
+    if(length(incomplete)!=1)
+      stop("incomplete cannot be a vector of length > 1.")
+    if(incomplete>timepoints) {
+      incomplete <- timepoints
+      warning("Argument `incomplete` must be less or equal to the number of",
+              "timepoints. `incomplete` is set to ", timepoints )
+    }
+    Toep <- toeplitz(c(rep(1,incomplete),rep(0,lenCl-incomplete)))
+    lastCols <- (timepoints-lenCl+1):timepoints
+
+    IM <- matrix(1,lenCl,timepoints)
+    IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
+    IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
+
+    IM <- IM[rep(seq_len(lenCl),Cl),]
+
+
+  }else if(is.matrix(incomplete)){
+    if(!nrow(incomplete) %in% c(lenCl,sumCl) | ncol(incomplete)!=timepoints)
+      stop("matrix dimensions of argument `incomplete` are ",
+           paste(dim(incomplete),collapse="x"), " but must be ",
+           paste(dim(trtmatrix),collapse="x"), " or ",
+           paste(dim(unique(trtmatrix)),collapse="x"))
+    IM <- incomplete
+    if(nrow(incomplete)==lenCl) IM <- IM[rep(seq_len(lenCl),Cl),]
+  }
+  return(IM)
 }

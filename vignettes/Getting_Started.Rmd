@@ -514,7 +514,7 @@ Open2Indiv <- wlsPower(mu0=0, mu1=10, Cl=c(1,1,1,0),
                        sigma=1, tau=5, psi=10, AR=c(1,1,.60),
                        N=3, verbose=2, INDIV_LVL=TRUE)
 
-plot(Open2Indiv, which=3)[[3]]
+plot(Open2Indiv, which=4)[[4]]
 ```
 
 Note that you can zoom to get a better look at the structure. The autoregressive 

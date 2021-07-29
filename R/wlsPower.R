@@ -297,12 +297,6 @@
       if( (-1)>rho | rho>1 )
         stop("Correlation rho must be between -1 and 1")
     }
-    if(is.null(tau)){
-      tau <- 0
-      warning("Random cluster effect tau and random treatment effect eta",
-              " are assumed to be 0, i.e. the observations across clusters are",
-              " assumed to be marginally independent. Declare tau=0 to supress this warning.")
-    }
     if(!is.null(psi) & is.null(power)){
       if(is.null(N))
         stop("If the standard deviation `psi` is not null, N is needed.")
@@ -340,19 +334,20 @@
                                   timepoints = timepoints,
                                   timeAdjust = timeAdjust,
                                   period     = period,
+                                  incomplete = incomplete,
                                   N          = if(INDIV_LVL) N,
                                   INDIV_LVL  = INDIV_LVL )
   }else{
     if(inherits(DesMat, "DesMat")) {
-      if(!all(sapply(list(Cl, timepoints, trtDelay,
-                          period),     is.null)))      ## timeAdjust??
+      if(!all(sapply(list(Cl, timepoints,timeAdjust,trtDelay,period,incomplete),is.null)))      ## timeAdjust??
         warning("If input to argument DesMat inherits class `DesMat`, \n",
-                "Cl, timepoints, trtDelay, ",
+                "Cl, timepoints, trtDelay, incomplete,",
                 "timeAdjust, period and dsntype are ignored.")
     } else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
       DesMat <- construct_DesMat(trtmatrix  = DesMat,
                                  timeAdjust = timeAdjust,
                                  period     = period,
+                                 incomplete = incomplete,
                                  N          = if(INDIV_LVL) N,
                                  INDIV_LVL  = INDIV_LVL)
       if(!all(sapply(list(Cl, timepoints, trtDelay, dsntype), is.null)))
@@ -364,14 +359,20 @@
     dsntype <- DesMat$dsntype
   }
 
-  if(is.null(INFO_CONTENT) & verbose>0)
-    INFO_CONTENT <- ifelse(length(DesMat$trtmatrix)<=2500,TRUE,FALSE)
-
   ## declare temporary variables #####
   timepoints <- DesMat$timepoints
   lenCl      <- length(DesMat$Cl)
   sumCl      <- sum(DesMat$Cl)
 
+  ## default for INFO_CONTENT ####
+  if(is.null(INFO_CONTENT)){
+    INFO_CONTENT <- ifelse(length(DesMat$trtMat)<=2500 & sumCl>2 &
+                           verbose>0 & !INDIV_LVL,                   TRUE,FALSE)
+  }else if(INFO_CONTENT & sumCl<=2) {
+    INFO_CONTENT <- FALSE
+    warning("Information Content not (yet) implemented for only two clusters.",
+            "INFO_CONTENT set to FALSE.")
+  }
 
   ## distribution family ####
   if(family =="gaussian"){
@@ -415,38 +416,9 @@
 
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
+    IM <- DesMat$incompMat
+    IM[IM==0] <- Inf
 
-    if(is.vector(incomplete)){
-      if(dsntype !="SWD")
-        stop("scalar input for argument `incomplete` is only, ",
-             "applicable for dsntype = 'SWD'. ")
-      if(length(incomplete)!=1)
-        stop("incomplete cannot be a vector of length > 1.")
-      if(incomplete>timepoints) {
-        incomplete <- timepoints
-        warning("Argument `incomplete` must be less or equal to the number of",
-                "timepoints. `incomplete` is set to ", timepoints )
-      }
-      Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
-      lastCols <- (timepoints-lenCl+1):timepoints
-
-      IM <- matrix(1,lenCl,timepoints)
-      IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
-      IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
-
-      IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
-
-
-    }else if(is.matrix(incomplete)){
-      if(!nrow(incomplete) %in% c(lenCl,sumCl) | ncol(incomplete)!=timepoints)
-        stop("matrix dimensions of argument `incomplete` are ",
-             paste(dim(incomplete),collapse="x"), " but must be ",
-             paste(dim(DesMat$trtMat),collapse="x"), " or ",
-             paste(dim(unique(DesMat$trtMat)),collapse="x"))
-      IM <- incomplete
-      IM[which(IM==0)] <- Inf
-      if(nrow(incomplete)==lenCl) IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
-    }
     sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
@@ -493,7 +465,6 @@
                           dfAdjust  = dfAdjust,
                           sig.level = sig.level,
                           CovMat    = CovMat,
-                          incompMat = if(exists("IM")) IM else NULL,    ## TODO: should be included into `DesMat`
                           INDIV_LVL = INDIV_LVL,
                           INFO_CONTENT = INFO_CONTENT,
                           verbose   = verbose)
@@ -548,11 +519,10 @@ compute_wlsPower <- function(DesMat,
                              CovMat     = NULL,
                              dfAdjust   = "none",
                              sig.level  = .05,
-                             incompMat  = NULL,
                              INDIV_LVL  = FALSE,
                              INFO_CONTENT = FALSE,
                              verbose    = 1){
-  dsnmatrix  <- DesMat$dsnmatrix
+  dsn        <- DesMat$dsnmatrix
   tp         <- DesMat$timepoints
   sumCl      <- sum(DesMat$Cl)
   SumSubCl   <- sum(DesMat$N)
@@ -574,15 +544,13 @@ compute_wlsPower <- function(DesMat,
                                  INDIV_LVL  = INDIV_LVL)
 
   ## matrices for power calculation #####
-  dsncols <- dim(dsnmatrix)[2]
+  dsncols <- dim(dsn)[2]
 
-  XQ <- matrix(
-    ((tdsnmatrix <- t(dsnmatrix)) %*% Matrix::chol2inv(Matrix::chol(CovMat)))@x,dsncols)
-  Var <- Matrix::solve( VarInv <- XQ %*% dsnmatrix )
-
+  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(chol(CovMat)))@x, dsncols )
+  Var <- spdinv( VarInv <- XQ %*% dsn )
   if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
-                                nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
-                                byrow=TRUE)
+                                  nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
+                                  byrow=TRUE)
 
   ## Information content, if requested ####
   if(INFO_CONTENT){
@@ -593,38 +561,43 @@ compute_wlsPower <- function(DesMat,
                         time =  numeric(tp))
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
+    if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
+      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) )
+      j <- rep(J,each=tp) +  i_add
+      CovMat <- CovMat + sparseMatrix(i,sort(j),x=0)
+    }
+
     for(i in I){
       J_start  <- tp*(i-1)
-      J_incomp <- if(is.null(incompMat)) J else J[incompMat[i,]==1]  ## no computation of empty cells
+      J_incomp <- if(is.null(DesMat$incompMat)) J else J[DesMat$incompMat[i,]==1]  ## no computation of empty cells
 
-      Var_drop <-Rfast::spdinv( VarInv - XQ[,(J_start+J)] %*% dsnmatrix[(J_start+J),] )
+      Var_drop <-spdinv( VarInv - XQ[,(J_start+J)] %*% submatrix(dsn,J_start+1,J_start+tp,1,dsncols) )
       InfoContent$Cluster[i] <- Var_drop[1,1]/Var[1,1]
 
-      for(j in J_incomp){
-        J_drop <- J[-j] + J_start
-        XQ_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
-        XQ_drop[,J[-j]] <- tdsnmatrix[,J_drop] %*%
-          Rfast::spdinv(
-            matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2 ],tp) [J[-j],J[-j]]
-          )
-        Var_drop <- Rfast::spdinv(
-          VarInv + (tp_drop_updt <- (XQ_drop[,J]-XQ[,J_start+J]) %*%
-                      dsnmatrix[J_start+J,])
-        )
-        tp_drop[,,j]           <- tp_drop[,,j] + tp_drop_updt
-        InfoContent$Cells[i,j] <- Var_drop[1,1]/Var[1,1]
+      if(tp>1){
+        for(j in J_incomp){
+          J_drop <- (J_ <- J[-j]) + J_start
+          XQ_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
+          XQ_drop[,J_] <- tdsn[,J_drop] %*%
+            spdinv( matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2],tp) [J_,J_] )
+          Var_drop <- spdinv( VarInv +
+              (tp_drop_updt <- (XQ_drop[,J]-XQ[,J_start+J]) %*% dsn[J_start+J,]) )
+          tp_drop[,,j]           <- tp_drop[,,j] + tp_drop_updt
+          InfoContent$Cells[i,j] <- Var_drop[1,1]/Var[1,1]
+        }
       }
     }
-    if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
-      for(j in J){
-        Var_drop <- Rfast::spdinv(
-          (VarInv + tp_drop[,,j])[-(j+1),-(j+1)]  )
-        InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
-      }
-    }else {
-      for(j in J){
-        Var_drop <- Rfast::spdinv( VarInv + tp_drop[,,j] )
-        InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
+    if( tp>1 & sum(colSums(DesMat$trtMat)>0)>1 ){
+      if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
+        for(j in J){
+          Var_drop <- spdinv( (VarInv + tp_drop[,,j])[-(j+1),-(j+1)] )
+          InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
+        }
+      }else {
+        for(j in J){
+          Var_drop <- spdinv( VarInv + tp_drop[,,j] )
+          InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
+        }
       }
     }
   }
@@ -632,14 +605,14 @@ compute_wlsPower <- function(DesMat,
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
                "none"           = Inf,
-               "between-within" = sumCl - rankMatrix(dsnmatrix),
-               "containment"    = dim(dsnmatrix)[1] - sumCl,
-               "residual"       = dim(dsnmatrix)[1] - rankMatrix(dsnmatrix))
+               "between-within" = sumCl - rankMatrix(dsn),
+               "containment"    = dim(dsn)[1] - sumCl,
+               "residual"       = dim(dsn)[1] - rankMatrix(dsn))
   if(df<3){
     warning(dfAdjust,"-method not applicable. No DDF adjustment used.")
     df <- Inf }
 
-  Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
+  Pwr <- tTestPwr(d=EffSize, se=sqrt(Var[1,1]), df=df, sig.level=sig.level)
   if(verbose==0){
     out <- Pwr
   } else {
