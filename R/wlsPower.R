@@ -339,7 +339,7 @@
                                   INDIV_LVL  = INDIV_LVL )
   }else{
     if(inherits(DesMat, "DesMat")) {
-      if(!all(sapply(list(Cl, timepoints,timeAdjust,trtDelay,period,incomplete),is.null)))      ## timeAdjust??
+      if(!all(sapply(list(Cl, timepoints ,trtDelay,period,incomplete),is.null)))      ## timeAdjust defaults to factor (!)
         warning("If input to argument DesMat inherits class `DesMat`, \n",
                 "Cl, timepoints, trtDelay, incomplete,",
                 "timeAdjust, period and dsntype are ignored.")
