@@ -50,7 +50,7 @@ standard deviation of a random time effect.}
 \item{trtMat}{a matrix of dimension *#Cluster* x *timepoints* as produced by
 the function `construct_trtMat`, indicating the cluster-periods that receive
 interventional treatment. Defaults to NULL. If trtMat is given, the arguments
-`SumCl` and `timepoints` are ignored (!).}
+`sumCl` and `timepoints` are ignored (!).}
 
 \item{psi}{numeric (scalar), random subject specific intercept.
 Leads to a closed cohort setting}

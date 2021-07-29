@@ -19,6 +19,7 @@ compute_wlsPower(
   dfAdjust = "none",
   sig.level = 0.05,
   INDIV_LVL = FALSE,
+  INFO_CONTENT = FALSE,
   verbose = 1
 )
 }
@@ -68,7 +69,12 @@ must be NULL.}
 individual level? This leads to longer run time and is
 mainly for diagnostic purposes.}
 
-\item{verbose}{integer, how much information should the function return?}
+\item{INFO_CONTENT}{logical, should the information content of cluster cells be
+computed? The default is `TRUE` for designs with less or equal than 2500
+cluster cells, otherwise `FALSE`. This ist still experimental(!)}
+
+\item{verbose}{integer, how much information should the function return?
+See also under `Value`.}
 }
 \value{
 The return depends on the `verbose` parameter.

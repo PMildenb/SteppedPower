@@ -15,6 +15,7 @@ Description: Tools for power and sample size
 Imports:
     Matrix,
     plotly,
+    Rfast,
     grDevices,
     stats,
     utils

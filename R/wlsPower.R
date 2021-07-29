@@ -71,6 +71,7 @@
 #' @param dfAdjust character, one of the following: "none","between-within",
 #' "containment", "residual".
 #' @param verbose integer, how much information should the function return?
+#' See also under `Value`.
 #' @param period numeric (scalar)
 #' @param CovMat numeric, a positive-semidefinite matrix with
 #' (#Clusters \eqn{\cdot} timepoints) rows and columns. If `CovMat` is given,
@@ -79,6 +80,9 @@
 #' @param INDIV_LVL logical, should the computation be conducted on an
 #' individual level? This leads to longer run time and is
 #' mainly for diagnostic purposes.
+#' @param INFO_CONTENT logical, should the information content of cluster cells be
+#' computed? The default is `TRUE` for designs with less or equal than 2500
+#' cluster cells, otherwise `FALSE`. This ist still experimental(!)
 #'
 #' @details
 #' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
@@ -199,10 +203,12 @@
 #' wlsPower(mu0=0.5, mu1=0.25, Cl=rep(4,8), tau=0.5, N=1,
 #'               family="binomial", marginal_mu=TRUE)
 #'
+#'##
+#'##
+#'
 
 
-
-wlsPower <- function( Cl            = NULL,
+ wlsPower <- function( Cl            = NULL,
                       timepoints    = NULL,
                       DesMat        = NULL,
                       trtDelay      = NULL,
@@ -229,6 +235,7 @@ wlsPower <- function( Cl            = NULL,
                       sig.level     = 0.05,
                       dfAdjust      = "none",
                       INDIV_LVL     = FALSE,
+                      INFO_CONTENT  = NULL,
                       verbose       = 1){
   ## Match string inputs ####
   ### dsntype
@@ -290,12 +297,6 @@ wlsPower <- function( Cl            = NULL,
       if( (-1)>rho | rho>1 )
         stop("Correlation rho must be between -1 and 1")
     }
-    if(is.null(tau)){
-      tau <- 0
-      warning("Random cluster effect tau and random treatment effect eta",
-              " are assumed to be 0, i.e. the observations across clusters are",
-              " assumed to be marginally independent. Declare tau=0 to supress this warning.")
-    }
     if(!is.null(psi) & is.null(power)){
       if(is.null(N))
         stop("If the standard deviation `psi` is not null, N is needed.")
@@ -333,19 +334,20 @@ wlsPower <- function( Cl            = NULL,
                                   timepoints = timepoints,
                                   timeAdjust = timeAdjust,
                                   period     = period,
+                                  incomplete = incomplete,
                                   N          = if(INDIV_LVL) N,
                                   INDIV_LVL  = INDIV_LVL )
   }else{
     if(inherits(DesMat, "DesMat")) {
-      if(!all(sapply(list(Cl, timepoints, trtDelay,
-                          period),     is.null)))      ## timeAdjust??
+      if(!all(sapply(list(Cl, timepoints,timeAdjust,trtDelay,period,incomplete),is.null)))      ## timeAdjust??
         warning("If input to argument DesMat inherits class `DesMat`, \n",
-                "Cl, timepoints, trtDelay, ",
+                "Cl, timepoints, trtDelay, incomplete,",
                 "timeAdjust, period and dsntype are ignored.")
     } else if(inherits(DesMat,"matrix") & !inherits(DesMat,"DesMat")){
       DesMat <- construct_DesMat(trtmatrix  = DesMat,
                                  timeAdjust = timeAdjust,
                                  period     = period,
+                                 incomplete = incomplete,
                                  N          = if(INDIV_LVL) N,
                                  INDIV_LVL  = INDIV_LVL)
       if(!all(sapply(list(Cl, timepoints, trtDelay, dsntype), is.null)))
@@ -360,8 +362,17 @@ wlsPower <- function( Cl            = NULL,
   ## declare temporary variables #####
   timepoints <- DesMat$timepoints
   lenCl      <- length(DesMat$Cl)
-  SumCl      <- sum(DesMat$Cl)
+  sumCl      <- sum(DesMat$Cl)
 
+  ## default for INFO_CONTENT ####
+  if(is.null(INFO_CONTENT)){
+    INFO_CONTENT <- ifelse(length(DesMat$trtMat)<=2500 & sumCl>2 &
+                           verbose>0 & !INDIV_LVL,                   TRUE,FALSE)
+  }else if(INFO_CONTENT & sumCl<=2) {
+    INFO_CONTENT <- FALSE
+    warning("Information Content not (yet) implemented for only two clusters.",
+            "INFO_CONTENT set to FALSE.")
+  }
 
   ## distribution family ####
   if(family =="gaussian"){
@@ -381,7 +392,7 @@ wlsPower <- function( Cl            = NULL,
       print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
     }
 
-    muMat   <- matrix(mu0, SumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
+    muMat   <- matrix(mu0, sumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
     sigma   <- sqrt(muMat * (1-muMat))
 
     if (verbose>0) {
@@ -405,39 +416,10 @@ wlsPower <- function( Cl            = NULL,
 
   ## incomplete designs #####
   if(!is.null(incomplete) & is.null(CovMat)){
+    IM <- DesMat$incompMat
+    IM[IM==0] <- Inf
 
-    if(is.vector(incomplete)){
-      if(dsntype !="SWD")
-        stop("scalar input for argument `incomplete` is only, ",
-             "applicable for dsntype = 'SWD'. ")
-      if(length(incomplete)!=1)
-        stop("incomplete cannot be a vector of length > 1.")
-      if(incomplete>timepoints) {
-        incomplete <- timepoints
-        warning("Argument `incomplete` must be less or equal to the number of",
-                "timepoints. `incomplete` is set to ", timepoints )
-      }
-      Toep <- toeplitz(c(rep(1,incomplete),rep(Inf,lenCl-incomplete)))
-      lastCols <- (timepoints-lenCl+1):timepoints
-
-      IM <- matrix(1,lenCl,timepoints)
-      IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
-      IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
-
-      IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
-
-
-    }else if(is.matrix(incomplete)){
-      if(!nrow(incomplete) %in% c(lenCl,SumCl) | ncol(incomplete)!=timepoints)
-        stop("matrix dimensions of argument `incomplete` are ",
-             paste(dim(incomplete),collapse="x"), " but must be ",
-             paste(dim(DesMat$trtMat),collapse="x"), " or ",
-             paste(dim(unique(DesMat$trtMat)),collapse="x"))
-      IM <- incomplete
-      IM[which(IM==0)] <- Inf
-      if(nrow(incomplete)==lenCl) IM <- IM[rep(seq_len(lenCl),DesMat$Cl),]
-    }
-    sigma <- matrix(sigma, nrow=SumCl, ncol=timepoints,
+    sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
   }
 
@@ -459,6 +441,7 @@ wlsPower <- function( Cl            = NULL,
                                                            sig.level = sig.level,
                                                            CovMat    = CovMat,
                                                            INDIV_LVL = INDIV_LVL,
+                                                           INFO_CONTENT = FALSE,
                                                            verbose   = 0)},
                 interval=N_range)$root),
               error=function(cond){
@@ -483,6 +466,7 @@ wlsPower <- function( Cl            = NULL,
                           sig.level = sig.level,
                           CovMat    = CovMat,
                           INDIV_LVL = INDIV_LVL,
+                          INFO_CONTENT = INFO_CONTENT,
                           verbose   = verbose)
   if(!is.null(power)) out$N_opt <- N_opt
 
@@ -536,17 +520,18 @@ compute_wlsPower <- function(DesMat,
                              dfAdjust   = "none",
                              sig.level  = .05,
                              INDIV_LVL  = FALSE,
+                             INFO_CONTENT = FALSE,
                              verbose    = 1){
-  dsnmatrix  <- DesMat$dsnmatrix
-  timepoints <- DesMat$timepoints
-  SumCl      <- sum(DesMat$Cl)
+  dsn        <- DesMat$dsnmatrix
+  tp         <- DesMat$timepoints
+  sumCl      <- sum(DesMat$Cl)
   SumSubCl   <- sum(DesMat$N)
   trtMat     <- DesMat$trtMat
 
   ## get covariance matrix #####
   if(is.null(CovMat))
-    CovMat   <- construct_CovMat(SumCl      = SumCl,
-                                 timepoints = timepoints,
+    CovMat   <- construct_CovMat(sumCl      = sumCl,
+                                 timepoints = tp,
                                  sigma      = sigma,
                                  tau        = tau,
                                  eta        = eta,
@@ -559,23 +544,75 @@ compute_wlsPower <- function(DesMat,
                                  INDIV_LVL  = INDIV_LVL)
 
   ## matrices for power calculation #####
-  tmpmat <- t(dsnmatrix) %*% Matrix::chol2inv(Matrix::chol(CovMat))
-  VarMat <- Matrix::solve(tmpmat %*% dsnmatrix)
-  if(verbose>0) ProjMat <- matrix((VarMat %*% tmpmat)[1,],
-                                nrow=ifelse(INDIV_LVL,SumSubCl,SumCl),
-                                byrow=TRUE)
+  dsncols <- dim(dsn)[2]
+
+  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(chol(CovMat)))@x, dsncols )
+  Var <- spdinv( VarInv <- XQ %*% dsn )
+  if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
+                                  nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
+                                  byrow=TRUE)
+
+  ## Information content, if requested ####
+  if(INFO_CONTENT){
+    I <- 1:sumCl
+    J <- 1:tp
+    InfoContent <- list(Cells=matrix(NA,sumCl,tp),
+                        Cluster=numeric(sumCl),
+                        time =  numeric(tp))
+    tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
+
+    if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
+      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) )
+      j <- rep(J,each=tp) +  i_add
+      CovMat <- CovMat + sparseMatrix(i,sort(j),x=0)
+    }
+
+    for(i in I){
+      J_start  <- tp*(i-1)
+      J_incomp <- if(is.null(DesMat$incompMat)) J else J[DesMat$incompMat[i,]==1]  ## no computation of empty cells
+
+      Var_drop <-spdinv( VarInv - XQ[,(J_start+J)] %*% submatrix(dsn,J_start+1,J_start+tp,1,dsncols) )
+      InfoContent$Cluster[i] <- Var_drop[1,1]/Var[1,1]
+
+      if(tp>1){
+        for(j in J_incomp){
+          J_drop <- (J_ <- J[-j]) + J_start
+          XQ_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
+          XQ_drop[,J_] <- tdsn[,J_drop] %*%
+            spdinv( matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2],tp) [J_,J_] )
+          Var_drop <- spdinv( VarInv +
+              (tp_drop_updt <- (XQ_drop[,J]-XQ[,J_start+J]) %*% dsn[J_start+J,]) )
+          tp_drop[,,j]           <- tp_drop[,,j] + tp_drop_updt
+          InfoContent$Cells[i,j] <- Var_drop[1,1]/Var[1,1]
+        }
+      }
+    }
+    if( tp>1 & sum(colSums(DesMat$trtMat)>0)>1 ){
+      if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
+        for(j in J){
+          Var_drop <- spdinv( (VarInv + tp_drop[,,j])[-(j+1),-(j+1)] )
+          InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
+        }
+      }else {
+        for(j in J){
+          Var_drop <- spdinv( VarInv + tp_drop[,,j] )
+          InfoContent$time[j] <- Var_drop[1,1]/Var[1,1]
+        }
+      }
+    }
+  }
 
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
                "none"           = Inf,
-               "between-within" = SumCl - rankMatrix(dsnmatrix),
-               "containment"    = dim(dsnmatrix)[1] - SumCl,
-               "residual"       = dim(dsnmatrix)[1] - rankMatrix(dsnmatrix))
+               "between-within" = sumCl - rankMatrix(dsn),
+               "containment"    = dim(dsn)[1] - sumCl,
+               "residual"       = dim(dsn)[1] - rankMatrix(dsn))
   if(df<3){
     warning(dfAdjust,"-method not applicable. No DDF adjustment used.")
     df <- Inf }
 
-  Pwr <- tTestPwr(d=EffSize, se=sqrt(VarMat[1,1]), df=df, sig.level=sig.level)
+  Pwr <- tTestPwr(d=EffSize, se=sqrt(Var[1,1]), df=df, sig.level=sig.level)
   if(verbose==0){
     out <- Pwr
   } else {
@@ -597,12 +634,16 @@ compute_wlsPower <- function(DesMat,
                              dfAdjust   = dfAdjust,
                              sig.level  = sig.level),
                 ProjMatrix = ProjMat)
+  if(INFO_CONTENT){
+    out <- append(out,
+                  list(InformationContent= InfoContent))
   }
   if(verbose==2)
     out <- append(out,
                   list(DesignMatrix     = DesMat,
                        CovarianceMatrix = CovMat))
   return(out)
+  }
 }
 
 #' @title Print an object of class `wlsPower`
@@ -632,6 +673,72 @@ print.wlsPower <- function(x, ...){
 
 
 
+#' @title plot the information content of a wls object
+#'
+#' @param IC a matrix with information content for each cluster at each time period
+#' @param annotations logical, should the information content of cells be annotated in the Plot?
+#'
+#' @return a plotly object
+#' @export
+#'
+
+plot_InfoContent <- function(IC, annotations=NULL){
+
+  if(is.null(annotations)){
+    annotations <- ifelse(length(IC$Cells)<=1e4,TRUE,FALSE)
+  }
+  mx  <- max(IC$Cells)
+  sumCl <- dim(IC$Cells)[1]
+  timep <- dim(IC$Cells)[2]
+
+  dat=cbind(expand.grid(y=seq_len(sumCl),
+                        x=seq_len(timep)),
+            z=as.numeric(IC$Cells),
+            zChar=as.character(round(IC$Cells,3)))
+  dat$zChar[is.na(dat$zChar)] <- ""
+
+  PLT <- plot_ly(data=dat, x=~x, y=~y,  z=~z,
+          type="heatmap",
+          colors=grDevices::colorRamp(c("white","gold","firebrick")),
+          xgap=.3, ygap=.3, name=" ",
+          hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.6f}" ) %>%
+    colorbar(len=1,limits=c(1-1e-8,mx)) %>%
+    layout(xaxis=list(title="Time"),
+           yaxis=list(title="Cluster", autorange="reversed"))
+  if(annotations) PLT <- PLT %>% add_annotations(text=~zChar, showarrow=FALSE)
+
+
+  subplot(
+    plot_ly(data=data.frame(time   = seq_along(IC$time),
+                            InfoC  = IC$time),
+            type="bar", x=~time, y=~InfoC, color=I("grey"),
+            name=" ",
+            hovertemplate="Time: %{x}\nInfoContent: %{y:.6f}") %>%
+      layout(yaxis=list(title=""),
+             xaxis=list(title="", showticklabels=FALSE))
+    ,
+    plotly_empty(type="scatter",mode="marker")
+    ,
+    PLT
+    ,
+    plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
+                            InfoC   = IC$Cluster),
+            type="bar", orientation="h",
+            y=~cluster, x=~InfoC, color=I("grey"),
+            name=" ",
+            hovertemplate="Cluster: %{y}\nInfoContent: %{x:.6f}") %>%
+      layout(xaxis=list(title=""),
+             yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+    ,
+    nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+  ) %>% layout(showlegend=FALSE)
+}
+
+
+
+
+
+
 #' @title plot an object of class `wlsPower`
 #'
 #' @description Up to three plots (selectable by `which`) that visualise:
@@ -640,9 +747,11 @@ print.wlsPower <- function(x, ...){
 #' the covariance matrix. By default, only the first plot is returned.
 #'
 #' @param x object of class wlsPower
-#' @param which Specify a subset of the numbers 1:3 to select plots
+#' @param which Specify a subset of the numbers `1:4` to select plots. The default is
+#' `1:2` or `1`, depending on whether `x` contains the information content.
 #' @param show_colorbars logical, should the colorbars be shown?
 #' @param ... Arguments to be passed to methods
+#' @param annotations logical, should the cell contributions be annotated in the Plot?
 #'
 #' @method plot wlsPower
 #'
@@ -650,36 +759,56 @@ print.wlsPower <- function(x, ...){
 #'
 #' @export
 #'
-plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
+plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
+                          annotations=NULL, ...){
+  if(is.null(which))
+    which <- if("InformationContent" %in% names(x)) 1:2 else 1
 
   WgtPlot <- if (1 %in% which){
+
+    if(is.null(annotations)){
+      annotations <- ifelse(length(x$ProjMatrix)<=1e4,TRUE,FALSE)
+    }
     wgt <- x$ProjMatrix
     mx  <- max(abs(wgt))
     sumCl <- dim(wgt)[1]
     timep <- dim(wgt)[2]
 
+    dat <- cbind(expand.grid(y=seq_len(sumCl),
+                             x=seq_len(timep)),
+                 wgt=as.numeric(wgt),
+                 wgtChar=as.character(round(wgt,3)) )
+    dat$wgtChar[is.na(dat$wgtChar)] <- ""
+
+    PLT <- plot_ly(data=dat, x=~x, y=~y, z=~wgt, type="heatmap",
+            colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+            xgap=.3, ygap=.3, name=" ",
+            hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
+      colorbar(len=1,limits=c(-mx,mx)) %>%
+      layout(xaxis=list(title="time"),
+             yaxis=list(title="cluster", autorange="reversed"))
+    if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
+
     suppressWarnings(
       subplot(
-        plot_ly(data=data.frame(time   = seq_len(dim(wgt)[2]),
+        plot_ly(data=data.frame(time   = seq_len(timep),
                                 weight = colSums(abs(wgt))),
-                type="bar", x=~time, y=~weight, color=I("grey")) %>%
+                type="bar", x=~time, y=~weight, color=I("grey"),
+                name=" ",
+                hovertemplate="Time: %{x}\nWeight: %{y:.6f}") %>%
           layout(yaxis=list(title="Sum|weights|"),
                  xaxis=list(title="", showticklabels=FALSE))
         ,
         plotly_empty(type="scatter",mode="marker")
         ,
-        plot_ly(x=seq_len(timep), y=seq_len(sumCl), z=wgt, type="heatmap",
-                colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-                xgap=.3, ygap=.3, name=" ",
-                hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z}") %>%
-          colorbar(len=1,limits=c(-mx,mx)) %>%
-          layout(xaxis=list(title="time"),
-                 yaxis=list(title="cluster", autorange="reversed"))
+        PLT
         ,
-        plot_ly(data=data.frame(cluster=seq_len(dim(wgt)[1]),
+        plot_ly(data=data.frame(cluster=seq_len(sumCl),
                                 weight=rowSums(abs(wgt))),
                 type="bar", orientation="h",
-                y=~cluster, x=~weight, color=I("grey")) %>%
+                y=~cluster, x=~weight, color=I("grey"),
+                name=" ",
+                hovertemplate="Cluster: %{y}\nAbsWeight: %{x:.6f}") %>%
           layout(xaxis=list(title="Sum|weights|"),
                  yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
         ,
@@ -688,15 +817,21 @@ plot.wlsPower <- function(x, which=1, show_colorbars=NULL, ...){
     )
   } else NULL
 
-  DMplot <- if (2 %in% which){
+  ICplot <- if (2 %in% which){
+    if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
+    plot_InfoContent(x$InformationContent, annotations=annotations)
+  } else NULL
+
+  DMplot <- if (3 %in% which){
     if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot(x$DesignMatrix, show_colorbar=show_colorbars)
   } else NULL
 
-  CMplot <- if (3 %in% which){
+  CMplot <- if (4 %in% which){
     if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbars)
   } else NULL
 
-  return(list(WgtPlot,DMplot,CMplot))
+
+  return(list(WgtPlot,ICplot,DMplot,CMplot))
 }
