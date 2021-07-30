@@ -546,7 +546,7 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   dsncols <- dim(dsn)[2]
 
-  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(chol(CovMat)))@x, dsncols )
+  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(drop0(chol(CovMat))))@x, dsncols ) ## drop0 for incomplete designs
   Var <- spdinv( VarInv <- XQ %*% dsn )
   if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
                                   nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
@@ -562,7 +562,7 @@ compute_wlsPower <- function(DesMat,
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
-      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) )
+      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) ) ## wouldnt be necessary with bdiag_m ...
       j <- rep(J,each=tp) +  i_add
       CovMat <- CovMat + sparseMatrix(i,j,x=0)
     }
