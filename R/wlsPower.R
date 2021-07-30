@@ -556,15 +556,15 @@ compute_wlsPower <- function(DesMat,
   if(INFO_CONTENT){
     I <- 1:sumCl
     J <- 1:tp
-    InfoContent <- list(Cells=matrix(NA,sumCl,tp),
-                        Cluster=numeric(sumCl),
-                        time =  numeric(tp))
+    InfoContent <- list(Cells   = matrix(NA,sumCl,tp),
+                        Cluster = numeric(sumCl),
+                        time    = numeric(tp))
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
       i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) )
       j <- rep(J,each=tp) +  i_add
-      CovMat <- CovMat + sparseMatrix(i,sort(j),x=0)
+      CovMat <- CovMat + sparseMatrix(i,j,x=0)
     }
 
     for(i in I){
@@ -774,6 +774,9 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
     sumCl <- dim(wgt)[1]
     timep <- dim(wgt)[2]
 
+    if(!is.null(x$DesignMatrix$incompMat))
+      wgt[x$DesignMatrix$incompMat==0] <- NA
+
     dat <- cbind(expand.grid(y=seq_len(sumCl),
                              x=seq_len(timep)),
                  wgt=as.numeric(wgt),
@@ -792,7 +795,7 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
     suppressWarnings(
       subplot(
         plot_ly(data=data.frame(time   = seq_len(timep),
-                                weight = colSums(abs(wgt))),
+                                weight = colSums(abs(wgt),na.rm=TRUE)),
                 type="bar", x=~time, y=~weight, color=I("grey"),
                 name=" ",
                 hovertemplate="Time: %{x}\nWeight: %{y:.6f}") %>%
@@ -804,7 +807,7 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
         PLT
         ,
         plot_ly(data=data.frame(cluster=seq_len(sumCl),
-                                weight=rowSums(abs(wgt))),
+                                weight=rowSums(abs(wgt),na.rm=TRUE)),
                 type="bar", orientation="h",
                 y=~cluster, x=~weight, color=I("grey"),
                 name=" ",
