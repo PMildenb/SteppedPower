@@ -682,14 +682,15 @@ print.wlsPower <- function(x, ...){
 #' @export
 #'
 
-plot_InfoContent <- function(IC, annotations=NULL){
+plot_InfoContent <- function(IC, annotations=NULL, show_colorbar=TRUE){
 
   if(is.null(annotations)){
-    annotations <- ifelse(length(IC$Cells)<=1e4,TRUE,FALSE)
+    annotations <- ifelse(length(IC$Cells)<=1e2,TRUE,FALSE)
   }
   mx  <- max(IC$Cells)
   sumCl <- dim(IC$Cells)[1]
   timep <- dim(IC$Cells)[2]
+  gaps  <- 20/sqrt(length(IC$Cells))
 
   dat=cbind(expand.grid(y=seq_len(sumCl),
                         x=seq_len(timep)),
@@ -700,7 +701,8 @@ plot_InfoContent <- function(IC, annotations=NULL){
   PLT <- plot_ly(data=dat, x=~x, y=~y,  z=~z,
           type="heatmap",
           colors=grDevices::colorRamp(c("white","gold","firebrick")),
-          xgap=.3, ygap=.3, name=" ",
+          xgap=gaps, ygap=gaps, name=" ",
+          showscale=show_colorbar,
           hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.6f}" ) %>%
     colorbar(len=1,limits=c(1-1e-8,mx)) %>%
     layout(xaxis=list(title="Time"),
@@ -711,8 +713,8 @@ plot_InfoContent <- function(IC, annotations=NULL){
   subplot(
     plot_ly(data=data.frame(time   = seq_along(IC$time),
                             InfoC  = IC$time),
-            type="bar", x=~time, y=~InfoC, color=I("grey"),
-            name=" ",
+            type="bar", x=~time, y=~(InfoC-1), color=I("grey"),
+            name=" ", base=1,
             hovertemplate="Time: %{x}\nInfoContent: %{y:.6f}") %>%
       layout(yaxis=list(title=""),
              xaxis=list(title="", showticklabels=FALSE))
@@ -724,8 +726,8 @@ plot_InfoContent <- function(IC, annotations=NULL){
     plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
                             InfoC   = IC$Cluster),
             type="bar", orientation="h",
-            y=~cluster, x=~InfoC, color=I("grey"),
-            name=" ",
+            y=~cluster, x=~(InfoC-1), color=I("grey"),
+            name=" ", base=1,
             hovertemplate="Cluster: %{y}\nInfoContent: %{x:.6f}") %>%
       layout(xaxis=list(title=""),
              yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
@@ -767,12 +769,13 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
   WgtPlot <- if (1 %in% which){
 
     if(is.null(annotations)){
-      annotations <- ifelse(length(x$ProjMatrix)<=1e4,TRUE,FALSE)
+      annotations <- ifelse(length(x$ProjMatrix)<=1e2,TRUE,FALSE)
     }
     wgt <- x$ProjMatrix
     mx  <- max(abs(wgt))
     sumCl <- dim(wgt)[1]
     timep <- dim(wgt)[2]
+    gaps  <- 20/sqrt(length(wgt))
 
     if(!is.null(x$DesignMatrix$incompMat))
       wgt[x$DesignMatrix$incompMat==0] <- NA
@@ -785,11 +788,12 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
 
     PLT <- plot_ly(data=dat, x=~x, y=~y, z=~wgt, type="heatmap",
             colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-            xgap=.3, ygap=.3, name=" ",
+            xgap=gaps, ygap=gaps, name=" ",
+            showscale=show_colorbars,
             hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
       colorbar(len=1,limits=c(-mx,mx)) %>%
-      layout(xaxis=list(title="time"),
-             yaxis=list(title="cluster", autorange="reversed"))
+      layout(xaxis=list(title="Time"),
+             yaxis=list(title="Cluster", autorange="reversed"))
     if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
 
     suppressWarnings(
@@ -822,7 +826,7 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
 
   ICplot <- if (2 %in% which){
     if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
-    plot_InfoContent(x$InformationContent, annotations=annotations)
+    plot_InfoContent(x$InformationContent, annotations=annotations, show_colorbar=show_colorbars)
   } else NULL
 
   DMplot <- if (3 %in% which){
