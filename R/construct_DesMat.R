@@ -104,7 +104,7 @@ construct_DesMat <- function(Cl          = NULL,
                                       timeAdjust,
                                       "userdefined"),
                   trtMat     = trtMat,
-                  incompMat  = if(exists("incompMat")) incompMat else NULL)
+                  incompMat  = if(!is.null(incomplete)) incompMat else NULL)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
@@ -164,6 +164,9 @@ print.DesMat <- function(x, ...){
 
 plot.DesMat <- function(x, show_colorbar=FALSE, ...){
   trt <- x$trtMat
+  if(!is.null(x$incompMat))
+    trt[x$incompMat==0] <- NA
+
   plot_ly(type="heatmap",
           x=~(seq_len(dim(trt)[2])), y=~(seq_len(dim(trt)[1])),
           z=~trt, xgap=5, ygap=5, name=" ",
@@ -227,8 +230,8 @@ construct_trtMat <- function(Cl,
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
       message(paste("assumes 1 baseline period and",timepoints-1,
-                    "parallel period(s). If intended otherwise,
-                    argument timepoints must have length two."))
+                    "parallel period(s). \nIf intended otherwise,",
+                    "argument timepoints must have length two.\n"))
     }else if(length(timepoints)==2){
       timepoints01 <- timepoints
       timepoints   <- sum(timepoints)

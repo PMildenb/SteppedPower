@@ -339,7 +339,7 @@
                                   INDIV_LVL  = INDIV_LVL )
   }else{
     if(inherits(DesMat, "DesMat")) {
-      if(!all(sapply(list(Cl, timepoints,timeAdjust,trtDelay,period,incomplete),is.null)))      ## timeAdjust??
+      if(!all(sapply(list(Cl, timepoints ,trtDelay,period,incomplete),is.null)))      ## timeAdjust defaults to factor (!)
         warning("If input to argument DesMat inherits class `DesMat`, \n",
                 "Cl, timepoints, trtDelay, incomplete,",
                 "timeAdjust, period and dsntype are ignored.")
@@ -415,7 +415,7 @@
 
 
   ## incomplete designs #####
-  if(!is.null(incomplete) & is.null(CovMat)){
+  if(!is.null(DesMat$IncompMat) & is.null(CovMat)){
     IM <- DesMat$incompMat
     IM[IM==0] <- Inf
 
@@ -546,7 +546,7 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   dsncols <- dim(dsn)[2]
 
-  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(chol(CovMat)))@x, dsncols )
+  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(drop0(chol(CovMat))))@x, dsncols ) ## drop0 for incomplete designs
   Var <- spdinv( VarInv <- XQ %*% dsn )
   if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
                                   nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
@@ -556,15 +556,15 @@ compute_wlsPower <- function(DesMat,
   if(INFO_CONTENT){
     I <- 1:sumCl
     J <- 1:tp
-    InfoContent <- list(Cells=matrix(NA,sumCl,tp),
-                        Cluster=numeric(sumCl),
-                        time =  numeric(tp))
+    InfoContent <- list(Cells   = matrix(NA,sumCl,tp),
+                        Cluster = numeric(sumCl),
+                        time    = numeric(tp))
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
-      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) )
+      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) ) ## wouldnt be necessary with bdiag_m ...
       j <- rep(J,each=tp) +  i_add
-      CovMat <- CovMat + sparseMatrix(i,sort(j),x=0)
+      CovMat <- CovMat + sparseMatrix(i,j,x=0)
     }
 
     for(i in I){
@@ -675,21 +675,25 @@ print.wlsPower <- function(x, ...){
 
 #' @title plot the information content of a wls object
 #'
+#' @inheritParams plot.wlsPower
 #' @param IC a matrix with information content for each cluster at each time period
-#' @param annotations logical, should the information content of cells be annotated in the Plot?
 #'
 #' @return a plotly object
 #' @export
 #'
 
-plot_InfoContent <- function(IC, annotations=NULL){
+plot_InfoContent <- function(IC,
+                             annotations=NULL,
+                             show_colorbar=TRUE,
+                             marginal_plots=TRUE){
 
   if(is.null(annotations)){
-    annotations <- ifelse(length(IC$Cells)<=1e4,TRUE,FALSE)
+    annotations <- ifelse(length(IC$Cells)<=1e2,TRUE,FALSE)
   }
   mx  <- max(IC$Cells)
   sumCl <- dim(IC$Cells)[1]
   timep <- dim(IC$Cells)[2]
+  gaps  <- 20/sqrt(length(IC$Cells))
 
   dat=cbind(expand.grid(y=seq_len(sumCl),
                         x=seq_len(timep)),
@@ -700,7 +704,8 @@ plot_InfoContent <- function(IC, annotations=NULL){
   PLT <- plot_ly(data=dat, x=~x, y=~y,  z=~z,
           type="heatmap",
           colors=grDevices::colorRamp(c("white","gold","firebrick")),
-          xgap=.3, ygap=.3, name=" ",
+          xgap=gaps, ygap=gaps, name=" ",
+          showscale=show_colorbar,
           hovertemplate="Time: %{x}\nCluster: %{y}\nInfoContent: %{z:.6f}" ) %>%
     colorbar(len=1,limits=c(1-1e-8,mx)) %>%
     layout(xaxis=list(title="Time"),
@@ -708,91 +713,81 @@ plot_InfoContent <- function(IC, annotations=NULL){
   if(annotations) PLT <- PLT %>% add_annotations(text=~zChar, showarrow=FALSE)
 
 
-  subplot(
-    plot_ly(data=data.frame(time   = seq_along(IC$time),
-                            InfoC  = IC$time),
-            type="bar", x=~time, y=~InfoC, color=I("grey"),
-            name=" ",
-            hovertemplate="Time: %{x}\nInfoContent: %{y:.6f}") %>%
-      layout(yaxis=list(title=""),
-             xaxis=list(title="", showticklabels=FALSE))
-    ,
-    plotly_empty(type="scatter",mode="marker")
-    ,
-    PLT
-    ,
-    plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
-                            InfoC   = IC$Cluster),
-            type="bar", orientation="h",
-            y=~cluster, x=~InfoC, color=I("grey"),
-            name=" ",
-            hovertemplate="Cluster: %{y}\nInfoContent: %{x:.6f}") %>%
-      layout(xaxis=list(title=""),
-             yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
-    ,
-    nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
-  ) %>% layout(showlegend=FALSE)
+  if(marginal_plots){
+    PLT <- subplot(
+      plot_ly(data=data.frame(time   = seq_along(IC$time),
+                              InfoC  = IC$time),
+              type="bar", x=~time, y=~(InfoC-1), color=I("grey"),
+              name=" ", base=1,
+              hovertemplate="Time: %{x}\nInfoContent: %{y:.6f}") %>%
+        layout(yaxis=list(title=""),
+               xaxis=list(title="", showticklabels=FALSE))
+      ,
+      plotly_empty(type="scatter",mode="marker")
+      ,
+      PLT
+      ,
+      plot_ly(data=data.frame(cluster = seq_along(IC$Cluster),
+                              InfoC   = IC$Cluster),
+              type="bar", orientation="h",
+              y=~cluster, x=~(InfoC-1), color=I("grey"),
+              name=" ", base=1,
+              hovertemplate="Cluster: %{y}\nInfoContent: %{x:.6f}") %>%
+        layout(xaxis=list(title=""),
+               yaxis=list(title="", showticklabels=FALSE, autorange="reversed"))
+      ,
+      nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
+    ) %>% layout(showlegend=FALSE)
+  }
+  PLT
 }
 
 
-
-
-
-
-#' @title plot an object of class `wlsPower`
+#' @title plot cell contributions (weights) of a wls object
 #'
-#' @description Up to three plots (selectable by `which`) that visualise:
-#' influence of each cluster for each timepoint,
-#' the treatment status for each cluster for each timepoint and
-#' the covariance matrix. By default, only the first plot is returned.
+#' @inheritParams plot.wlsPower
 #'
-#' @param x object of class wlsPower
-#' @param which Specify a subset of the numbers `1:4` to select plots. The default is
-#' `1:2` or `1`, depending on whether `x` contains the information content.
-#' @param show_colorbars logical, should the colorbars be shown?
-#' @param ... Arguments to be passed to methods
-#' @param annotations logical, should the cell contributions be annotated in the Plot?
-#'
-#' @method plot wlsPower
-#'
-#' @return a list of plotly html widgets
-#'
+#' @return a plotly html widget
 #' @export
 #'
-plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
-                          annotations=NULL, ...){
-  if(is.null(which))
-    which <- if("InformationContent" %in% names(x)) 1:2 else 1
+plot_CellWeights <- function(x,
+                             annotations=NULL,
+                             show_colorbar=TRUE,
+                             marginal_plots=TRUE){
 
-  WgtPlot <- if (1 %in% which){
+  if(is.null(annotations)){
+    annotations <- ifelse(length(x$ProjMatrix)<=1e2,TRUE,FALSE)
+  }
+  wgt <- x$ProjMatrix
+  mx  <- max(abs(wgt))
+  sumCl <- dim(wgt)[1]
+  timep <- dim(wgt)[2]
+  gaps  <- 20/sqrt(length(wgt))
 
-    if(is.null(annotations)){
-      annotations <- ifelse(length(x$ProjMatrix)<=1e4,TRUE,FALSE)
-    }
-    wgt <- x$ProjMatrix
-    mx  <- max(abs(wgt))
-    sumCl <- dim(wgt)[1]
-    timep <- dim(wgt)[2]
+  if(!is.null(x$DesignMatrix$incompMat))
+    wgt[x$DesignMatrix$incompMat==0] <- NA
 
-    dat <- cbind(expand.grid(y=seq_len(sumCl),
-                             x=seq_len(timep)),
-                 wgt=as.numeric(wgt),
-                 wgtChar=as.character(round(wgt,3)) )
-    dat$wgtChar[is.na(dat$wgtChar)] <- ""
+  dat <- cbind(expand.grid(y=seq_len(sumCl),
+                           x=seq_len(timep)),
+               wgt=as.numeric(wgt),
+               wgtChar=as.character(round(wgt,3)) )
+  dat$wgtChar[is.na(dat$wgtChar)] <- ""
 
-    PLT <- plot_ly(data=dat, x=~x, y=~y, z=~wgt, type="heatmap",
-            colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
-            xgap=.3, ygap=.3, name=" ",
-            hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
-      colorbar(len=1,limits=c(-mx,mx)) %>%
-      layout(xaxis=list(title="time"),
-             yaxis=list(title="cluster", autorange="reversed"))
-    if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
+  PLT <- plot_ly(data=dat, x=~x, y=~y, z=~wgt, type="heatmap",
+                 colors=grDevices::colorRamp(c("steelblue","white","firebrick")),
+                 xgap=gaps, ygap=gaps, name=" ",
+                 showscale=show_colorbar,
+                 hovertemplate="Time: %{x}\nCluster: %{y}\nWeight: %{z:.6f}") %>%
+    colorbar(len=1,limits=c(-mx,mx)) %>%
+    layout(xaxis=list(title="Time"),
+           yaxis=list(title="Cluster", autorange="reversed"))
+  if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
 
-    suppressWarnings(
+  if(marginal_plots){
+    PLT <- suppressWarnings(
       subplot(
         plot_ly(data=data.frame(time   = seq_len(timep),
-                                weight = colSums(abs(wgt))),
+                                weight = colSums(abs(wgt),na.rm=TRUE)),
                 type="bar", x=~time, y=~weight, color=I("grey"),
                 name=" ",
                 hovertemplate="Time: %{x}\nWeight: %{y:.6f}") %>%
@@ -804,7 +799,7 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
         PLT
         ,
         plot_ly(data=data.frame(cluster=seq_len(sumCl),
-                                weight=rowSums(abs(wgt))),
+                                weight=rowSums(abs(wgt),na.rm=TRUE)),
                 type="bar", orientation="h",
                 y=~cluster, x=~weight, color=I("grey"),
                 name=" ",
@@ -815,23 +810,64 @@ plot.wlsPower <- function(x, which=NULL, show_colorbars=NULL,
         nrows=2, heights=c(.2,.8), widths=c(.8,.2), titleX=TRUE, titleY=TRUE
       ) %>% layout(showlegend=FALSE)
     )
-  } else NULL
-
-  ICplot <- if (2 %in% which){
-    if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
-    plot_InfoContent(x$InformationContent, annotations=annotations)
-  } else NULL
-
-  DMplot <- if (3 %in% which){
-    if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
-    plot(x$DesignMatrix, show_colorbar=show_colorbars)
-  } else NULL
-
-  CMplot <- if (4 %in% which){
-    if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
-    plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbars)
-  } else NULL
-
-
-  return(list(WgtPlot,ICplot,DMplot,CMplot))
+  }
+  PLT
 }
+
+
+
+#' @title plot an object of class `wlsPower`
+#'
+#' @description Up to four plots (selectable by `which`) that visualise:
+#' the contribution of each cluster-period cell to the treatment effect estimator,
+#' the information content of each cluster-period cell,
+#' the treatment status for each cluster for each time point and
+#' the covariance matrix. By default, only the first two plots are returned.
+#'
+#' @param x object of class wlsPower
+#' @param which Specify a subset of the numbers `1:4` to select plots. The default is
+#' `1:2` or `1`, depending on whether `x` contains the information content.
+#' @param show_colorbar logical, should the colorbars be shown?
+#' @param ... Arguments to be passed to methods
+#' @param annotations logical, should the cell contributions be annotated in the Plot?
+#' @param marginal_plots should the influence of whole periods, clusters also be plotted?
+#'
+#' @method plot wlsPower
+#'
+#' @return a list of plotly html widgets
+#'
+#' @export
+#'
+plot.wlsPower <- function(x, which=NULL, show_colorbar=NULL,
+                          annotations=NULL, marginal_plots=TRUE,...){
+  out <- list()
+  if(is.null(which))
+    which <- if("InformationContent" %in% names(x)) 1:2 else 1
+
+  if (1 %in% which){
+    out$WgtPlot <- plot_CellWeights(x, annotations=annotations,
+                                show_colorbar=show_colorbar,
+                                marginal_plots=marginal_plots)
+  }
+
+  if (2 %in% which){
+    if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
+    out$IMplot <- plot_InfoContent(x$InformationContent,
+                                        annotations=annotations,
+                                        show_colorbar=show_colorbar,
+                                        marginal_plots=marginal_plots)
+  }
+
+  if (3 %in% which){
+    if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
+    out$DMplot <- plot(x$DesignMatrix, show_colorbar=show_colorbar)
+  }
+
+  if (4 %in% which){
+    if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
+    out$CMplot <- plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbar)
+  }
+
+  return(out)
+}
+
