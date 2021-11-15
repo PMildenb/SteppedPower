@@ -4,7 +4,14 @@
 \alias{plot.wlsPower}
 \title{plot an object of class `wlsPower`}
 \usage{
-\method{plot}{wlsPower}(x, which = NULL, show_colorbars = NULL, annotations = NULL, ...)
+\method{plot}{wlsPower}(
+  x,
+  which = NULL,
+  show_colorbar = NULL,
+  annotations = NULL,
+  marginal_plots = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{object of class wlsPower}
@@ -12,9 +19,11 @@
 \item{which}{Specify a subset of the numbers `1:4` to select plots. The default is
 `1:2` or `1`, depending on whether `x` contains the information content.}
 
-\item{show_colorbars}{logical, should the colorbars be shown?}
+\item{show_colorbar}{logical, should the colorbars be shown?}
 
 \item{annotations}{logical, should the cell contributions be annotated in the Plot?}
+
+\item{marginal_plots}{should the influence of whole periods, clusters also be plotted?}
 
 \item{...}{Arguments to be passed to methods}
 }
@@ -22,8 +31,9 @@
 a list of plotly html widgets
 }
 \description{
-Up to three plots (selectable by `which`) that visualise:
-influence of each cluster for each timepoint,
-the treatment status for each cluster for each timepoint and
-the covariance matrix. By default, only the first plot is returned.
+Up to four plots (selectable by `which`) that visualise:
+the contribution of each cluster-period cell to the treatment effect estimator,
+the information content of each cluster-period cell,
+the treatment status for each cluster for each time point and
+the covariance matrix. By default, only the first two plots are returned.
 }
