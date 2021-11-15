@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{plot_CellWeights}
 \alias{plot_CellWeights}
-\title{Title}
+\title{plot cell contributions (weights) of a wls object}
 \usage{
 plot_CellWeights(
   x,
@@ -24,5 +24,5 @@ plot_CellWeights(
 a plotly html widget
 }
 \description{
-Title
+plot cell contributions (weights) of a wls object
 }

@@ -415,7 +415,7 @@
 
 
   ## incomplete designs #####
-  if(!is.null(incomplete) & is.null(CovMat)){
+  if(!is.null(DesMat$IncompMat) & is.null(CovMat)){
     IM <- DesMat$incompMat
     IM[IM==0] <- Inf
 
@@ -743,7 +743,7 @@ plot_InfoContent <- function(IC,
 }
 
 
-#' Title
+#' @title plot cell contributions (weights) of a wls object
 #'
 #' @inheritParams plot.wlsPower
 #'
@@ -846,24 +846,25 @@ plot.wlsPower <- function(x, which=NULL, show_colorbar=NULL,
   WgtPlot <- if (1 %in% which){
     plot_CellWeights(x, annotations=annotations, show_colorbar=show_colorbar,
                      marginal_plots=marginal_plots)
-  } else NULL
+  }
 
   ICplot <- if (2 %in% which){
     if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
     plot_InfoContent(x$InformationContent, annotations=annotations,
                      show_colorbar=show_colorbar, marginal_plots=marginal_plots)
-  } else NULL
+  }
 
   DMplot <- if (3 %in% which){
     if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot(x$DesignMatrix, show_colorbar=show_colorbar)
-  } else NULL
+  }
 
   CMplot <- if (4 %in% which){
     if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
     plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbar)
-  } else NULL
+  }
 
-
-  return(list(WgtPlot,ICplot,DMplot,CMplot))
+  plts <- c("WgtPlot","ICplot","DMplot","CMplot")
+  ex <- sapply(plts,exists)
+  return(as.list(mget(plts[ex])))
 }
