@@ -269,19 +269,23 @@ construct_CovMat <- function(sumCl      = NULL,
 #' @return a plotly object
 #'
 
-plot_CovMat <- function(CovMat, show_colorbar=TRUE){
+plot_CovMat <- function(CovMat, show_colorbar=FALSE){
 
   CovMat    <- as.matrix(CovMat)
-  seqLength <- seq_len(dim(CovMat)[1])
+  CMcols    <- diag(CovMat!=Inf)
+
+  seqLength <- 1:(dim(CovMat)[1])
+  seqLength <- seqLength[CMcols]
+  gaps <- 20/dim(CovMat)[1]
 
   ## Work-around for incomplete designs, .. is there a nicer way?
-  tmpaux <- colSums(CovMat)==Inf
-  CovMat[tmpaux,] <- 0
-  CovMat[,tmpaux] <- 0
+  # tmpaux <- colSums(CovMat)==Inf
+  # CovMat[tmpaux,] <- 0
+  # CovMat[,tmpaux] <- 0
 
   plot_ly(type="heatmap", colors=c("white","steelblue"),
-          x=~seqLength, y=~seqLength, z=~CovMat,
-          xgap=1, ygap=1,
+          x=~seqLength, y=~seqLength, z=~CovMat[CMcols,CMcols],
+          xgap=gaps, ygap=gaps,
           showscale=show_colorbar) %>%
     layout(xaxis=list(title="", visible=FALSE),
            yaxis=list(title="", visible=FALSE, autorange="reversed") ) %>%
