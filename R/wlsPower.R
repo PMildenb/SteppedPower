@@ -840,31 +840,34 @@ plot_CellWeights <- function(x,
 #'
 plot.wlsPower <- function(x, which=NULL, show_colorbar=NULL,
                           annotations=NULL, marginal_plots=TRUE,...){
+  out <- list()
   if(is.null(which))
     which <- if("InformationContent" %in% names(x)) 1:2 else 1
 
-  WgtPlot <- if (1 %in% which){
-    plot_CellWeights(x, annotations=annotations, show_colorbar=show_colorbar,
-                     marginal_plots=marginal_plots)
+  if (1 %in% which){
+    out$WgtPlot <- plot_CellWeights(x, annotations=annotations,
+                                show_colorbar=show_colorbar,
+                                marginal_plots=marginal_plots)
   }
 
-  ICplot <- if (2 %in% which){
+  if (2 %in% which){
     if(!("InformationContent" %in% names(x)) ) stop("Please rerun wlsPower() with INFO_CONTENT=TRUE")
-    plot_InfoContent(x$InformationContent, annotations=annotations,
-                     show_colorbar=show_colorbar, marginal_plots=marginal_plots)
+    out$IMplot <- plot_InfoContent(x$InformationContent,
+                                        annotations=annotations,
+                                        show_colorbar=show_colorbar,
+                                        marginal_plots=marginal_plots)
   }
 
-  DMplot <- if (3 %in% which){
+  if (3 %in% which){
     if(!("DesignMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
-    plot(x$DesignMatrix, show_colorbar=show_colorbar)
+    out$DMplot <- plot(x$DesignMatrix, show_colorbar=show_colorbar)
   }
 
-  CMplot <- if (4 %in% which){
+  if (4 %in% which){
     if(!("CovarianceMatrix" %in% names(x)) ) stop("Please rerun wlsPower() with verbose=2")
-    plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbar)
+    out$CMplot <- plot_CovMat(x$CovarianceMatrix, show_colorbar=show_colorbar)
   }
 
-  plts <- c("WgtPlot","ICplot","DMplot","CMplot")
-  ex <- sapply(plts,exists)
-  return(as.list(mget(plts[ex])))
+  return(out)
 }
+
