@@ -230,8 +230,8 @@ construct_trtMat <- function(Cl,
     if(length(timepoints)==1){
       timepoints01 <- c(1,timepoints-1)
       message(paste("assumes 1 baseline period and",timepoints-1,
-                    "parallel period(s). If intended otherwise,
-                    argument timepoints must have length two."))
+                    "parallel period(s). \nIf intended otherwise,",
+                    "argument timepoints must have length two.\n"))
     }else if(length(timepoints)==2){
       timepoints01 <- timepoints
       timepoints   <- sum(timepoints)
