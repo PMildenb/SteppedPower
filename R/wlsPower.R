@@ -415,7 +415,7 @@
 
 
   ## incomplete designs #####
-  if(!is.null(DesMat$IncompMat) & is.null(CovMat)){
+  if(!is.null(DesMat$incompMat) & is.null(CovMat)){
     IM <- DesMat$incompMat
     IM[IM==0] <- Inf
 
