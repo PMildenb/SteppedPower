@@ -641,7 +641,8 @@ compute_wlsPower <- function(DesMat,
   if(verbose==2)
     out <- append(out,
                   list(DesignMatrix     = DesMat,
-                       CovarianceMatrix = CovMat))
+                       CovarianceMatrix = CovMat,
+                       VarianceMatrix   = Var))
   return(out)
   }
 }
