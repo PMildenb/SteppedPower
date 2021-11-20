@@ -44,7 +44,7 @@ If only one element is provided, autocorrelation of all random effects is
 assumed to be the same.
 *Currently not compatible with `rho`!=0 !*}
 
-\item{rho}{numeric (scalar), correlation of `tau` and `eta`}
+\item{rho}{numeric (scalar), correlation of `tau` and `eta`. The default is no correlation.}
 
 \item{gamma}{numeric (scalar), random time effect}
 

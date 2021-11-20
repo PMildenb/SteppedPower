@@ -48,7 +48,7 @@
 #' If only one element is provided, autocorrelation of all random effects is
 #' assumed to be the same.
 #' *Currently not compatible with `rho`!=0 !*
-#' @param rho numeric (scalar), correlation of `tau` and `eta`
+#' @param rho numeric (scalar), correlation of `tau` and `eta`. The default is no correlation.
 #' @param gamma numeric (scalar), random time effect
 #' @param psi numeric (scalar), random subject specific intercept.
 #' Leads to a closed cohort setting
