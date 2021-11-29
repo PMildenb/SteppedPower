@@ -546,13 +546,15 @@ compute_wlsPower <- function(DesMat,
   ## matrices for power calculation #####
   dsncols <- dim(dsn)[2]
 
-  XQ  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(drop0(chol(CovMat))))@x, dsncols ) ## drop0 for incomplete designs
-  Var <- spdinv( VarInv <- XQ %*% dsn )
-  if(verbose>0) ProjMat <- matrix((Var[1,] %*% XQ),
+  XW  <- matrix( ((tdsn <- t(dsn)) %*% chol2inv(drop0(chol(CovMat))))@x, dsncols ) ## drop0 for incomplete designs
+  Var <- spdinv( VarInv <- XW %*% dsn )
+  if(verbose>0) ProjMat <- matrix((Var[1,] %*% XW),
                                   nrow=ifelse(INDIV_LVL,SumSubCl,sumCl),
                                   byrow=TRUE)
 
   ## Information content, if requested ####
+  # currently computed twice, once explicitly, once using the specific formula
+  # explicit computation will be removed in near future
   if(INFO_CONTENT){
     I <- 1:sumCl
     J <- 1:tp
@@ -571,17 +573,17 @@ compute_wlsPower <- function(DesMat,
       J_start  <- tp*(i-1)
       J_incomp <- if(is.null(DesMat$incompMat)) J else J[DesMat$incompMat[i,]==1]  ## no computation of empty cells
 
-      Var_drop <-spdinv( VarInv - XQ[,(J_start+J)] %*% submatrix(dsn,J_start+1,J_start+tp,1,dsncols) )
+      Var_drop <-spdinv( VarInv - XW[,(J_start+J)] %*% submatrix(dsn,J_start+1,J_start+tp,1,dsncols) )
       InfoContent$Cluster[i] <- Var_drop[1,1]/Var[1,1]
 
       if(tp>1){
         for(j in J_incomp){
           J_drop <- (J_ <- J[-j]) + J_start
-          XQ_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
-          XQ_drop[,J_] <- tdsn[,J_drop] %*%
+          XW_drop <- matrix(0, dsncols, tp)  ## add *real* zeros to remain consistent with sparse matrix indexing
+          XW_drop[,J_] <- tdsn[,J_drop] %*%
             spdinv( matrix(CovMat@x[tp^2*(i-1) + 1:(tp)^2],tp) [J_,J_] )
           Var_drop <- spdinv( VarInv +
-              (tp_drop_updt <- (XQ_drop[,J]-XQ[,J_start+J]) %*% dsn[J_start+J,]) )
+              (tp_drop_updt <- (XW_drop[,J]-XW[,J_start+J]) %*% dsn[J_start+J,]) )
           tp_drop[,,j]           <- tp_drop[,,j] + tp_drop_updt
           InfoContent$Cells[i,j] <- Var_drop[1,1]/Var[1,1]
         }
@@ -600,7 +602,23 @@ compute_wlsPower <- function(DesMat,
         }
       }
     }
+
+  ## Formula-based calculation of information content
+    W  <- spdinv(as.matrix(CovMat))
+    X2 <- dsn[,-1]
+    x1 <- dsn[, 1]
+    Q  <- W %*% X2 %*% spdinv(t(X2)%*%W%*%X2) %*%t(X2)%*%W
+    WQ <- W - Q
+    hh <- as.numeric( t(x1)%*%WQ / c(t(x1)%*%WQ%*%x1) )
+    InfoContent$Closed <- matrix(1/(1 - hh^2*as.numeric(t(x1)%*%WQ%*%x1) / diag(WQ) ),
+                                 sumCl,tp, byrow=TRUE)
+
+    # ## Check consistency of methods
+    # maxDiff <- 0
+    # maxDiff <- max(abs(InfoContent$Cells - InfoContent$Closed))
+    # if(maxDiff>1e-12)  warning("formula-based information content and explicit information content differ")
   }
+
 
   ## ddf for power calculation #####
   df <- switch(dfAdjust,
