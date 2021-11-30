@@ -71,7 +71,7 @@ mainly for diagnostic purposes.}
 
 \item{INFO_CONTENT}{logical, should the information content of cluster cells be
 computed? The default is `TRUE` for designs with less or equal than 2500
-cluster cells, otherwise `FALSE`. This ist still experimental(!)}
+cluster cells, otherwise `FALSE`. Ignored if `verbose=0`.}
 
 \item{verbose}{integer, how much information should the function return?
 See also under `Value`.}
