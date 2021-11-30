@@ -82,7 +82,7 @@
 #' mainly for diagnostic purposes.
 #' @param INFO_CONTENT logical, should the information content of cluster cells be
 #' computed? The default is `TRUE` for designs with less or equal than 2500
-#' cluster cells, otherwise `FALSE`. This ist still experimental(!)
+#' cluster cells, otherwise `FALSE`. Ignored if `verbose=0`.
 #'
 #' @details
 #' Let \eqn{\theta:= \mu_1-\mu_0} the treatment effect under investigation.
@@ -96,9 +96,16 @@
 #' @return
 #' The return depends on the `verbose` parameter.
 #' If `verbose`=0, only the power is returned
-#' If `verbose`=1 (the default), a list containing power and the
+#' If `verbose`=1 (the default), a list containing power, projection matrix and the
 #' parameters of the specific setting is returned.
-#' If requested (by `verbose`=2) this list also contains relevant matrices.
+#' If explicitly requested (by `verbose`=2) this list also contains
+#' the `DesMat`-object and the covariance matrix.
+#'
+#' If INFO_CONTENT= TRUE, the returned list contains a named list with four elements:
+#' `Cells` is explicit computation of the information content in each cell;
+#' `Cluster` is the information content of entire clusters;
+#' `time` is thie information content of entire time periods and
+#' `Closed` is a formula-based computation the information content in each cell,
 #'
 #' @export
 #'
@@ -800,7 +807,8 @@ plot_CellWeights <- function(x,
     colorbar(len=1,limits=c(-mx,mx)) %>%
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
-  if(annotations) PLT <- PLT %>% add_annotations(text=~wgtChar, showarrow=FALSE)
+  if(annotations) PLT <- PLT %>% add_annotations(x=dat$x, y=dat$y,
+                                                 text=dat$wgtChar, showarrow=FALSE)
 
   if(marginal_plots){
     PLT <- suppressWarnings(
