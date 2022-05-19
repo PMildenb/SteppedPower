@@ -736,7 +736,8 @@ plot_InfoContent <- function(IC,
     colorbar(len=1,limits=c(1-1e-8,mx)) %>%
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
-  if(annotations) PLT <- PLT %>% add_annotations(text=~zChar, showarrow=FALSE)
+  if(annotations) PLT <- PLT %>% add_annotations(text=~zChar,
+                                                 font=list(size=16), showarrow=FALSE)
 
 
   if(marginal_plots){
@@ -807,8 +808,8 @@ plot_CellWeights <- function(x,
     colorbar(len=1,limits=c(-mx,mx)) %>%
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
-  if(annotations) PLT <- PLT %>% add_annotations(x=dat$x, y=dat$y,
-                                                 text=dat$wgtChar, showarrow=FALSE)
+  if(annotations) PLT <- PLT %>% add_annotations(x=dat$x, y=dat$y,text=dat$wgtChar,
+                                                 font=list(size=16), showarrow=FALSE)
 
   if(marginal_plots){
     PLT <- suppressWarnings(
