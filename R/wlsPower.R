@@ -699,6 +699,7 @@ print.glsPower <- function(x, ...){
 
 plot_InfoContent <- function(IC,
                              annotations=NULL,
+                             annotation_size=NULL,
                              show_colorbar=TRUE,
                              marginal_plots=TRUE){
 
@@ -726,7 +727,8 @@ plot_InfoContent <- function(IC,
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
   if(annotations) PLT <- PLT %>% add_annotations(text=~zChar,
-                                                 font=list(size=16), showarrow=FALSE)
+                                                 font=list(size=annotation_size),
+                                                 showarrow=FALSE)
 
 
   if(marginal_plots){
@@ -768,6 +770,7 @@ plot_InfoContent <- function(IC,
 #'
 plot_CellWeights <- function(x,
                              annotations=NULL,
+                             annotation_size=NULL,
                              show_colorbar=TRUE,
                              marginal_plots=TRUE){
 
@@ -797,8 +800,9 @@ plot_CellWeights <- function(x,
     colorbar(len=1,limits=c(-mx,mx)) %>%
     layout(xaxis=list(title="Time"),
            yaxis=list(title="Cluster", autorange="reversed"))
-  if(annotations) PLT <- PLT %>% add_annotations(x=dat$x, y=dat$y,text=dat$wgtChar,
-                                                 font=list(size=16), showarrow=FALSE)
+  if(annotations) PLT <- PLT %>% add_annotations(text=dat$wgtChar,
+                                                 font=list(size=annotation_size),
+                                                 showarrow=FALSE)
 
   if(marginal_plots){
     PLT <- suppressWarnings(
@@ -847,6 +851,7 @@ plot_CellWeights <- function(x,
 #' @param show_colorbar logical, should the colorbars be shown?
 #' @param ... Arguments to be passed to methods
 #' @param annotations logical, should the cell contributions be annotated in the Plot?
+#' @param annotation_size font size of annotation in influence plots
 #' @param marginal_plots should the influence of whole periods, clusters also be plotted?
 #'
 #' @method plot glsPower
@@ -856,13 +861,16 @@ plot_CellWeights <- function(x,
 #' @export
 #'
 plot.glsPower <- function(x, which=NULL, show_colorbar=NULL,
-                          annotations=NULL, marginal_plots=TRUE,...){
+                          annotations=NULL, annotation_size=NULL,
+                          marginal_plots=TRUE,...){
   out <- list()
   if(is.null(which))
     which <- if("InformationContent" %in% names(x)) 1:2 else 1
 
   if (1 %in% which){
-    out$WgtPlot <- plot_CellWeights(x, annotations=annotations,
+    out$WgtPlot <- plot_CellWeights(x,
+                                annotations=annotations,
+                                annotation_size=annotiation_size,
                                 show_colorbar=show_colorbar,
                                 marginal_plots=marginal_plots)
   }
@@ -870,9 +878,10 @@ plot.glsPower <- function(x, which=NULL, show_colorbar=NULL,
   if (2 %in% which){
     if(!("InformationContent" %in% names(x)) ) stop("Please rerun glsPower() with INFO_CONTENT=TRUE")
     out$IMplot <- plot_InfoContent(x$InformationContent,
-                                        annotations=annotations,
-                                        show_colorbar=show_colorbar,
-                                        marginal_plots=marginal_plots)
+                                   annotations=annotations,
+                                   annotation_size=annotiation_size,
+                                   show_colorbar=show_colorbar,
+                                   marginal_plots=marginal_plots)
   }
 
   if (3 %in% which){

@@ -7,6 +7,7 @@
 plot_CellWeights(
   x,
   annotations = NULL,
+  annotation_size = NULL,
   show_colorbar = TRUE,
   marginal_plots = TRUE
 )
@@ -15,6 +16,8 @@ plot_CellWeights(
 \item{x}{object of class glsPower}
 
 \item{annotations}{logical, should the cell contributions be annotated in the Plot?}
+
+\item{annotation_size}{font size of annotation in influence plots}
 
 \item{show_colorbar}{logical, should the colorbars be shown?}
 

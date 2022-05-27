@@ -9,6 +9,7 @@
   which = NULL,
   show_colorbar = NULL,
   annotations = NULL,
+  annotation_size = NULL,
   marginal_plots = TRUE,
   ...
 )
@@ -22,6 +23,8 @@
 \item{show_colorbar}{logical, should the colorbars be shown?}
 
 \item{annotations}{logical, should the cell contributions be annotated in the Plot?}
+
+\item{annotation_size}{font size of annotation in influence plots}
 
 \item{marginal_plots}{should the influence of whole periods, clusters also be plotted?}
 
