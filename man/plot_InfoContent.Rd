@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{plot_InfoContent}
 \alias{plot_InfoContent}
-\title{plot the information content of a wls object}
+\title{plot the information content of a gls object}
 \usage{
 plot_InfoContent(
   IC,
@@ -24,5 +24,5 @@ plot_InfoContent(
 a plotly object
 }
 \description{
-plot the information content of a wls object
+plot the information content of a gls object
 }

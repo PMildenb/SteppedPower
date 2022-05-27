@@ -2,7 +2,7 @@
 % Please edit documentation in R/wlsPower.R
 \name{plot_CellWeights}
 \alias{plot_CellWeights}
-\title{plot cell contributions (weights) of a wls object}
+\title{plot cell contributions (weights) of a gls object}
 \usage{
 plot_CellWeights(
   x,
@@ -12,7 +12,7 @@ plot_CellWeights(
 )
 }
 \arguments{
-\item{x}{object of class wlsPower}
+\item{x}{object of class glsPower}
 
 \item{annotations}{logical, should the cell contributions be annotated in the Plot?}
 
@@ -24,5 +24,5 @@ plot_CellWeights(
 a plotly html widget
 }
 \description{
-plot cell contributions (weights) of a wls object
+plot cell contributions (weights) of a gls object
 }
