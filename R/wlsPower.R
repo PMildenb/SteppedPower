@@ -870,7 +870,7 @@ plot.glsPower <- function(x, which=NULL, show_colorbar=NULL,
   if (1 %in% which){
     out$WgtPlot <- plot_CellWeights(x,
                                 annotations=annotations,
-                                annotation_size=annotiation_size,
+                                annotation_size=annotation_size,
                                 show_colorbar=show_colorbar,
                                 marginal_plots=marginal_plots)
   }
@@ -879,7 +879,7 @@ plot.glsPower <- function(x, which=NULL, show_colorbar=NULL,
     if(!("InformationContent" %in% names(x)) ) stop("Please rerun glsPower() with INFO_CONTENT=TRUE")
     out$IMplot <- plot_InfoContent(x$InformationContent,
                                    annotations=annotations,
-                                   annotation_size=annotiation_size,
+                                   annotation_size=annotation_size,
                                    show_colorbar=show_colorbar,
                                    marginal_plots=marginal_plots)
   }
