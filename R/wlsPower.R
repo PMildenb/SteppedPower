@@ -571,7 +571,7 @@ compute_glsPower <- function(DesMat,
     tp_drop <- array(0,dim=c(dsncols,dsncols,tp))
 
     if(length(CovMat@x)<tp*tp*sumCl) {  ## ugly. Is needed to produce consistent sparse matrix indexing for tau=0 (and eta >=0)
-      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) ) ## wouldnt be necessary with bdiag_m ...
+      i <- rep(J,tp)      + (i_add <- rep(tp*(I-1),each=tp*tp) ) ## @SELF: wouldnt be necessary with bdiag_m ...
       j <- rep(J,each=tp) +  i_add
       CovMat <- CovMat + sparseMatrix(i,j,x=0)
     }
@@ -610,20 +610,9 @@ compute_glsPower <- function(DesMat,
       }
     }
 
-  ## Formula-based calculation of information content
-    W  <- spdinv(as.matrix(CovMat))
-    X2 <- dsn[,-1]
-    x1 <- dsn[, 1]
-    Q  <- W %*% X2 %*% spdinv(t(X2)%*%W%*%X2) %*%t(X2)%*%W
-    WQ <- W - Q
-    hh <- as.numeric( t(x1)%*%WQ / c(t(x1)%*%WQ%*%x1) )
-    InfoContent$Closed <- matrix(1/(1 - hh^2*as.numeric(t(x1)%*%WQ%*%x1) / diag(WQ) ),
-                                 sumCl,tp, byrow=TRUE)
-
-    # ## Check consistency of methods
-    # maxDiff <- 0
-    # maxDiff <- max(abs(InfoContent$Cells - InfoContent$Closed))
-    # if(maxDiff>1e-12)  warning("formula-based information content and explicit information content differ")
+    ## Formula-based calculation of information content
+    InfoContent$Closed <- compute_InfoContent(CovMat=CovMat, dsn=dsn,
+                                            sumCl=sumCl  , tp=tp)
   }
 
 
