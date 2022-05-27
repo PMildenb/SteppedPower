@@ -13,7 +13,10 @@ compute_InfoContent(CovMat = NULL, W = NULL, dsn, sumCl, tp)
 \item{W}{numeric, the inverse of a covariance matrix. If CovMat is specified,
 input for W is ignored}
 
-\item{dsn}{a matrix of dimensions #Clusters x #timepoints;}
+\item{dsn}{a matrix with  (#Clusters \eqn{\cdot} #timepoints) rows and p
+columns, where p are the degrees of freedom of fixed effects in a gls model.
+This usually contains the intervention effect and some specification of the
+time effect.}
 
 \item{sumCl}{number of clusters}
 

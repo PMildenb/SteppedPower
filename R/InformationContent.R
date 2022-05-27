@@ -6,7 +6,10 @@
 #' (#Clusters \eqn{\cdot} timepoints) rows and columns.
 #' @param W numeric, the inverse of a covariance matrix. If CovMat is specified,
 #' input for W is ignored
-#' @param dsn a matrix of dimensions #Clusters x #timepoints;
+#' @param dsn a matrix with  (#Clusters \eqn{\cdot} #timepoints) rows and p
+#' columns, where p are the degrees of freedom of fixed effects in a gls model.
+#' This usually contains the intervention effect and some specification of the
+#' time effect.
 #' @param sumCl number of clusters
 #' @param tp number of time points
 #'
@@ -14,7 +17,11 @@
 #'
 #' @export
 
-compute_InfoContent <- function(CovMat=NULL,W=NULL,dsn,sumCl,tp){
+compute_InfoContent <- function(CovMat = NULL,
+                                W      = NULL,
+                                dsn,
+                                sumCl,
+                                tp){
   if(is.null(W) | !is.null(CovMat)) W  <- spdinv(as.matrix(CovMat))
   X2 <- dsn[,-1]
   x1 <- dsn[, 1]
