@@ -663,7 +663,6 @@ compute_glsPower <- function(DesMat,
 
 #' @title Print an object of class `glsPower`
 #'
-#'
 #' @param x object of class glsPower
 #' @param ... Arguments to be passed to methods
 #'
