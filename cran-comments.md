@@ -1,5 +1,33 @@
+## Submission of version 0.3.2
 
-## Resubmission 
+### Changes to version 0.3.1 
+
+* The most noticeable change in this version is that the abbrevation `wls` 
+(weighted least squares) in function names is now replaced with `gls`
+(generalised least squars) to more properly reflect the scope of the functionality.
+For example, the function `wlsPower()` is now called `glsPower()` - although the
+former version still works and throws a warning. 
+* The closed formula for the computation of information content is now a dedicated formula, 
+called `compute_InfoContent()` 
+* In `plot.glsPower()` there now is an option to manually set the font size of the
+annotation in the influence plots
+
+
+### Test environments
+
+* local R installation (Windows 10) , R 4.2.0
+* Mac OS 11.6.6 (on GitHub Actions), R 4.2.0
+* ubuntu 20.04.4 (on GitHub Actions), R 4.2.0
+* Windows Server 2022 10.0.20348 (on GitHub Actions), R 4.2.0
+
+### R CMD check results
+
+0 errors | 0 warnings | 0 notes
+
+
+
+
+## Resubmission of version 0.3.1
 
 You saw:
 ```
@@ -10,7 +38,7 @@ You saw:
 
 I fixed the trailing slashes in the vignette. 
 
-## Changes to previous version
+### Changes in 0.3.1 to previous version
 
 Since submission of version 0.2.0 (published 2021-07-07), I changed the following:
 
@@ -28,14 +56,14 @@ and once explicitly. Information content of whole periods or clusters is also co
   * Various aesthetic improvements, e.g.: Improved hover information, dynamic gap size between cells.
 * Vignette was extended
 
-## Test environments
+### Test environments
 
 * local R installation (Windows 10) , R 4.1.2
 * Mac OS 10.15.7 (on GitHub Actions), R 4.1.2
 * ubuntu 20.04.2 (on GitHub Actions), R 4.1.2
 * Windows Server 2019 10.0.17763 (on GitHub Actions), R 4.1.2
 
-## R CMD check results
+### R CMD check results
 
 0 errors | 0 warnings | 1 note
 
