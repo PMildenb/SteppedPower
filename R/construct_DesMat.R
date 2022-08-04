@@ -94,6 +94,17 @@ construct_DesMat <- function(Cl          = NULL,
                                      Cl         = Cl,
                                      trtmatrix  = trtMat)
 
+  if(any(is.na(trtMat))){
+    if(!exists("incompMat"))
+      incompMat <- matrix(1L,nrow=nrow(trtMat), ncol=ncol(trtMat))
+
+    incompMat[is.na(trtMat)]    <- 0L
+    dsnmatrix[is.na(dsnmatrix)] <- 0 ## must not be NA (for computation of XW)
+    trtMat[is.na(trtMat)]       <- 0 ## must not be NA (mainly for eta)
+  }
+
+
+  ## Return ####
   DesMat  <- list(dsnmatrix  = dsnmatrix,
                   timepoints = timepoints,
                   trtDelay   = trtDelay,
@@ -104,7 +115,7 @@ construct_DesMat <- function(Cl          = NULL,
                                       timeAdjust,
                                       "userdefined"),
                   trtMat     = trtMat,
-                  incompMat  = if(!is.null(incomplete)) incompMat else NULL)
+                  incompMat  = if(exists("incompMat")) incompMat else NULL)
   class(DesMat) <- append(class(DesMat),"DesMat")
 
   return(DesMat)
@@ -350,10 +361,10 @@ construct_incompMat <- function(incomplete,dsntype,timepoints,Cl,
       warning("Argument `incomplete` must be less or equal to the number of",
               "timepoints. `incomplete` is set to ", timepoints )
     }
-    Toep <- toeplitz(c(rep(1,incomplete),rep(0,lenCl-incomplete)))
-    lastCols <- (timepoints-lenCl+1):timepoints
+    Toep <- toeplitz(c(rep(1L,incomplete),rep(0L,lenCl-incomplete)))
+    lastCols <- (timepoints-lenCl+1L):timepoints
 
-    IM <- matrix(1,lenCl,timepoints)
+    IM <- matrix(1L,lenCl,timepoints)
     IM[lower.tri(IM)]                       <- Toep[lower.tri(Toep)]
     IM[,lastCols][upper.tri(IM[,lastCols])] <- Toep[upper.tri(Toep)]
 

@@ -15,15 +15,18 @@ annotation in the influence plots
 
 ### Test environments
 
-* local R installation (Windows 10) , R 4.2.0
+* local R installation (Windows 10) , R-devel (4.3.0)
 * Mac OS 11.6.6 (on GitHub Actions), R 4.2.0
 * ubuntu 20.04.4 (on GitHub Actions), R 4.2.0
 * Windows Server 2022 10.0.20348 (on GitHub Actions), R 4.2.0
 
 ### R CMD check results
 
-0 errors | 0 warnings | 0 notes
+```
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
+R CMD check succeeded
+```
 
 
 
