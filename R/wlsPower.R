@@ -357,7 +357,7 @@
                                  incomplete = incomplete,
                                  N          = if(INDIV_LVL) N,
                                  INDIV_LVL  = INDIV_LVL)
-      if(!all(sapply(list(Cl, timepoints, trtDelay, dsntype), is.null)))
+      if(!all(sapply(list(Cl, timepoints, trtDelay), is.null)))
         warning("If input to argument DesMat is of class `matrix`, \n",
                 "Cl, timepoints, trtDelay, dsntype are ignored.")
     }else
@@ -424,7 +424,7 @@
   ## incomplete designs #####
   if(!is.null(DesMat$incompMat) & is.null(CovMat)){
     IM <- DesMat$incompMat
-    IM[IM==0] <- Inf
+    IM[IM!=1] <- Inf
 
     sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
                     byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
@@ -596,7 +596,7 @@ compute_glsPower <- function(DesMat,
         }
       }
     }
-    if( tp>1 & sum(colSums(DesMat$trtMat)>0)>1 ){
+    if( tp>1 & sum(colSums(DesMat$trtMat,na.rm=TRUE)>0)>1 ){
       if(DesMat$timeAdjust=="factor"){ ## TODO: ADD WARNINGS !!
         for(j in J){
           Var_drop <- spdinv( (VarInv + tp_drop[,,j])[-(j+1),-(j+1)] )
