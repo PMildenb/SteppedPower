@@ -18,13 +18,14 @@
 #' @param DesMat Either an object of class `DesMat` or a matrix indicating the
 #' treatment status for each cluster at each timepoint. If supplied,
 #' `timepoints`,`Cl`,`trtDelay` are ignored.
-#' @param trtDelay numeric (possibly vector), value(s)
-#' between 0 and 1 specifying the proportion of intervention effect
-#' in the first (second ... ) intervention phase.
+#' @param trtDelay numeric (possibly vector), `NA`(s) and/or value(s)
+#' between `0` and `1`. `NA` means that first (second, ... ) period after intervention
+#' start is not observed. A value between `0` and `1` specifies the assumed proportion of intervention effect
+#' in the first (second ... ) intervention period.
 #' @param incomplete integer, either a scalar (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
-#' control to intervention that are observed. A matrix consists of 1's for
-#' observed clusterperiods and 0's for unobserved clusterperiods.
+#' control to intervention that are observed. A matrix consists of `1`s for
+#' observed clusterperiods and `0`s or `NA` for unobserved clusterperiods.
 #' @param timeAdjust character, specifies adjustment for time periods.
 #' One of the following: "factor", "linear", "none", "periodic".
 #' Defaults to "factor".
@@ -423,11 +424,10 @@
 
   ## incomplete designs #####
   if(!is.null(DesMat$incompMat) & is.null(CovMat)){
-    IM <- DesMat$incompMat
-    IM[IM!=1] <- Inf
 
     sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
-                    byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE)) * IM
+                    byrow=ifelse(length(sigma)!=timepoints,TRUE,FALSE))
+    sigma[DesMat$incompMat!=1 | is.na(DesMat$incompMat)] <- Inf
   }
 
   ## calculate samplesize (if needed, i.e. if power is not NULL ) #####
@@ -578,7 +578,8 @@ compute_glsPower <- function(DesMat,
 
     for(i in I){
       J_start  <- tp*(i-1)
-      J_incomp <- if(is.null(DesMat$incompMat)) J else J[DesMat$incompMat[i,]==1]  ## no computation of empty cells
+      J_incomp <- if(is.null(DesMat$incompMat)) J else
+        J[!(DesMat$incompMat[i,]!=1 | is.na(DesMat$incompMat[i,]) )]  ## no computation of empty cells
 
       Var_drop <-spdinv( VarInv - XW[,(J_start+J)] %*% submatrix(dsn,J_start+1,J_start+tp,1,dsncols) )
       InfoContent$Cluster[i] <- Var_drop[1,1]/Var[1,1]

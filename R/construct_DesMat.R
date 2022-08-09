@@ -153,7 +153,9 @@ print.DesMat <- function(x, ...){
           "Dimension of design matrix         = ", dim(x$dsnmatrix)[1]," x ",
                                                    dim(x$dsnmatrix)[2],"\n",
           "\nTreatment status (clusters x timepoints):")
-  print(x$trtMat)
+  tmp <- x$trtMat
+  tmp[x$incompMat!=1 | is.na(x$incompMat)] <- NA
+  print(tmp)
 }
 
 
@@ -176,7 +178,7 @@ print.DesMat <- function(x, ...){
 plot.DesMat <- function(x, show_colorbar=FALSE, ...){
   trt <- x$trtMat
   if(!is.null(x$incompMat))
-    trt[x$incompMat==0] <- NA
+    trt[x$incompMat!=1 | is.na(x$incompMat)] <- NA
 
   plot_ly(type="heatmap",
           x=~(seq_len(dim(trt)[2])), y=~(seq_len(dim(trt)[1])),
@@ -361,7 +363,7 @@ construct_incompMat <- function(incomplete,dsntype,timepoints,Cl,
       warning("Argument `incomplete` must be less or equal to the number of",
               "timepoints. `incomplete` is set to ", timepoints )
     }
-    Toep <- toeplitz(c(rep(1L,incomplete),rep(0L,lenCl-incomplete)))
+    Toep <- toeplitz(c(rep(1L,incomplete),rep(NA,lenCl-incomplete)))
     lastCols <- (timepoints-lenCl+1L):timepoints
 
     IM <- matrix(1L,lenCl,timepoints)
