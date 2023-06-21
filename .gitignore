@@ -5,3 +5,4 @@ inst/doc
 .Ruserdata
 sync.ffs_db
 .RDataTmp
+.idea

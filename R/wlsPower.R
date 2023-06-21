@@ -245,6 +245,7 @@
                       INDIV_LVL     = FALSE,
                       INFO_CONTENT  = NULL,
                       verbose       = 1){
+
   ## Match string inputs ####
   ### dsntype
   dsntypeOptions <- c("SWD","parallel","parallel_baseline","crossover")
@@ -259,6 +260,20 @@
   if(family != tmpfamily) {
     message("Assumes ", tmpfamily, "distribution")
     family <- tmpfamily
+  }
+  ### time Adjustment
+  AdjOptions <- c("factor", "none", "linear", "periodic", "quadratic")
+  tmptimeAdjust <- choose_character_Input(AdjOptions,timeAdjust)
+  if(tmptimeAdjust != timeAdjust){
+    message("Assumes", tmptimeAdjust, "as time adjustment")
+    timeAdjust <- tmptimeAdjust
+  }
+  ### df Adjustment
+  dfOptions <- c("none","between-within", "containment", "residual")
+  tmpdfAdjust <- choose_character_Input(dfOptions, dfAdjust)
+  if(tmpdfAdjust != dfAdjust){
+    message("Assumes", tmpdfAdjust, "as df adjustment")
+    dfAdjust <- tmpdfAdjust
   }
 
   ## CHECKS #####
