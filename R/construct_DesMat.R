@@ -339,7 +339,7 @@ construct_timeAdjust <- function(Cl,
   return(timeBlks)
 }
 
-#' @title Constructs a matrix of 0 and 1 for unobserved and observed cluster periods, respectively.
+#' @title Constructs a matrix of `NA` and `1` for unobserved and observed cluster periods, respectively.
 #'
 #' @description Mostly useful to build incomplete stepped wedge designs
 #'
