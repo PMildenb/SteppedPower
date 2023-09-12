@@ -2,7 +2,7 @@
 % Please edit documentation in R/construct_DesMat.R
 \name{construct_incompMat}
 \alias{construct_incompMat}
-\title{Constructs a matrix of 0 and 1 for unobserved and observed cluster periods, respectively.}
+\title{Constructs a matrix of `NA` and `1` for unobserved and observed cluster periods, respectively.}
 \usage{
 construct_incompMat(incomplete, dsntype, timepoints, Cl, trtmatrix = NULL)
 }
