@@ -1,3 +1,8 @@
+## Submission of version 0.3.4 
+
+* Fixed the roxygen2 bug as explained in https://github.com/r-lib/roxygen2/issues/1491 
+
+
 ## Submission of version 0.3.2
 
 ### Changes to version 0.3.1 
