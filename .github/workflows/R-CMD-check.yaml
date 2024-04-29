@@ -2,7 +2,7 @@ on: [push, pull_request]
   # push:
   # pull_request:
     # branches:
-    #   - master
+    #   - v2
 
 name: R-CMD-check
 
