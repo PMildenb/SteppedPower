@@ -333,7 +333,7 @@ RandEff_to_alpha012 <- function(sigResid, tau, gamma, psi){
   sigMargSq <- (tau^2 + gamma^2 +psi^2 + sigResid^2)
 
   alpha0 <- (tau^2 + gamma^2) / sigMargSq
-  alpha1 <- (tau^2) / SigMargSq
+  alpha1 <- (tau^2) / sigMargSq
   alpha2 <- (tau^2 + psi^2)   / sigMargSq
 
   return(list(alpha0 = alpha0,
