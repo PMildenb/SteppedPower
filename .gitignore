@@ -6,3 +6,5 @@ inst/doc
 sync.ffs_db
 .RDataTmp
 .idea
+/doc/
+/Meta/
