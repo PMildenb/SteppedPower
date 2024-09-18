@@ -1,3 +1,27 @@
+
+## Submission of version 0.3.5
+
+### Changes to previous version:
+
+* internal restructuring and error fixes
+* `plot.DesMat()` now has a new option to plot the treatment allocation for individuals 
+(instead of entire clusters)
+ 
+ 
+### Test environments 
+
+* local R installation (Win 10), R 4.4.0
+* Mac OS 14.4.1 (on GitHub Actions), R 4.4.0
+
+### R CMD check results
+
+```
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+
+R CMD check succeeded
+```
+
+
 ## Submission of version 0.3.4 
 
 * Fixed the roxygen2 bug as explained in https://github.com/r-lib/roxygen2/issues/1491 
@@ -9,7 +33,7 @@
 
 * The most noticeable change in this version is that the abbrevation `wls` 
 (weighted least squares) in function names is now replaced with `gls`
-(generalised least squars) to more properly reflect the scope of the functionality.
+(generalised least squares) to more properly reflect the scope of the functionality.
 For example, the function `wlsPower()` is now called `glsPower()` - although the
 former version still works and throws a warning. 
 * The closed formula for the computation of information content is now a dedicated formula, 
