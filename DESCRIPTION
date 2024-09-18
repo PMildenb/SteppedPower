@@ -28,4 +28,5 @@ Suggests:
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.1
+Roxygen: list(markdown=TRUE)
 VignetteBuilder: knitr
