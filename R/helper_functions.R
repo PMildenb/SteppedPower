@@ -77,7 +77,28 @@ input_to_List <- function(input, SumCl, tp){
   return(out)
 }
 
-################################################################################
+fbdiag <- function(lmat) {
+  ## fast block diagonal sparse matrix construction.
+  ## no checks at all. Isanely unsave, for internal use only.
+  ## assumes symmetrical blocks of equal length.
+
+  l <- length(lmat)         ## number of blocks
+  N <- nrow(lmat[[1]])      ## block size N x N
+  s  <- rep(seq(0,(l-1)*N,by=N), each=N*(N+1)/2) ## create block shift vector
+
+  i0 <- rep(1:N, times=N:1) ## row indices of upper triangle of first block
+  i  <- rep(i0,l) + s
+
+  j0 <- unlist(lapply(seq_len(N), \(k) seq(k, N))) ## column indices
+  j  <- rep(j0,l) + s
+
+  idx <- lower.tri(lmat[[1]], diag = TRUE) ## lower, bc unlist works columnwise
+  x   <- unlist(lapply(lmat, "[", idx)) ## values in tiangles of blocks
+
+  sparseMatrix(i, j, x=x, symmetric=TRUE, check=FALSE)
+}
+
+
 ## auxiliary functions for binomial outcome ####
 logit.deriv      <- function(x) 1/(x-x^2)
 sdLin_invlogit   <- function(sdLin,mu){sdLin/logit.deriv(mu)}
