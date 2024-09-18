@@ -120,17 +120,17 @@ construct_CovSubMat <- function(N,
 #'
 #' @description
 #' constructs a (block diagonal) covariance matrix.
-#' This function calls `construct_CovBlk`
-#' (or `construct_CovSubMat` in case of repeated
+#' This function calls \code{\link{construct_CovBlk}}
+#' (or \code{\link{construct_CovSubMat}} in case of repeated
 #' observations of the same individuals) for each block.
 #'
-#' @inheritParams compute_glsPower
+#' @inheritParams glsPower
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
 #' @param sumCl total number of clusters
 #' @param trtMat a matrix of dimension *#Cluster* x *timepoints* as produced by
-#' the function `construct_trtMat`, indicating the cluster-periods that receive
+#' the function \code{\link{construct_trtMat}}, indicating the cluster-periods that receive
 #' interventional treatment. Defaults to NULL. If trtMat is given, the arguments
 #' `sumCl` and `timepoints` are ignored (!).
 #' @param CovBlk a matrix of dimension *timepoints* x *timepoints*.
@@ -228,7 +228,8 @@ construct_CovMat <- function(sumCl      = NULL,
                         MoreArgs = list(AR  = AR,
                                         rho = rho),
                         SIMPLIFY = FALSE)
-      CovMat       <- Matrix::bdiag(CovBlks)
+      # CovMat       <- Matrix::bdiag(CovBlks)
+      CovMat       <- fbdiag(CovBlks)
 
       if(!is.null(gamma)) {
         gammaMat     <- input_to_Mat(gamma, sumCl, timepoints)
@@ -251,7 +252,8 @@ construct_CovMat <- function(sumCl      = NULL,
                                         AR         = AR,
                                         rho        = rho),
                         SIMPLIFY = FALSE)
-      CovMat       <- Matrix::bdiag(CovBlks)
+      # CovMat       <- Matrix::bdiag(CovBlks)
+      CovMat       <- fbdiag(CovBlks)
     }
   }
   return(CovMat)

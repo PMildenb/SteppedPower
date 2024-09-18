@@ -4,3 +4,5 @@
 docs/*
 ^\.github$
 cran-comments.md
+^doc$
+^Meta$

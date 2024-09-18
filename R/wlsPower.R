@@ -3,11 +3,12 @@
 #'
 #' @description
 #' This is the main function of the SteppedPower package.
-#' It calls the constructor functions for the design matrix and
-#' covariance matrix, and then calculates the variance of the
+#' It calls the constructor functions for the design matrix
+#' \code{\link{construct_DesMat}} and
+#' covariance matrix \code{\link{construct_CovMat}},
+#' and then calculates the variance of the
 #' intervention effect estimator. The latter is then used
 #' to compute the power of a Wald test of a (given) intervention effect.
-#'
 #'
 #'
 #' @param Cl integer (vector), number of clusters per sequence group (in SWD),
@@ -15,7 +16,8 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat Either an object of class `DesMat` or a matrix indicating the
+#' @param DesMat Either an object of class `DesMat` created by the
+#' function \code{\link{construct_DesMat}} or a matrix indicating the
 #' treatment status for each cluster at each timepoint. If supplied,
 #' `timepoints`,`Cl`,`trtDelay` are ignored.
 #' @param trtDelay numeric (possibly vector), `NA`(s) and/or value(s)
@@ -25,7 +27,7 @@
 #' @param incomplete integer, either a scalar (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
 #' control to intervention that are observed. A matrix consists of `1`s for
-#' observed clusterperiods and `0`s or `NA` for unobserved clusterperiods.
+#' observed clusterperiods and `0`s or `NA` for unobserved cluster periods.
 #' @param timeAdjust character, specifies adjustment for time periods.
 #' One of the following: "factor", "linear", "none", "periodic".
 #' Defaults to "factor".
@@ -321,7 +323,7 @@
         stop("Correlation rho must be between -1 and 1")
     }
     if(!is.null(psi) & is.null(power)){
-      if(is.null(N))
+      if(is.null(N) & is.null(DesMat$N))
         stop("If the standard deviation `psi` is not null, N is needed.")
       if(is.matrix(N)){
         N <- N[,1]
@@ -358,9 +360,10 @@
                                   timeAdjust = timeAdjust,
                                   period     = period,
                                   incomplete = incomplete,
-                                  N          = if(INDIV_LVL) N,
+                                  N          = N,
                                   INDIV_LVL  = INDIV_LVL )
-  }else{
+  }
+  else{
     if(inherits(DesMat, "DesMat")) {
       if(!all(sapply(list(Cl, timepoints ,trtDelay,period,incomplete),is.null)))      ## timeAdjust defaults to factor (!)
         warning("If input to argument DesMat inherits class `DesMat`, \n",
@@ -371,7 +374,8 @@
                                  timeAdjust = timeAdjust,
                                  period     = period,
                                  incomplete = incomplete,
-                                 N          = if(INDIV_LVL) N,
+                                 # N          = if(INDIV_LVL) N,
+                                 N          = N,
                                  INDIV_LVL  = INDIV_LVL)
       if(!all(sapply(list(Cl, timepoints, trtDelay), is.null)))
         warning("If input to argument DesMat is of class `matrix`, \n",
@@ -390,7 +394,8 @@
   ## default for INFO_CONTENT ####
   if(is.null(INFO_CONTENT)){
     INFO_CONTENT <- ifelse(length(DesMat$trtMat)<=2500 & sumCl>2 &
-                           verbose>0 & !INDIV_LVL,                   TRUE,FALSE)
+                           verbose>0 & !INDIV_LVL,
+                           TRUE,FALSE)
   }else if(INFO_CONTENT & sumCl<=2) {
     INFO_CONTENT <- FALSE
     warning("Information Content not (yet) implemented for only two clusters.",
@@ -406,6 +411,11 @@
       psi   <- tmp$psi
     }
   } else if(family =="binomial"){
+
+  ## TODO: Decide whether mu0,mu1 define the residual or
+  ## the marginal variance by default (or something in between).
+  ##
+  ## Hemming/Hooper use it as marginal variance by default.
 
     if(marginal_mu){
       if(!UseRandEff)
@@ -431,13 +441,15 @@
     }
   }
 
+  ## compute Effect Size ####
   EffSize <- mu1-mu0
 
   if(marginal_mu & verbose>0)
     print(paste("The (raw) effect is",round(EffSize,5)))
 
 
-  ## incomplete designs #####
+  ## incomplete designs ####
+  ## TODO: Is the check `is.null(CovMat)` really needed here?
   if(!is.null(DesMat$incompMat) & is.null(CovMat)){
 
     sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
@@ -449,29 +461,30 @@
   if(!is.null(power)){
     if(power<0 | power>1) stop("power needs to be between 0 and 1.")
     N_opt <- tryCatch(ceiling(
-              uniroot(function(N){power - compute_glsPower(DesMat    = DesMat,
-                                                           EffSize   = EffSize,
-                                                           sigma     = sigma,
-                                                           tau       = tau,
-                                                           eta       = eta,
-                                                           AR        = AR,
-                                                           rho       = rho,
-                                                           gamma     = gamma,
-                                                           psi       = psi,
-                                                           N         = N,
-                                                           dfAdjust  = dfAdjust,
-                                                           sig.level = sig.level,
-                                                           CovMat    = CovMat,
-                                                           INDIV_LVL = INDIV_LVL,
-                                                           INFO_CONTENT = FALSE,
-                                                           verbose   = 0)},
+              uniroot(function(N){
+                DesMat$N <- N
+                power - compute_glsPower(DesMat    = DesMat,
+                                         EffSize   = EffSize,
+                                         sigma     = sigma,
+                                         tau       = tau,
+                                         eta       = eta,
+                                         AR        = AR,
+                                         rho       = rho,
+                                         gamma     = gamma,
+                                         psi       = psi,
+                                         dfAdjust  = dfAdjust,
+                                         sig.level = sig.level,
+                                         CovMat    = CovMat,
+                                         INDIV_LVL = INDIV_LVL,
+                                         INFO_CONTENT = FALSE,
+                                           verbose   = 0)},
                 interval=N_range)$root),
               error=function(cond){
                 message(paste0("Maximal N yields power below ",power,
                                ". Increase argument N_range."))
                 return(N_range[2])
               })
-    N <- N_opt
+    DesMat$N <- N_opt
   }
   ## calculate Power #####
   out <- compute_glsPower(DesMat    = DesMat,
@@ -483,7 +496,6 @@
                           rho       = rho,
                           gamma     = gamma,
                           psi       = psi,
-                          N         = N,
                           dfAdjust  = dfAdjust,
                           sig.level = sig.level,
                           CovMat    = CovMat,
@@ -537,7 +549,6 @@ compute_glsPower <- function(DesMat,
                              rho        = NULL,
                              gamma      = NULL,
                              psi        = NULL,
-                             N          = NULL,
                              CovMat     = NULL,
                              dfAdjust   = "none",
                              sig.level  = .05,
@@ -562,7 +573,7 @@ compute_glsPower <- function(DesMat,
                                  gamma      = gamma,
                                  psi        = psi,
                                  trtMat     = trtMat,
-                                 N          = N,
+                                 N          = DesMat$N,
                                  INDIV_LVL  = INDIV_LVL)
 
   ## matrices for power calculation #####
@@ -643,17 +654,13 @@ compute_glsPower <- function(DesMat,
     df <- Inf }
 
   Pwr <- tTestPwr(d=EffSize, se=sqrt(Var[1,1]), df=df, sig.level=sig.level)
+
+  ## create output ####
   if(verbose==0){
     out <- Pwr
   } else {
     out <- list(power  =Pwr,
-                Params =list(Cl         = DesMat$Cl,
-                             timeAdjust = DesMat$timeAdjust,
-                             timepoints = DesMat$timepoints,
-                             designtype = DesMat$dsntype,
-                             trtDelay   = DesMat$trtDelay,
-                             N          = N,
-                             sigma      = sigma,
+                Params =list(sigma      = sigma,
                              tau        = tau,
                              eta        = eta,
                              AR         = AR,
@@ -673,8 +680,8 @@ compute_glsPower <- function(DesMat,
                   list(DesignMatrix     = DesMat,
                        CovarianceMatrix = CovMat,
                        VarianceMatrix   = Var))
-  return(out)
   }
+  return(out)
 }
 
 #' @title Print an object of class `glsPower`
