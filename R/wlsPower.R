@@ -3,11 +3,12 @@
 #'
 #' @description
 #' This is the main function of the SteppedPower package.
-#' It calls the constructor functions for the design matrix and
-#' covariance matrix, and then calculates the variance of the
+#' It calls the constructor functions for the design matrix
+#' \code{\link{construct_DesMat}} and
+#' covariance matrix \code{\link{construct_CovMat}},
+#' and then calculates the variance of the
 #' intervention effect estimator. The latter is then used
 #' to compute the power of a Wald test of a (given) intervention effect.
-#'
 #'
 #'
 #' @param Cl integer (vector), number of clusters per sequence group (in SWD),
@@ -15,7 +16,8 @@
 #' @param timepoints numeric (scalar or vector), number of timepoints (periods).
 #' If design is swd, timepoints defaults to length(Cl)+1.
 #' Defaults to 1 for parallel designs.
-#' @param DesMat Either an object of class `DesMat` or a matrix indicating the
+#' @param DesMat Either an object of class `DesMat` created by the
+#' function \code{\link{construct_DesMat}} or a matrix indicating the
 #' treatment status for each cluster at each timepoint. If supplied,
 #' `timepoints`,`Cl`,`trtDelay` are ignored.
 #' @param trtDelay numeric (possibly vector), `NA`(s) and/or value(s)
@@ -25,7 +27,7 @@
 #' @param incomplete integer, either a scalar (only for SWD) or a matrix.
 #' A vector defines the number of periods before and after the switch from
 #' control to intervention that are observed. A matrix consists of `1`s for
-#' observed clusterperiods and `0`s or `NA` for unobserved clusterperiods.
+#' observed clusterperiods and `0`s or `NA` for unobserved cluster periods.
 #' @param timeAdjust character, specifies adjustment for time periods.
 #' One of the following: "factor", "linear", "none", "periodic".
 #' Defaults to "factor".
@@ -410,6 +412,11 @@
     }
   } else if(family =="binomial"){
 
+  ## TODO: Decide whether mu0,mu1 define the residual or
+  ## the marginal variance by default (or something in between).
+  ##
+  ## Hemming/Hooper use it as marginal variance by default.
+
     if(marginal_mu){
       if(!UseRandEff)
         stop("marginal_mu currently only implemented for random effects")
@@ -434,13 +441,15 @@
     }
   }
 
+  ## compute Effect Size ####
   EffSize <- mu1-mu0
 
   if(marginal_mu & verbose>0)
     print(paste("The (raw) effect is",round(EffSize,5)))
 
 
-  ## incomplete designs #####
+  ## incomplete designs ####
+  ## TODO: Is the check `is.null(CovMat)` really needed here?
   if(!is.null(DesMat$incompMat) & is.null(CovMat)){
 
     sigma <- matrix(sigma, nrow=sumCl, ncol=timepoints,
