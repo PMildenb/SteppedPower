@@ -257,7 +257,7 @@
     dsntype <- tmpdsntype
   }
   ### family
-  familyOptions <- c("gaussian", "binomial")
+  familyOptions <- c("gaussian", "binomial", "poisson")
   tmpfamily     <- choose_character_Input(familyOptions, family)
   if(family != tmpfamily) {
     message("Assumes ", tmpfamily, "distribution")
@@ -404,18 +404,16 @@
 
   ## distribution family ####
   if(family =="gaussian"){
-    if(Usealpha){
-      tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
-      tau   <- tmp$tau
-      gamma <- tmp$gamma
-      psi   <- tmp$psi
-    }
+
   } else if(family =="binomial"){
 
   ## TODO: Decide whether mu0,mu1 define the residual or
   ## the marginal variance by default (or something in between).
   ##
   ## Hemming/Hooper use it as marginal variance by default.
+
+  ## TODO: Move `usealpha` outside of family specifications
+  ## It should be possible to define them after the distribution families
 
     if(marginal_mu){
       if(!UseRandEff)
@@ -439,6 +437,19 @@
       gamma <- tmp$gamma
       psi   <- tmp$psi
     }
+  } else if(family =="poisson") {
+
+    muMat <- matrix(mu0, sumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
+    sigma <- sqrt(muMat)
+
+  }
+
+  ## convert covariance specification to random effects ####
+  if(Usealpha){
+    tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
+    tau   <- tmp$tau
+    gamma <- tmp$gamma
+    psi   <- tmp$psi
   }
 
   ## compute Effect Size ####
@@ -805,8 +816,8 @@ plot_CellWeights <- function(x,
   timep <- dim(wgt)[2]
   gaps  <- 20/sqrt(length(wgt))
 
-  if(!is.null(x$DesignMatrix$incompMat))
-    wgt[x$DesignMatrix$incompMat==0] <- NA
+  if(!is.null(im <- x$DesignMatrix$incompMat))
+    wgt[im==0 | is.na(im)] <- NA
 
   dat <- cbind(expand.grid(y=seq_len(sumCl),
                            x=seq_len(timep)),
