@@ -22,8 +22,6 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    swCRTdesign,
-    testthat,
     pwr
 License: MIT + file LICENSE
 Encoding: UTF-8
