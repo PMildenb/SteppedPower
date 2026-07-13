@@ -1,5 +1,36 @@
 
 
+# SteppedPower 0.4.0
+
+* Added tests for `construct_DesMat()`, `construct_CovMat()`, and `glsPower()`
+* Updated vignettes
+* Added ICC (intracluster correlation) transformation functions: `icc_to_RandEff()`, `RandEff_to_icc()`, `RandEff_to_alpha012()`, and `alpha012_to_RandEff()` for converting between random effects variances and ICC/CAC/IAC parameters
+* Fixed typo in `RandEff_to_alpha`
+* Improved documentation with additional links in help files
+* Roxygen documentation now uses markdown format
+* Changed covariance matrix construction to use `fbdiag` (fast block diagonal matrix)
+* Re-roxygenised all documentation
+
+
+# SteppedPower 0.3.5
+
+* Addressed CRAN comments
+* Fixed roxygen package name bug
+* Now using `fbdiag` for covariance matrix construction
+
+
+# SteppedPower 0.3.4
+
+* Addressed CRAN comments
+
+
+# SteppedPower 0.3.3
+
+* `N` (subjects per cluster-period cell) now belongs to `DesMat` class
+* Added vignette for incomplete designs
+* Fixed bug for handling `NA` in `incompMat` and `trtMat`
+
+
 # SteppedPower 0.3.2
 
 * The most noticeable change in this version is that the abbrevation `wls` 

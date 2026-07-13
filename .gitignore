@@ -8,3 +8,6 @@ sync.ffs_db
 .idea
 /doc/
 /Meta/
+
+/.quarto/
+**/*.quarto_ipynb
