@@ -2,14 +2,16 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/PMildenb/SteppedPower/workflows/R-CMD-check/badge.svg)](https://github.com/PMildenb/SteppedPower/actions)
-[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SteppedPower)](https://cran.r-project.org/package=SteppedPower)
+[![CRAN version](https://img.shields.io/cran/v/SteppedPower)](https://cran.r-project.org/package=SteppedPower)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CRAN Downloads](https://cranlogs.r-pkg.org/badges/SteppedPower)](https://cran.r-project.org/package=SteppedPower)
 <!-- badges: end -->
 
-**Tools for power and sample size calculation, as well as design diagnostics, for longitudinal mixed model settings, with a focus on stepped wedge designs.**
+**Tools for power and sample size calculation, as well as design diagnostics.  
+For longitudinal mixed model settings, with a focus on stepped wedge designs.**
 
-`SteppedPower` offers power and sample size calculation. It supports parallel, crossover, and stepped wedge designs. It allows for a flexible definition of the covariance structure.
-- Design visualisation and diagnostics tools
+`SteppedPower` provides power and sample size calculation for parallel, crossover, and stepped wedge designs. It allows for a flexible definition of the covariance structure.
+It further offers visualisations and diagnostics tools, to assess cluster importance across time points. 
 
 ## Installation
 
