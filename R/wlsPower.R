@@ -600,6 +600,7 @@ compute_glsPower <- function(DesMat,
   # currently computed twice, once explicitly, once using the specific formula
   # explicit computation will be removed in near future
   if(INFO_CONTENT){
+    InfoContent <- tryCatch({
     I <- 1:sumCl
     J <- 1:tp
     InfoContent <- list(Cells   = matrix(NA,sumCl,tp),
@@ -651,6 +652,10 @@ compute_glsPower <- function(DesMat,
     ## Formula-based calculation of information content
     InfoContent$Closed <- compute_InfoContent(CovMat=CovMat, dsn=dsn,
                                             sumCl=sumCl  , tp=tp)
+    InfoContent
+    }, error = \(...) {
+      warning("Information content calculation failed")
+      NULL})
   }
 
 
@@ -682,9 +687,8 @@ compute_glsPower <- function(DesMat,
                              dfAdjust   = dfAdjust,
                              sig.level  = sig.level),
                 ProjMatrix = ProjMat)
-  if(INFO_CONTENT){
-    out <- append(out,
-                  list(InformationContent= InfoContent))
+  if(INFO_CONTENT && !is.null(InfoContent)){
+    out <- append(out, list(InformationContent = InfoContent))
   }
   if(verbose==2)
     out <- append(out,
@@ -735,6 +739,10 @@ plot_InfoContent <- function(IC,
                              annotation_size=NULL,
                              show_colorbar=TRUE,
                              marginal_plots=TRUE){
+  if (is.null(IC) || is.null(IC$Cells) || nrow(IC$Cells)==0) {
+    warning("Information content calculation failed")
+    return(plot_ly())
+  }
 
   if(is.null(annotations)){
     annotations <- ifelse(length(IC$Cells)<=1e2,TRUE,FALSE)
