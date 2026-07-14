@@ -49,7 +49,7 @@ plot(construct_DesMat(Cl=c(1,1,1,1,0), incomplete = 2))
 plot(construct_DesMat(Cl=c(1,1,1,1,0), trtDelay = c(NA)))
 ```
 
-In the first type, clusters that switch early to the intervention are not observed until the end - accordingly, observation starts later in clusters that switch towards the end of the study `r fig$ref("Incomp1")`. The *"edge periods"* are thus not observed *(Fig. 1)*. The second type excludes the transition period(s) between control and intervention condition *(Fig. 2)*. 
+In the first type, clusters that switch early to the intervention are not observed until the end - accordingly, observation starts later in clusters that switch toward the end of the study `r fig$ref("Incomp1")`. The *"edge periods"* are thus not observed *(Fig. 1)*. The second type excludes the transition period(s) between control and intervention conditions *(Fig. 2)*. 
 
 
 
@@ -75,9 +75,9 @@ the examples below focus on `construct_DesMat()` directly.
 # Examples
 
 ## 1
-If for example the a stepped wedge study consists of eight clusters 
-in four sequences (i.e. five timepoints), 
-and only the last two periods before and the fist two periods after the switch are observed. One can use the `incomplete` argument
+If, for example, a stepped wedge study consists of eight clusters 
+in four sequences (i.e., five timepoints), 
+and only the last two periods before and the first two periods after the switch are observed, one can use the `incomplete` argument
 
 ```{r}
 Dsn1.1 <- construct_DesMat(Cl=rep(2,4), incomplete=2)
@@ -120,13 +120,13 @@ all.equal(Dsn1.1$trtMat,Dsn1.3$trtMat)
 ```
 
 
-> The argument `incomplete` with matrix input works also for other design types, but makes (supposedly) most sense in the context of stepped wedge designs
+> The argument `incomplete` with matrix input works also for other design types, but makes primarily most sense in the context of stepped wedge designs
 
 
 ## 2
 
 Now suppose we want to use a SWD to investigate the intervention effects after at least one month,  
-i.e. cluster periods directly after the switch to intervention conditions are not observed. 
+i.e., cluster periods directly after the switch to intervention conditions are not observed. 
 That leads to an incomplete design that is easiest modelled with `trtDelay=`
 
 

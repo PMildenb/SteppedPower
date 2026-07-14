@@ -6,7 +6,7 @@
 #' All calculations are oracle estimates i.e. assume random effect variances
 #' to be known (or guessed) in advance.
 #'
-#' @importFrom stats coef family gaussian optim pnorm qnorm dnorm rbinom rnorm
+#' @importFrom stats coef family gaussian optim pnorm qnorm dnorm rbinom rnorm uniroot integrate pt qt binomial
 #' uniroot integrate pt qt binomial
 #' @import Matrix
 #' @importFrom grDevices colorRamp

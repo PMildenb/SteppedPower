@@ -124,6 +124,7 @@ with
 
 ## Covariance Structure Specifications
 
+`SteppedPower` is most flexible when covariance structure is defined by the standard deviations of the random effects directly. However, for users more comfortable with correlation-based specifications, the package provides two alternative approaches that convert correlation parameters to random effect variances.
 
 ### $\alpha_0$, $\alpha_1$, $\alpha_2$
 
@@ -138,12 +139,13 @@ $$
 	\begin{align*}
 		\tau^2   		&:= {\sigma^2_{\text{marg}} \alpha_1} \\
 		\gamma^2 		&:= {\sigma^2_{\text{marg}} (\alpha_0-\alpha_1)} \\
-		\psi^2   	 	&:= {\sigma^2_{\text{marg}} (\alpha_2-\alpha_2)} \\
+		\psi^2   	 	&:= {\sigma^2_{\text{marg}} (\alpha_2-\alpha_1)} \\
 		\sigma^2_{\text{res}} 	&:= {\sigma^2_{\text{marg}} (1-\alpha_0 - \alpha_2 + \alpha_1)}
 	\end{align*}
 $$ 
 
 Note that $\boldsymbol{\alpha}$ as defined above cannot specify a random treatment effect.
+
 
 ### ICC, CAC and IAC
 
@@ -151,9 +153,19 @@ Another version is explained in [@hooper2016sample]. It consists of intracluster
 
 $$
 \begin{align}
-  \tau &:= \sqrt{\sigma^2_{\text{marg}} \cdot \text{ICC} \cdot \text{CAC}} \\
-  \gamma &:= \sqrt{\sigma^2_{\text{marg}} \cdot \text{ICC} \cdot (1 - \text{CAC})} \\
-  \psi &:= \sqrt{\sigma^2_{\text{marg}} \cdot \text{IAC} \cdot (1 - \text{ICC})} \\
+  \tau^2 &:= \sigma^2_{\text{marg}} \cdot \text{ICC} \cdot \text{CAC} \\
+  \gamma^2 &:= \sigma^2_{\text{marg}} \cdot \text{ICC} \cdot (1 - \text{CAC}) \\
+  \psi^2 &:= \sigma^2_{\text{marg}} \cdot \text{IAC} \cdot (1 - \text{ICC})\\
+\end{align}
+$$
+
+
+ICC, CAC, and IAC cannot be directly specified in `glsPower` but can easily be transformed into $\alpha$. The corresponding $\alpha$ values are:
+$$
+\begin{align}
+  \alpha_0 &= \text{ICC} \\
+  \alpha_1 &= \text{ICC} \times \text{CAC} \\
+  \alpha_2 &= \text{IAC} \times (1 - \text{ICC}) + \text{ICC} \times \text{CAC} \\
 \end{align}
 $$
 
