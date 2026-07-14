@@ -200,7 +200,7 @@ plot.DesMat <- function(x, show_colorbar=FALSE, INDIV_LVL=FALSE, ...){
           showscale=show_colorbar,
           colors=grDevices::colorRamp(c("steelblue","lightgoldenrod1","firebrick")),
           hovertemplate="Time: %{x},   Cluster: %{y} \nTreatment Status: %{z}") %>%
-    layout(xaxis = list(title="time", type="category"),
+    layout(xaxis = list(title="Time", type="category"),
            yaxis = list(title=yLabel,autorange="reversed",type="category")) %>%
     colorbar(len=1, title="")
   out
