@@ -1,9 +1,9 @@
 ---
 title: "Getting Started with `SteppedPower`"
 author:
-- name: Philipp Mildenberger^[pmildenb@uni-mainz.de]
+- name: Philipp Mildenberger
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page/))
-- name: Federico Marini^[marinif@uni-mainz.de]
+- name: Federico Marini
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page/))
 date: "`r Sys.Date()`"
 output: 
@@ -55,8 +55,8 @@ parallel with baseline period(s) and
 crossover designs. Further design types can be 
 easily defined by the user.  
 
-Currently, normal outcomes and binomial outcomes with 
-identity link are implemented. 
+Currently, normal outcomes and binomial outcomes with
+identity link are implemented (see also the [Binomial Outcomes](Binomial_Outcomes.html) vignette).
 The following random effects can be specified:
 random cluster intercept, random treatment effect, 
 random subject specific intercept and random time effect.
@@ -288,8 +288,8 @@ rm(mod4)
 
 ## Incomplete Stepped Wedge Designs
 
-There are two main types of incomplete designs considered in this package; 
-Incomplete designs with unobserved transition periods (on the right) are defined with the `trt_Delay` argument. Designs with unobserved *"edge periods"* are defined with the `incomplete` argument. This is described in more detail in the **Incomplete Designs** vignette. 
+There are two main types of incomplete designs considered in this package;
+Incomplete designs with unobserved transition periods (on the right) are defined with the `trt_Delay` argument. Designs with unobserved *"edge periods"* are defined with the `incomplete` argument. This is described in more detail in the [Incomplete Designs](Incomplete_Designs.html) vignette.
 
 ```{r}
 Incomp1 <- plot(construct_DesMat(Cl=c(1,1,1,1,0), incomplete = 2))
@@ -374,7 +374,7 @@ knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 
 ## Non-Gaussian outcomes
 
-`SteppedPower` can also handle binomial and count outcomes. 
+`SteppedPower` can also handle binomial and count outcomes (see the [Binomial Outcomes](Binomial_Outcomes.html) vignette for details).
 
 # Use Cases
 

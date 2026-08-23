@@ -1,5 +1,5 @@
 ---
-title: "Incomplete Designs with `SteppedPower`"
+title: "Incomplete Designs in `SteppedPower`"
 author:
 - name: Philipp Mildenberger^[pmildenb@uni-mainz.de]
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page/))
@@ -38,8 +38,10 @@ fig <- local({
 
 # Main Types of Incomplete Designs
 
+>For a general introduction to `SteppedPower`, see the [Getting Started with `SteppedPower`](Getting_Started.html) vignette.
+
 In general, a study design is referred to as incomplete if not all clusters are
-observed at every time period [@hemming2015stepped]. There are two main types of incomplete designs considered in this package. 
+observed at every time period [@hemming2015stepped]. There are two main types of incomplete designs considered in this package.
 
 ```{r, echo=FALSE, fig.cap=fig$cap("Incomp1","An incomplete stepped wedge design with four clusters with a total study duration of six periods. Clusters are only observed from two months prior to treatment switch to two months post switch.")}
 plot(construct_DesMat(Cl=c(1,1,1,1,0), incomplete = 2))
