@@ -11,3 +11,5 @@ sync.ffs_db
 
 /.quarto/
 **/*.quarto_ipynb
+
+unorganized_testing.R

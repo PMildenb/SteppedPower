@@ -301,7 +301,7 @@ RandEff_to_icc <- function(sigResid,
 
 #' Transform random effects to alpha
 #'
-#' #' Transforms standard deviations of random effects into a
+#' Transforms standard deviations of random effects into a
 #' correlation structure specified by \eqn{\alpha_0, \alpha_1, \alpha_2}
 #' as defined in Li et al. (2018).
 #'
@@ -397,5 +397,5 @@ alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
   return(list(tau      = tau,
               gamma    = gamma,
               psi      = psi,
-              sigresid = sigResid))
+              sigResid = sigResid))
 }

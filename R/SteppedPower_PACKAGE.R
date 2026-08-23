@@ -7,12 +7,10 @@
 #' to be known (or guessed) in advance.
 #'
 #' @importFrom stats coef family gaussian optim pnorm qnorm dnorm rbinom rnorm uniroot integrate pt qt binomial
-#' uniroot integrate pt qt binomial
 #' @import Matrix
 #' @importFrom grDevices colorRamp
 #' @importFrom utils adist
-#' @importFrom plotly colorbar config layout plot_ly plotly_empty subplot
-#' "%>%" add_annotations
+#' @importFrom plotly colorbar config layout plot_ly plotly_empty subplot "%>%" add_annotations
 #' @importFrom Rfast spdinv submatrix
 #'
 #' @author Philipp Mildenberger \email{pmildenb@@uni-mainz.de}

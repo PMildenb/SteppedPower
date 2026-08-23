@@ -211,6 +211,9 @@ one_cell <- function(idx) {
 grid_idx <- expand.grid(i = seq_along(p_grid), j = seq_along(p_grid))
 cells <- lapply(seq_len(nrow(grid_idx)), function(k) as.integer(grid_idx[k, ]))
 ncores <- max(1, parallel::detectCores() - 1, na.rm = TRUE)
+if (tolower(Sys.getenv("_R_CHECK_LIMIT_CORES_", "")) %in% c("true", "TRUE")) {
+  ncores <- min(ncores, 2)
+}
 cl <- parallel::makeCluster(ncores)
 parallel::clusterExport(cl, c("p_grid", "icc_grid", "one_cell"),
                         envir = environment())

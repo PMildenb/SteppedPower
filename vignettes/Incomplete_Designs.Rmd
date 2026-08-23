@@ -1,7 +1,7 @@
 ---
 title: "Incomplete Designs in `SteppedPower`"
 author:
-- name: Philipp Mildenberger^[pmildenb@uni-mainz.de]
+- name: Philipp Mildenberger
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page/))
 date: "`r Sys.Date()`"
 output: 
