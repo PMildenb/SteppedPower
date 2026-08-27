@@ -26,6 +26,10 @@ library(knitr)
 library(SteppedPower)
 library(Matrix)
 library(plotly)
+assign("knit_print.plotly", function(x, ...) {
+  x <- plotly::partial_bundle(x)
+  NextMethod()
+}, envir = .GlobalEnv)
 
 # A function for captioning and referencing images
 fig <- local({

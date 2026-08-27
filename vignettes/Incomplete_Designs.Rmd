@@ -19,6 +19,10 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,  fig.width = 7, fig.height = 2)
 library(SteppedPower)
+assign("knit_print.plotly", function(x, ...) {
+  x <- plotly::partial_bundle(x)
+  NextMethod()
+}, envir = .GlobalEnv)
 
 # A function for captioning and referencing images
 fig <- local({
