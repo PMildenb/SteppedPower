@@ -643,7 +643,7 @@ compute_glsPower <- function(DesMat,
     InfoContent$Closed <- compute_InfoContent(CovMat=CovMat, dsn=dsn,
                                             sumCl=sumCl  , tp=tp)
     InfoContent
-    }, error = \(...) {
+    }, error = function(...) {
       warning("Information content calculation failed")
       NULL})
   }
