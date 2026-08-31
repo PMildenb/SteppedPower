@@ -412,15 +412,12 @@
   ##
   ## Hemming/Hooper use it as marginal variance by default.
 
-  ## TODO: Move `usealpha` outside of family specifications
-  ## It should be possible to define them after the distribution families
-
     if(marginal_mu){
       if(!UseRandEff)
         stop("marginal_mu currently only implemented for random effects")
       mu0 <-muCond_to_muMarg(muCond=mu0, tauLin=tau)
       mu1 <-muCond_to_muMarg(muCond=mu1, tauLin=tau)
-      print(paste("mu0=",round(mu0,5),", mu1=",round(mu1,5),"."))
+      message("mu0=",round(mu0,5),", mu1=",round(mu1,5),".")
     }
 
     muMat   <- matrix(mu0, sumCl, timepoints) + DesMat$trtMat*(mu1-mu0)
@@ -428,14 +425,7 @@
 
     if (verbose>0) {
       OR <- (mu1*(1-mu0))/(mu0*(1-mu1))
-      print(paste("The assumed odds ratio is",round(OR,4))) ## user information
-    }
-
-    if(Usealpha){
-      tmp   <- alpha012_to_RandEff(alpha012=alpha_0_1_2, sigResid=sigma)
-      tau   <- tmp$tau
-      gamma <- tmp$gamma
-      psi   <- tmp$psi
+      message("The assumed odds ratio is ",round(OR,4)) ## user information
     }
   } else if(family =="poisson") {
 
@@ -456,7 +446,7 @@
   EffSize <- mu1-mu0
 
   if(marginal_mu & verbose>0)
-    print(paste("The (raw) effect is",round(EffSize,5)))
+    message("The (raw) effect is ",round(EffSize,5))
 
 
   ## incomplete designs ####
@@ -653,7 +643,7 @@ compute_glsPower <- function(DesMat,
     InfoContent$Closed <- compute_InfoContent(CovMat=CovMat, dsn=dsn,
                                             sumCl=sumCl  , tp=tp)
     InfoContent
-    }, error = \(...) {
+    }, error = function(...) {
       warning("Information content calculation failed")
       NULL})
   }

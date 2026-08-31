@@ -89,7 +89,7 @@ fbdiag <- function(lmat) {
   i0 <- rep(1:N, times=N:1) ## row indices of upper triangle of first block
   i  <- rep(i0,l) + s
 
-  j0 <- unlist(lapply(seq_len(N), \(k) seq(k, N))) ## column indices
+  j0 <- unlist(lapply(seq_len(N), function(k) seq(k, N))) ## column indices
   j  <- rep(j0,l) + s
 
   idx <- lower.tri(lmat[[1]], diag = TRUE) ## lower, bc unlist works columnwise
@@ -301,7 +301,7 @@ RandEff_to_icc <- function(sigResid,
 
 #' Transform random effects to alpha
 #'
-#' #' Transforms standard deviations of random effects into a
+#' Transforms standard deviations of random effects into a
 #' correlation structure specified by \eqn{\alpha_0, \alpha_1, \alpha_2}
 #' as defined in Li et al. (2018).
 #'
@@ -397,5 +397,5 @@ alpha012_to_RandEff <- function(alpha012, sigResid=NULL, sigMarg=NULL){
   return(list(tau      = tau,
               gamma    = gamma,
               psi      = psi,
-              sigresid = sigResid))
+              sigResid = sigResid))
 }
