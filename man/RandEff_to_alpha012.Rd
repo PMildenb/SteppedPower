@@ -21,7 +21,7 @@ a list containing four named elements (possibly vectors or matrices):
 denotes the marginal standard deviation
 }
 \description{
-#' Transforms standard deviations of random effects into a
+Transforms standard deviations of random effects into a
 correlation structure specified by \eqn{\alpha_0, \alpha_1, \alpha_2}
 as defined in Li et al. (2018).
 }

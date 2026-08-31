@@ -59,7 +59,7 @@ parallel with baseline period(s) and
 crossover designs. Further design types can be 
 easily defined by the user.  
 
-Currently, normal outcomes and binomial outcomes with
+Currently, normal, binomial, and count (Poisson) outcomes with
 identity link are implemented (see also the [Binomial Outcomes](Binomial_Outcomes.html) vignette).
 The following random effects can be specified:
 random cluster intercept, random treatment effect, 
@@ -188,7 +188,7 @@ It calls several auxiliary functions which will be shortly discussed here.
 
 `construct_DesMat` builds the design matrix which consists of the treatment 
 status, usually built by`construct_trtMat` and the time adjustment, usually
-built by `construct_timeadjust`. There is also the option to pass a user defined definition of the treatment status to `construct_DesMat`. If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design, i.e. two for cross-over designs or the number of waves plus one for stepped wedge designs. 
+built by `construct_timeAdjust`. There is also the option to pass a user defined definition of the treatment status to `construct_DesMat`. If not specified, the number of timepoints is guessed as the fewest number of periods (timepoints) possible with the given design, i.e. two for cross-over designs or the number of waves plus one for stepped wedge designs. 
 
 `construct_CovMat` builds the covariance matrix (explicitly). It uses `construct_CovBlk` to construct the blocks for each cluster which are then combined
 to a block diagonal matrix.
@@ -218,7 +218,7 @@ The matrix $H$ gives an impression of the importance of clusters and
 time periods with regard to the estimated coefficients $\hat\beta$. 
 The first row of $H$ corresponds to the coefficient of the treatment status, 
 i.e. the treatment effect.  
-The `plot.glsPower` method visualises this first row of $M$ as a matrix 
+The `plot.glsPower` method visualises this first row of $H$ as a matrix 
 where rows and columns correspond to clusters and time periods, respectively.
 
 
@@ -293,7 +293,7 @@ rm(mod4)
 ## Incomplete Stepped Wedge Designs
 
 There are two main types of incomplete designs considered in this package;
-Incomplete designs with unobserved transition periods (on the right) are defined with the `trt_Delay` argument. Designs with unobserved *"edge periods"* are defined with the `incomplete` argument. This is described in more detail in the [Incomplete Designs](Incomplete_Designs.html) vignette.
+Incomplete designs with unobserved transition periods (on the right) are defined with the `trtDelay` argument. Designs with unobserved *"edge periods"* are defined with the `incomplete` argument. This is described in more detail in the [Incomplete Designs](Incomplete_Designs.html) vignette.
 
 ```{r}
 Incomp1 <- plot(construct_DesMat(Cl=c(1,1,1,1,0), incomplete = 2))
@@ -317,16 +317,16 @@ applies to the cluster intercept, the second to the treatment effect (i.e. slope
 and the third to the subject specific intercept. This is especially useful for 
 open cohort designs (see below).
 
-An example of a stepped wedge design with 8 clusters in 4 waves, 
+An example of a stepped wedge design with 3 clusters in 3 waves, 
 once with medium autocorrelation (`AR=0.6`) and 
 once with high autocorrelation (`AR=0.95`):
 
 ```{r}
-plt1 <- glsPower(Cl=c(1,1,0), mu0=0, mu1=1, 
+plt1 <- glsPower(Cl=c(1,1,1), mu0=0, mu1=1, 
                  sigma=1, N=1, tau=1, AR=1, verbose=2) |>
   plot( which=4, show_colorbar = FALSE)
 
-plt2 <- glsPower(Cl=c(1,1,0), mu0=0, mu1=1, 
+plt2 <- glsPower(Cl=c(1,1,1), mu0=0, mu1=1, 
                  sigma=1, N=1, tau=1, AR=.6, verbose=2) |>
   plot( which=4, show_colorbar = FALSE)
 
@@ -378,7 +378,7 @@ knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 
 ## Non-Gaussian outcomes
 
-`SteppedPower` can also handle binomial and count outcomes (see the [Binomial Outcomes](Binomial_Outcomes.html) vignette for details).
+`SteppedPower` can also handle binomial and count (Poisson) outcomes, both with an identity link (see the [Binomial Outcomes](Binomial_Outcomes.html) vignette for the binomial case).
 
 # Use Cases
 
