@@ -6,3 +6,4 @@ docs/*
 cran-comments.md
 ^doc$
 ^Meta$
+^data-raw$
