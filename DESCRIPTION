@@ -20,6 +20,7 @@ Imports:
     stats,
     utils
 Suggests:
+    future.apply,
     knitr,
     rmarkdown,
     pwr,

@@ -1,6 +1,6 @@
 ## Precompute the (p0, p1) grid of variance estimators used by the
 ## "Differences in the Variance estimator" section of the
-## Binomial_Outcomes vignette.
+## Binomial_and_Count_Outcomes vignette.
 ##
 ## Run this script to regenerate inst/vignettes/BinomOutcomes_vals.rds.
 
