@@ -40,11 +40,17 @@ tTestPwr2 <- function(d,se,df,sig.level=.05){
 }
 
 choose_character_Input <- function(Options, Input){
-  Options[which.min(adist(Input, Options,
-                          costs=c(insertions    = 1,
-                                  deletions     = 100,
-                                  substitutions = 100),
-                          ignore.case=TRUE))]
+  dists <- adist(Input, Options,
+                 costs = c(insertions = 1, deletions = 1, substitutions = 1),
+                 ignore.case = TRUE)
+  best <- which.min(dists)
+  ## Reject if the closest option is still too far away
+  rel_dist <- dists[best] / nchar(Options[best])
+  if (rel_dist > 0.5)
+    stop("'", Input, "' does not match any of ",
+         paste(Options, collapse = ", "),
+         ". Did you misspell it?")
+  Options[best]
 }
 
 
