@@ -1,5 +1,5 @@
 ---
-title: "Binomial Outcomes in `SteppedPower`"
+title: "Binomial and Count Outcomes in `SteppedPower`"
 author:
 - name: Philipp Mildenberger
   affiliation: Institute of Medical Biostatistics, Epidemiology and Informatics ([IMBEI, Mainz](https://www.unimedizin-mainz.de/imbei/imbei/welcome-page/))
@@ -10,7 +10,7 @@ output:
     number_sections: true
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Binomial Outcomes in `SteppedPower`}
+  %\VignetteIndexEntry{Binomial and Count Outcomes in `SteppedPower`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -244,5 +244,16 @@ plot_ly(
             yaxis = list(title = "p1") )
 ```
 
+
+# Count (Poisson) Outcomes
+
+Count outcomes are handled very similary in  `SteppedPower`. It uses a Poisson distribution with an **identity link**:
+
+$$y_{ijk}= T_{ij} \theta + c_i + \mu_j + e_{ijk}$$
+
+As with the binomial case, the residual variance is tied to the mean via $\sigma^2 = \mu$:
+
+$$\sigma^2_{ij} = \mu_{ij} = \mu_0 + T_{ij}\,\theta .$$
+Again, $\sigma^2$ is derived cell-by-cell. The same two parametrisations of the covariance structure are available with the same implications. 
 
 # References {-}
