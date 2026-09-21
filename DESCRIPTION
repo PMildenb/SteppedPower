@@ -12,6 +12,8 @@ Description: Tools for power and sample size
     to be known (or guessed) in advance.  
     The method is introduced in Hussey and Hughes (2007) <doi:10.1016/j.cct.2006.05.007>,
     extensions are discussed in Li et al. (2020) <doi:10.1177/0962280220932962>.
+Depends:
+    R (>= 3.5.0)
 Imports:
     Matrix,
     plotly,

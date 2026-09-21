@@ -2,21 +2,31 @@
 
 # SteppedPower 0.4.0
 
-* Added tests for `construct_DesMat()`, `construct_CovMat()`, and `glsPower()`
-* Updated vignettes
+* `glsPower()` now supports count outcomes via `family="poisson"`
 * Added ICC (intracluster correlation) transformation functions: `icc_to_RandEff()`, `RandEff_to_icc()`, `RandEff_to_alpha012()`, and `alpha012_to_RandEff()` for converting between random effects variances and ICC/CAC/IAC parameters
-* Fixed typo in `RandEff_to_alpha`
-* Improved documentation with additional links in help files
-* Roxygen documentation now uses markdown format
+* Added vignette on binomial and count outcomes, with pre-calculated contour plots
+* In `glsPower()`, the argument `N` now overrides the `N` stored in a supplied
+`DesMat` object
+* `glsPower()` now fails gracefully (with a warning) if the information content
+cannot be calculated
+* Character input arguments (e.g. `dsntype`, `family`) now throw an error if no
+known option is sufficiently similar, instead of silently choosing the closest match
+* Diagnostic output now uses `message()` instead of `print()`
+* Vignette plots now use the plotly partial bundle to reduce package size
 * Changed covariance matrix construction to use `fbdiag` (fast block diagonal matrix)
-* Re-roxygenised all documentation
+* `plot_CellWeights()` now treats `NA` entries in `incompMat` as unobserved
+cluster periods
+* Replaced `\()` with `function()` for backward compatibility with older R versions
+* Fixed typo in `RandEff_to_alpha`
+* Added tests for `construct_DesMat()`, `construct_CovMat()`, and `glsPower()`
+* Updated vignettes and improved documentation with additional links in help files
+* Roxygen documentation now uses markdown format; re-roxygenised all documentation
 
 
 # SteppedPower 0.3.5
 
 * Addressed CRAN comments
 * Fixed roxygen package name bug
-* Now using `fbdiag` for covariance matrix construction
 
 
 # SteppedPower 0.3.4

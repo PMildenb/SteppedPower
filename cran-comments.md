@@ -1,4 +1,44 @@
 
+## Submission of version 0.4.0
+
+### Changes to previous version:
+
+* `glsPower()` now supports count outcomes via `family="poisson"`
+* Added ICC (intracluster correlation) transformation functions: `icc_to_RandEff()`, `RandEff_to_icc()`, `RandEff_to_alpha012()`, and `alpha012_to_RandEff()` for converting between random effects variances and ICC/CAC/IAC parameters
+* Added vignette on binomial and count outcomes, with pre-calculated contour plots
+* In `glsPower()`, the argument `N` now overrides the `N` stored in a supplied
+`DesMat` object
+* `glsPower()` now fails gracefully (with a warning) if the information content
+cannot be calculated
+* Character input arguments (e.g. `dsntype`, `family`) now throw an error if no
+known option is sufficiently similar, instead of silently choosing the closest match
+* Diagnostic output now uses `message()` instead of `print()`
+* Vignette plots now use the plotly partial bundle to reduce package size
+* Changed covariance matrix construction to use `fbdiag` (fast block diagonal matrix)
+* `plot_CellWeights()` now treats `NA` entries in `incompMat` as unobserved
+cluster periods
+* Replaced `\()` with `function()` for backward compatibility with older R versions
+* Fixed typo in `RandEff_to_alpha`
+* Added tests for `construct_DesMat()`, `construct_CovMat()`, and `glsPower()`
+* Updated vignettes and improved documentation with additional links in help files
+* Roxygen documentation now uses markdown format; re-roxygenised all documentation
+
+### Test environments
+
+* local R installation (Linux Mint 22.3), R 4.6.1
+* Mac OS (on GitHub Actions), R release
+* Windows Server (on GitHub Actions), R release
+* ubuntu 22.04 (on GitHub Actions), R devel, release and oldrel-1
+
+### R CMD check results
+
+```
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+
+R CMD check succeeded
+```
+
+
 ## Submission of version 0.3.5
 
 ### Changes to previous version:

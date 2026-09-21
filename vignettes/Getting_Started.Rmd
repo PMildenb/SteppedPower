@@ -60,7 +60,7 @@ crossover designs. Further design types can be
 easily defined by the user.  
 
 Currently, normal, binomial, and count (Poisson) outcomes with
-identity link are implemented (see also the [Binomial Outcomes](Binomial_Outcomes.html) vignette).
+identity link are implemented (see also the [Binomial and Count Outcomes](Binomial_and_Count_Outcomes.html) vignette).
 The following random effects can be specified:
 random cluster intercept, random treatment effect, 
 random subject specific intercept and random time effect.
@@ -378,7 +378,7 @@ knitr::kable(head(TimeAdj2$DesignMatrix$dsnmatrix, 5))
 
 ## Non-Gaussian outcomes
 
-`SteppedPower` can also handle binomial and count (Poisson) outcomes, both with an identity link (see the [Binomial Outcomes](Binomial_Outcomes.html) vignette for the binomial case).
+`SteppedPower` can also handle binomial and count (Poisson) outcomes, both with an identity link (see the [Binomial and Count Outcomes](Binomial_and_Count_Outcomes.html) vignette).
 
 # Use Cases
 
