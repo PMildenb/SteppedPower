@@ -16,7 +16,9 @@ Depends:
     R (>= 3.5.0)
 Imports:
     Matrix,
+    collapse,
     plotly,
+    RcppAlgos,
     Rfast,
     grDevices,
     stats,

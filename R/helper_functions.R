@@ -95,7 +95,7 @@ fbdiag <- function(lmat) {
   i0 <- rep(1:N, times=N:1) ## row indices of upper triangle of first block
   i  <- rep(i0,l) + s
 
-  j0 <- unlist(lapply(seq_len(N), function(k) seq(k, N))) ## column indices
+  j0 <- sequence(N:1) + rep(0:(N-1), N:1) ## column indices
   j  <- rep(j0,l) + s
 
   idx <- lower.tri(lmat[[1]], diag = TRUE) ## lower, bc unlist works columnwise
