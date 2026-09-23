@@ -209,8 +209,7 @@ construct_CovMat <- function(sumCl      = NULL,
                   sumCl,"x",timepoints)
       }else if(!is.null(trtMat) & length(eta)==1){
         etaMat <- trtMat * eta
-      }else stop("If argument eta is a scalar, ",
-                 "argument trtMat needs to be provided")
+      }else stop("If argument eta is a scalar, argument trtMat needs to be provided")
       etaLst <- split(etaMat, 1:nrow(etaMat))
     }else
       etaLst <- vector("list", length=sumCl)

@@ -48,7 +48,7 @@ construct_DesMat <- function(Cl          = NULL,
     if(length(N)==1){
       N <- rep(N,sum(Cl))
     }
-    tmpCl <- sapply(split(N,rep(as.factor(seq_along(Cl)),Cl)),sum)
+    tmpCl <- collapse::fsum(N, g = rep(seq_along(Cl), Cl))
   }else {
     tmpCl <- Cl
   }
@@ -64,7 +64,8 @@ construct_DesMat <- function(Cl          = NULL,
 
     dsntype <- "userdefined"
     timepoints  <- ncol(trtMat)
-    Cl          <- table(do.call(paste,split(trtMat,col(trtMat))))
+    Cl          <- collapse::qtab(do.call(paste,split(trtMat,col(trtMat))))
+    names(dimnames(Cl)) <- NULL
     tmpCl       <- Cl
   }else{
     trtMat  <- construct_trtMat(Cl            =Cl,
