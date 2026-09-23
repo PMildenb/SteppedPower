@@ -14,7 +14,9 @@ Description: Tools for power and sample size
     extensions are discussed in Li et al. (2020) <doi:10.1177/0962280220932962>.
 Imports:
     Matrix,
+    collapse,
     plotly,
+    RcppAlgos,
     Rfast,
     grDevices,
     stats,
